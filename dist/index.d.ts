@@ -274,8 +274,11 @@ export { instrumentGoogleGenAIClient }
  * Instrument miniapp router to create navigation spans.
  *
  * This function sets up listeners for miniapp route events:
+ * - wx.onBeforeAppRoute - Route start (use for accurate timing start)
  * - wx.onAppRoute / wx.onAppRouteDone - Route change events
  * - wx.onBeforePageLoad / wx.onAfterPageLoad - Page lifecycle events
+ *
+ * Uses routeEventId to correlate route events for accurate timing.
  *
  * Similar to Vue's `instrumentVueRouter`, this separates the routing logic
  * from the tracing integration.
@@ -454,6 +457,11 @@ export declare interface MiniappOptions extends ClientOptions {
 }
 
 /**
+ *
+ * 小程序路由事件
+ * https://developers.weixin.qq.com/miniprogram/dev/framework/app-service/route-event-listener.html
+ */
+/**
  * Miniapp route information from route events
  */
 export declare interface MiniAppRoute {
@@ -469,6 +477,10 @@ export declare interface MiniAppRoute {
     isTabBar?: boolean;
     /** Page webview id */
     webviewId?: number;
+    /** Route event ID for correlating route events (from wx.onBeforeAppRoute etc.) */
+    routeEventId?: string;
+    /** Timestamp from route event */
+    timeStamp?: number;
 }
 
 /**
@@ -492,6 +504,14 @@ export declare interface MiniAppRouterInstrumentationOptions {
      * @default true
      */
     instrumentNavigation?: boolean;
+    /**
+     * Whether to end the span when route completes (onAppRoute).
+     * - true: End span when page onShow completes (onBeforeAppRoute -> onAppRoute)
+     * - false: Use idle span behavior, wait for page to become idle (includes subsequent requests)
+     *
+     * @default true
+     */
+    endSpanOnRouteComplete?: boolean;
 }
 
 /**

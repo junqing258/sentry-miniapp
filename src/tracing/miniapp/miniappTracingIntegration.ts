@@ -110,6 +110,7 @@ const DEFAULT_OPTIONS: Partial<MiniAppTracingIntegrationOptions> = {
   childSpanTimeout: DEFAULT_CHILD_SPAN_TIMEOUT,
   instrumentPageLoad: true,
   instrumentNavigation: true,
+  endSpanOnRouteComplete: true,
   traceContinuityMode: 'link',
   consistentTraceSampling: false,
   ...defaultRequestInstrumentationOptions,
@@ -152,6 +153,7 @@ export function miniappTracingIntegration(
     childSpanTimeout,
     instrumentPageLoad,
     instrumentNavigation,
+    endSpanOnRouteComplete,
     traceContinuityMode,
     consistentTraceSampling,
     beforeStartSpan,
@@ -228,6 +230,7 @@ export function miniappTracingIntegration(
           routeLabel: 'path',
           instrumentPageLoad,
           instrumentNavigation,
+          endSpanOnRouteComplete,
         },
         startNavigationSpan,
       );
