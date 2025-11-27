@@ -70,7 +70,6 @@ export {
 
 export type { Scope } from '@sentry/core';
 export { configureScope } from './scope';
-export { startTransaction } from './tracing/hubextensions';
 
 export { SDK_NAME, SDK_VERSION } from "./version";
 export {
@@ -85,7 +84,18 @@ export {
 export type { MiniappOptions } from "./backend";
 export { MiniappClient, type ReportDialogOptions } from "./client";
 
-export { MiniAppTracing, type MiniAppTracingOptions } from "./tracing/miniapp/miniapptracing";
+// New function-based tracing integration (recommended)
+export {
+  miniappTracingIntegration,
+  startMiniAppTracingNavigationSpan,
+  getActiveMiniAppSpan,
+  instrumentMiniAppRouter,
+  getActiveMiniAppRootSpan,
+  type MiniAppTracingIntegrationOptions,
+  type MiniAppRoute,
+  type MiniAppRouterInstrumentationOptions,
+} from "./tracing";
+
 
 import * as Integrations from "./integrations/index";
 import * as Transports from "./transports/index";

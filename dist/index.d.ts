@@ -12,7 +12,6 @@ import { ClientOptions } from '@sentry/core';
 import { consoleLoggingIntegration } from '@sentry/core';
 import { createConsolaReporter } from '@sentry/core';
 import { DsnLike } from '@sentry/core';
-import { DynamicSamplingContext } from '@sentry/core';
 import { Event as Event_2 } from '@sentry/core';
 import { EventHint } from '@sentry/core';
 import { Exception } from '@sentry/core';
@@ -30,12 +29,9 @@ import { instrumentSupabaseClient } from '@sentry/core';
 import { Integration } from '@sentry/core';
 import { logger } from '@sentry/core';
 import { makeMultiplexedTransport } from '@sentry/core';
-import { Measurements } from '@sentry/core';
-import { MeasurementUnit } from '@sentry/core';
 import { metrics } from '@sentry/core';
 import { moduleMetadataIntegration } from '@sentry/core';
 import { ParameterizedString } from '@sentry/core';
-import { Primitive } from '@sentry/core';
 import { registerSpanErrorInstrumentation } from '@sentry/core';
 import { rewriteFramesIntegration } from '@sentry/core';
 import { Scope } from '@sentry/core';
@@ -49,23 +45,17 @@ import { setTag } from '@sentry/core';
 import { setTags } from '@sentry/core';
 import { setUser } from '@sentry/core';
 import { SeverityLevel } from '@sentry/core';
-import { Span as Span_2 } from '@sentry/core';
-import { SpanAttributes } from '@sentry/core';
-import { SpanAttributeValue } from '@sentry/core';
-import { SpanJSON } from '@sentry/core';
-import { SpanOrigin } from '@sentry/core';
-import { SpanStatus } from '@sentry/core';
-import { SpanTimeInput } from '@sentry/core';
+import { Span } from '@sentry/core';
 import { StackFrame } from '@sentry/core';
 import { Stacktrace } from '@sentry/core';
 import { startInactiveSpan } from '@sentry/core';
 import { startNewTrace } from '@sentry/core';
 import { startSpan } from '@sentry/core';
 import { startSpanManual } from '@sentry/core';
+import { StartSpanOptions } from '@sentry/core';
 import { supabaseIntegration } from '@sentry/core';
 import { thirdPartyErrorFilterIntegration } from '@sentry/core';
 import { Thread } from '@sentry/core';
-import { TraceFlag } from '@sentry/core';
 import { Transport } from '@sentry/core';
 import { User } from '@sentry/core';
 import { withActiveSpan } from '@sentry/core';
@@ -75,8 +65,6 @@ import { zodErrorsIntegration } from '@sentry/core';
 export { addBreadcrumb }
 
 export { addEventProcessor }
-
-declare type BeforeFinishCallback = (transactionSpan: IdleTransaction, endTimestamp: number) => void;
 
 export { Breadcrumb }
 
@@ -109,9 +97,7 @@ export { consoleLoggingIntegration }
 
 export { createConsolaReporter }
 
-declare type CustomSamplingContext = Record<string, unknown>;
-
-export declare const defaultIntegrations: (Integration | GlobalHandlers | TryCatch | LinkedErrors | System | Router | IgnoreMpcrawlerErrors | MiniAppTracing)[];
+export declare const defaultIntegrations: (Integration | GlobalHandlers | TryCatch | LinkedErrors | System | Router | IgnoreMpcrawlerErrors)[];
 
 export { Event_2 as Event }
 
@@ -131,6 +117,16 @@ export { featureFlagsIntegration }
  * @param timeout Maximum time in ms the client should wait.
  */
 export declare function flush(timeout?: number): PromiseLike<boolean>;
+
+/**
+ * Get the currently active root span for miniapp.
+ */
+export declare function getActiveMiniAppRootSpan(): Span | undefined;
+
+/**
+ * Get the currently active idle span for the miniapp.
+ */
+export declare function getActiveMiniAppSpan(): Span | undefined;
 
 export { getActiveSpan }
 
@@ -184,69 +180,6 @@ declare interface GlobalHandlersIntegrations {
     onunhandledrejection: boolean;
     onpagenotfound: boolean;
     onmemorywarning: boolean;
-}
-
-/**
- * An IdleTransaction is a transaction that automatically finishes. It does this by tracking child spans as activities.
- * You can have multiple IdleTransactions active, but if the `onScope` option is specified, the idle transaction will
- * put itself on the scope on creation.
- */
-declare class IdleTransaction extends Transaction {
-    /**
-     * The time to wait in ms until the idle transaction will be finished.
-     * @default 1000
-     */
-    private readonly _idleTimeout;
-    private readonly _onScope;
-    activities: Record<string, boolean>;
-    private _prevHeartbeatString;
-    private _heartbeatCounter;
-    private _finished;
-    private readonly _beforeFinishCallbacks;
-    /**
-     * If a transaction is created and no activities are added, we want to make sure that
-     * it times out properly. This is cleared and not used when activities are added.
-     */
-    private _initTimeout;
-    constructor(transactionContext: TransactionContext, 
-    /**
-     * The time to wait in ms until the idle transaction will be finished.
-     * @default 1000
-     */
-    _idleTimeout?: number, _onScope?: boolean);
-    /** {@inheritDoc} */
-    finish(endTimestamp?: number): string | undefined;
-    /**
-     * Register a callback function that gets excecuted before the transaction finishes.
-     * Useful for cleanup or if you want to add any additional spans based on current context.
-     *
-     * This is exposed because users have no other way of running something before an idle transaction
-     * finishes.
-     */
-    registerBeforeFinishCallback(callback: BeforeFinishCallback): void;
-    /**
-     * @inheritDoc
-     */
-    initSpanRecorder(maxlen?: number): void;
-    /**
-     * Start tracking a specific activity.
-     * @param spanId The span id that represents the activity
-     */
-    private _pushActivity;
-    /**
-     * Remove an activity from usage
-     * @param spanId The span id that represents the activity
-     */
-    private _popActivity;
-    /**
-     * Checks when entries of this.activities are not changing for 3 beats.
-     * If this occurs we finish the transaction.
-     */
-    private _beat;
-    /**
-     * Pings the heartbeat
-     */
-    private _pingHeartbeat;
 }
 
 /**
@@ -329,6 +262,18 @@ export { instrumentAnthropicAiClient }
 
 export { instrumentGoogleGenAIClient }
 
+/**
+ * Instrument miniapp router to create navigation spans.
+ *
+ * This function sets up listeners for miniapp route events:
+ * - wx.onAppRoute / wx.onAppRouteDone - Route change events
+ * - wx.onBeforePageLoad / wx.onAfterPageLoad - Page lifecycle events
+ *
+ * Similar to Vue's `instrumentVueRouter`, this separates the routing logic
+ * from the tracing integration.
+ */
+export declare function instrumentMiniAppRouter(options: MiniAppRouterInstrumentationOptions, startNavigationSpan: (context: StartSpanOptions) => void): void;
+
 export { instrumentOpenAiClient }
 
 export { instrumentSupabaseClient }
@@ -401,6 +346,36 @@ export { makeMultiplexedTransport }
 
 export { metrics }
 
+/** Class tracking metrics for MiniApp performance */
+declare class MetricsInstrumentation {
+    private _reportAllChanges;
+    private _measurements;
+    private _observer?;
+    private _timeOrigin?;
+    constructor(_reportAllChanges?: boolean);
+    /**
+     * Add performance entries from the miniapp performance API.
+     * Called when the idle span is being ended.
+     */
+    addPerformanceEntriesFromSpan(span: Span): void;
+    /**
+     * Start observing performance entries and create child spans.
+     * Should be called when a new route span starts.
+     */
+    startObserving(parentSpan: Span): void;
+    private _getPerformance;
+    private _getTimeOrigin;
+    private _handleEntry;
+    private _mapOp;
+    private _getDescription;
+    private _buildSpanAttributes;
+    private _recordMeasurements;
+    private _measurementKey;
+    private _toTimestamp;
+    private _applyMeasurementsToSpan;
+    private _stopObserver;
+}
+
 /**
  * The Sentry Miniapp SDK Client.
  *
@@ -442,34 +417,106 @@ export declare interface MiniappOptions extends ClientOptions {
     defaultIntegrations?: Integration[];
 }
 
-export declare class MiniAppTracing implements Integration {
-    /**
-     * @inheritDoc
-     */
-    static id: string;
-    /**
-     * @inheritDoc
-     */
-    name: string;
-    options: MiniAppTracingOptions;
-    private readonly _metrics;
-    private readonly _configuredIdleTimeout;
-    constructor(_options?: Partial<MiniAppTracingOptions>);
-    setupOnce(): void;
-    /** Create routing idle transaction. */
-    private _createRouteTransaction;
+/**
+ * Miniapp route information from route events
+ */
+export declare interface MiniAppRoute {
+    /** Page path */
+    path: string;
+    /** Route path with query string */
+    query?: string;
+    /** Page scene value */
+    scene?: number;
+    /** Open type: appLaunch, navigateTo, navigateBack, redirectTo, reLaunch, switchTab, etc. */
+    openType?: string;
+    /** Whether it's a tab bar page */
+    isTabBar?: boolean;
+    /** Page webview id */
+    webviewId?: number;
 }
 
-export declare interface MiniAppTracingOptions extends RequestInstrumentationOptions, TraceContinuityOptions {
-    idleTimeout: number;
-    startTransactionOnLocationChange: boolean;
-    startTransactionOnPageLoad: boolean;
-    maxTransactionDuration: number;
+/**
+ * Options for miniapp router instrumentation
+ */
+export declare interface MiniAppRouterInstrumentationOptions {
+    /**
+     * What to use for route labels.
+     * - 'path': Use the page path directly (e.g., 'pages/index/index')
+     *
+     * @default 'path'
+     */
+    routeLabel?: 'path';
+    /**
+     * If a span should be created on page load.
+     * @default true
+     */
+    instrumentPageLoad?: boolean;
+    /**
+     * If a span should be created on navigation (route change).
+     * @default true
+     */
+    instrumentNavigation?: boolean;
+}
+
+/**
+ * A custom tracing integration for miniapp applications.
+ *
+ * This follows the pattern of Vue's browserTracingIntegration, separating
+ * router instrumentation from the main integration logic.
+ *
+ * @example
+ * ```ts
+ * import { miniappTracingIntegration } from '@sentry/miniapp';
+ *
+ * Sentry.init({
+ *   integrations: [
+ *     miniappTracingIntegration({
+ *       traceContinuityMode: 'link',
+ *       beforeStartSpan: (options) => ({
+ *         ...options,
+ *         name: `Custom: ${options.name}`,
+ *       }),
+ *     }),
+ *   ],
+ * });
+ * ```
+ */
+export declare function miniappTracingIntegration(options?: MiniAppTracingIntegrationOptions): Integration;
+
+/**
+ * Options for MiniApp Tracing integration
+ */
+export declare interface MiniAppTracingIntegrationOptions extends Partial<RequestInstrumentationOptions>, TraceContinuityOptions, MiniAppRouterInstrumentationOptions {
+    /**
+     * The time to wait in ms until the idle span will be finished.
+     * @default 1000
+     */
+    idleTimeout?: number;
+    /**
+     * The max time an idle span may run.
+     * @default 30000
+     */
+    finalTimeout?: number;
+    /**
+     * The max time a child span may run.
+     * @default 15000
+     */
+    childSpanTimeout?: number;
+    /**
+     * @deprecated Use _metricOptions instead
+     */
+    maxTransactionDuration?: number;
+    /**
+     * Metric collection options.
+     */
     _metricOptions?: Partial<{
         _reportAllChanges: boolean;
     }>;
-    beforeNavigate?(context: TransactionContext): TransactionContext | undefined;
-    routingInstrumentation<T extends IdleTransaction>(customStartTransaction: (context: TransactionContext) => T | undefined, startTransactionOnPageLoad?: boolean, startTransactionOnLocationChange?: boolean): void;
+    /**
+     * A callback which is called before a span for a pageload or navigation is started.
+     * It receives the options passed to `startSpan`, and expects to return an updated options object.
+     */
+    beforeStartSpan?: (options: StartSpanOptions) => StartSpanOptions;
 }
 
 export { moduleMetadataIntegration }
@@ -571,223 +618,19 @@ export { SeverityLevel }
  */
 export declare function showReportDialog(options?: ReportDialogOptions): void;
 
-/**
- * Span contains all data about a span
- */
-declare class Span implements Span_2 {
-    /**
-     * Human-readable identifier for the span. Mirrors description for backwards compatibility.
-     */
-    name: string;
-    /**
-     * @inheritDoc
-     */
-    traceId: string;
-    /**
-     * @inheritDoc
-     */
-    spanId: string;
-    /**
-     * @inheritDoc
-     */
-    parentSpanId?: string;
-    /**
-     * Internal keeper of the status
-     */
-    status?: SpanStatusType | string | number;
-    /**
-     * @inheritDoc
-     */
-    sampled?: boolean;
-    /**
-     * Timestamp in seconds when the span was created.
-     */
-    startTimestamp: number;
-    /**
-     * Timestamp in seconds when the span ended.
-     */
-    endTimestamp?: number;
-    /**
-     * @inheritDoc
-     */
-    op?: string;
-    /**
-     * @inheritDoc
-     */
-    description?: string;
-    /**
-     * @inheritDoc
-     */
-    tags: {
-        [key: string]: Primitive;
+declare interface SpanCreationContext {
+    idleTimeout: number;
+    finalTimeout: number;
+    childSpanTimeout: number;
+    traceContinuityMode: TraceContinuityMode;
+    consistentTraceSampling: boolean;
+    beforeStartSpan?: (options: StartSpanOptions) => StartSpanOptions;
+    metricsInstrumentation?: MetricsInstrumentation;
+    latestRoute: {
+        name?: string;
+        source?: string;
     };
-    /**
-     * @inheritDoc
-     */
-    data: SpanAttributes;
-    /**
-     * Attributes for the span (new Sentry/OpenTelemetry style).
-     */
-    attributes: SpanAttributes;
-    /**
-     * List of spans that were finalized
-     */
-    spanRecorder?: SpanRecorder;
-    /**
-     * @inheritDoc
-     */
-    transaction?: Transaction;
-    /**
-     * Instrumenter that created the span.
-     */
-    instrumenter: 'sentry' | 'otel';
-    /**
-     * Origin of the span.
-     */
-    origin?: SpanOrigin;
-    /* Excluded from this release type: __constructor */
-    /**
-     * @inheritDoc
-     * @deprecated
-     */
-    child(spanContext?: Pick<SpanContext, Exclude<keyof SpanContext, 'spanId' | 'sampled' | 'traceId' | 'parentSpanId'>>): Span;
-    /**
-     * @inheritDoc
-     */
-    startChild(spanContext?: SpanContext): Span;
-    /**
-     * @inheritDoc
-     */
-    setTag(key: string, value: Primitive): this;
-    /**
-     * @inheritDoc
-     */
-    setData(key: string, value: SpanAttributeValue | undefined): this;
-    /**
-     * @inheritDoc
-     */
-    setAttribute(key: string, value: SpanAttributeValue | undefined): this;
-    /**
-     * @inheritDoc
-     */
-    setAttributes(attributes: SpanAttributes): this;
-    /**
-     * @inheritDoc
-     */
-    setStatus(value: SpanStatus | SpanStatusType): this;
-    /**
-     * @inheritDoc
-     */
-    setHttpStatus(httpStatus: number): this;
-    /**
-     * @inheritDoc
-     */
-    addEvent(_name: string, _attributesOrStartTime?: SpanAttributes | SpanTimeInput, _startTime?: SpanTimeInput): this;
-    /**
-     * @inheritDoc
-     */
-    addLink(_link: unknown): this;
-    /**
-     * @inheritDoc
-     */
-    addLinks(_links: unknown): this;
-    /**
-     * @inheritDoc
-     */
-    recordException(_exception: unknown): void;
-    /**
-     * @inheritDoc
-     */
-    isSuccess(): boolean;
-    /**
-     * @inheritDoc
-     */
-    setName(name: string): void;
-    /**
-     * @inheritDoc
-     */
-    updateName(name: string): this;
-    /**
-     * @inheritDoc
-     */
-    end(endTimestamp?: SpanTimeInput): void;
-    /**
-     * @inheritDoc
-     */
-    finish(endTimestamp?: number): void;
-    /**
-     * @inheritDoc
-     */
-    toTraceparent(): string;
-    /**
-     * @inheritDoc
-     */
-    toContext(): SpanContext;
-    /**
-     * @inheritDoc
-     */
-    updateWithContext(spanContext: SpanContext): this;
-    /**
-     * @inheritDoc
-     */
-    getTraceContext(): {
-        data?: {
-            [key: string]: any;
-        };
-        description?: string;
-        op?: string;
-        parent_span_id?: string;
-        span_id: string;
-        status?: string;
-        tags?: {
-            [key: string]: Primitive;
-        };
-        trace_id: string;
-    };
-    /**
-     * @inheritDoc
-     */
-    toJSON(): SpanJSON;
-    /**
-     * Return OTEL-like span context data.
-     */
-    spanContext(): {
-        traceId: string;
-        spanId: string;
-        isRemote?: boolean;
-        traceFlags: TraceFlag;
-    };
-    /**
-     * Whether span is recording (sampled and not finished).
-     */
-    isRecording(): boolean;
 }
-
-/** Minimal span context used by the legacy miniapp tracing implementation. */
-declare interface SpanContext {
-    data?: Record<string, any>;
-    description?: string;
-    name?: string;
-    op?: string;
-    parentSpanId?: string;
-    sampled?: boolean;
-    spanId?: string;
-    startTimestamp?: number;
-    endTimestamp?: number;
-    status?: SpanStatusType | string | number;
-    tags?: {
-        [key: string]: Primitive;
-    };
-    traceId?: string;
-    attributes?: SpanAttributes;
-    instrumenter?: 'sentry' | 'otel';
-    origin?: SpanOrigin;
-}
-
-/* Excluded from this release type: SpanRecorder */
-
-/** Lightweight span status type used throughout the custom tracing layer. */
-declare type SpanStatusType = 'ok' | 'deadline_exceeded' | 'unauthenticated' | 'permission_denied' | 'not_found' | 'resource_exhausted' | 'invalid_argument' | 'unimplemented' | 'unavailable' | 'internal_error' | 'unknown_error' | 'cancelled' | 'already_exists' | 'failed_precondition' | 'aborted' | 'out_of_range' | 'data_loss';
 
 export { StackFrame }
 
@@ -795,34 +638,17 @@ export { Stacktrace }
 
 export { startInactiveSpan }
 
+/**
+ * Start a navigation span for miniapp tracing.
+ * This is the core function that creates idle spans for pageload/navigation.
+ */
+export declare function startMiniAppTracingNavigationSpan(client: Client, startSpanOptions: StartSpanOptions, context: SpanCreationContext): Span | undefined;
+
 export { startNewTrace }
 
 export { startSpan }
 
 export { startSpanManual }
-
-/**
- * Creates a new transaction and adds a sampling decision if it doesn't yet have one.
- * Supports trace continuity for maintaining consistent traceId across navigations.
- */
-export declare function startTransaction(transactionContext: TransactionContext, customSamplingContext?: CustomSamplingContext, traceOptions?: StartTransactionOptions): Transaction;
-
-/**
- * Options for trace continuity when starting transactions.
- */
-declare interface StartTransactionOptions {
-    /**
-     * Trace continuity mode.
-     * - 'session': Reuse the same traceId for the entire session
-     * - 'link': Create new trace but link to previous
-     * - 'off': Independent traces (legacy behavior)
-     */
-    traceContinuityMode?: TraceContinuityMode;
-    /**
-     * Inherit sampling decision from previous trace.
-     */
-    consistentTraceSampling?: boolean;
-}
 
 export { supabaseIntegration }
 
@@ -878,81 +704,6 @@ declare interface TraceContinuityOptions {
      * @default false
      */
     consistentTraceSampling?: boolean;
-}
-
-/** JSDoc */
-declare class Transaction extends Span {
-    name: string;
-    metadata: TransactionMetadata;
-    private _measurements;
-    private _contexts;
-    private _trimEnd?;
-    /* Excluded from this release type: __constructor */
-    /**
-     * JSDoc
-     */
-    setName(name: string): void;
-    /**
-     * Attach additional context to the transaction.
-     * @deprecated Prefer attributes or scope data.
-     */
-    setContext(key: string, context: object): void;
-    /**
-     * Record a single measurement.
-     * @deprecated Prefer top-level `setMeasurement`.
-     */
-    setMeasurement(name: string, value: number, unit?: MeasurementUnit): void;
-    /**
-     * Attaches SpanRecorder to the span itself
-     * @param maxlen maximum number of spans that can be recorded
-     */
-    initSpanRecorder(maxlen?: number): void;
-    /**
-     * Set observed measurements for this transaction.
-     * @hidden
-     */
-    setMeasurements(measurements: Measurements): void;
-    /**
-     * Set metadata for this transaction.
-     * @hidden
-     */
-    setMetadata(newMetadata: TransactionMetadata): void;
-    /**
-     * Return dynamic sampling context for this transaction.
-     */
-    getDynamicSamplingContext(): Partial<DynamicSamplingContext>;
-    /**
-     * Placeholder profile id (not used in miniapp tracing).
-     */
-    getProfileId(): string | undefined;
-    /**
-     * @inheritDoc
-     */
-    finish(endTimestamp?: number): string | undefined;
-    /**
-     * @inheritDoc
-     */
-    toContext(): TransactionContext;
-    /**
-     * @inheritDoc
-     */
-    updateWithContext(transactionContext: TransactionContext): this;
-}
-
-/** Context used when creating a transaction/span. */
-declare interface TransactionContext extends SpanContext {
-    name?: string;
-    parentSampled?: boolean;
-    trimEnd?: boolean;
-    metadata?: TransactionMetadata;
-}
-
-/** Transaction specific metadata. */
-declare interface TransactionMetadata {
-    source?: string;
-    spanMetadata?: Record<string, any>;
-    dynamicSamplingContext?: DynamicSamplingContext;
-    [key: string]: unknown;
 }
 
 declare namespace Transports {

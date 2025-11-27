@@ -1,9 +1,10 @@
-
-import { Measurements } from '@sentry/core';
-import type { SpanContext } from '../types';
-import { Span } from '../span';
-import { Transaction } from '../transaction';
-import { msToSec } from '../utils';
+import {
+  type Span,
+  type Measurements,
+  startInactiveSpan,
+  spanToJSON,
+  setMeasurement,
+} from '@sentry/core';
 import { sdk } from '../../crossPlatform';
 
 // https://developers.weixin.qq.com/miniprogram/dev/api/base/performance/PerformanceEntry.html
@@ -29,7 +30,12 @@ type MiniProgramPerformance = {
 
 const EPOCH_TIME_THRESHOLD = 1e12;
 
-/** Class tracking metrics  */
+/** Convert milliseconds to seconds */
+function msToSec(ms: number): number {
+  return ms / 1000;
+}
+
+/** Class tracking metrics for MiniApp performance */
 export class MetricsInstrumentation {
   private _measurements: Measurements = {};
   private _observer?: PerformanceObserver;
@@ -37,19 +43,53 @@ export class MetricsInstrumentation {
 
   public constructor(private _reportAllChanges: boolean = false) {}
 
-  public addPerformanceEntries(transaction: Transaction): void {
+  /**
+   * Add performance entries from the miniapp performance API.
+   * Called when the idle span is being ended.
+   */
+  public addPerformanceEntriesFromSpan(span: Span): void {
     const performance = this._getPerformance();
     if (!performance) {
       return;
     }
 
-    this._timeOrigin = this._getTimeOrigin(performance, transaction);
+    const spanJson = spanToJSON(span);
+    const spanStartTimestamp = spanJson.start_timestamp;
 
-    // performance.createObserver
+    this._timeOrigin = this._getTimeOrigin(performance, spanStartTimestamp);
+
+    // Stop any existing observer
+    this._stopObserver();
+
+    // Set measurements on the span
+    this._applyMeasurementsToSpan();
+  }
+
+  /**
+   * Start observing performance entries and create child spans.
+   * Should be called when a new route span starts.
+   */
+  public startObserving(parentSpan: Span): void {
+    const performance = this._getPerformance();
+    if (!performance) {
+      return;
+    }
+
+    const spanJson = spanToJSON(parentSpan);
+    this._timeOrigin = this._getTimeOrigin(performance, spanJson.start_timestamp);
+    this._measurements = {};
 
     this._observer = performance.createObserver?.((entryList: { getEntries: () => PerformanceEntry[] }) => {
       const list = entryList?.getEntries?.() || [];
-      list.forEach(entry => this._handleEntry(transaction, entry));
+      const parentSpanJson = spanToJSON(parentSpan);
+      
+      // Don't process if parent span is already finished
+      if (parentSpanJson.timestamp !== undefined) {
+        this._stopObserver();
+        return;
+      }
+
+      list.forEach(entry => this._handleEntry(parentSpan, entry, parentSpanJson.start_timestamp));
     });
 
     if (!this._observer) {
@@ -74,7 +114,7 @@ export class MetricsInstrumentation {
     return performance as unknown as MiniProgramPerformance;
   }
 
-  private _getTimeOrigin(performance: MiniProgramPerformance, transaction: Transaction): number | undefined {
+  private _getTimeOrigin(performance: MiniProgramPerformance, spanStartTimestamp: number): number {
     if (typeof performance.timeOrigin === 'number') {
       return msToSec(performance.timeOrigin);
     }
@@ -84,36 +124,27 @@ export class MetricsInstrumentation {
       return msToSec(Date.now() - perfNow);
     }
 
-    return transaction.startTimestamp;
+    return spanStartTimestamp;
   }
 
-  private _handleEntry(transaction: Transaction, entry: PerformanceEntry): void {
-    if (transaction.endTimestamp !== undefined) {
-      this._stopObserver();
-      return;
-    }
+  private _handleEntry(_parentSpan: Span, entry: PerformanceEntry, spanStartTimestamp: number): void {
+    const startTimestamp = this._toTimestamp(entry.startTime, spanStartTimestamp);
+    const endTimestamp = this._toTimestamp(entry.startTime + entry.duration, spanStartTimestamp);
 
-    const startTimestamp = this._toTimestamp(entry.startTime, transaction.startTimestamp);
-    const endTimestamp = this._toTimestamp(entry.startTime + entry.duration, transaction.startTimestamp);
-
-    _startChild(transaction, {
+    // Create child span for this entry
+    const childSpan = startInactiveSpan({
+      name: this._getDescription(entry) || entry.entryType,
       op: this._mapOp(entry),
-      description: this._getDescription(entry),
-      startTimestamp,
-      endTimestamp,
-      data: this._buildSpanData(entry),
+      startTime: startTimestamp,
+      attributes: this._buildSpanAttributes(entry),
     });
 
-    this._recordMeasurements(entry, transaction, startTimestamp);
-    transaction.setTag('sentry_reportAllChanges', this._reportAllChanges);
-
-    if (Object.keys(this._measurements).length > 0) {
-      transaction.setMeasurements(this._measurements);
+    if (childSpan) {
+      childSpan.end(endTimestamp);
     }
 
-    /* if (entry.name === 'largestContentfulPaint' && !this._reportAllChanges) {
-      this._stopObserver(transaction);
-    } */
+    // Record measurements
+    this._recordMeasurements(entry, spanStartTimestamp, startTimestamp);
   }
 
   private _mapOp(entry: PerformanceEntry): string {
@@ -137,24 +168,26 @@ export class MetricsInstrumentation {
     return entry.path || entry.moduleName || entry.name;
   }
 
-  private _buildSpanData(entry: PerformanceEntry): Record<string, unknown> {
-    const data: Record<string, unknown> = { entryType: entry.entryType };
+  private _buildSpanAttributes(entry: PerformanceEntry): Record<string, string | number> {
+    const attrs: Record<string, string | number> = {
+      'performance.entry_type': entry.entryType,
+    };
     if (entry.moduleName) {
-      data.moduleName = entry.moduleName;
+      attrs['performance.module_name'] = entry.moduleName;
     }
     if (entry.path) {
-      data.path = entry.path;
+      attrs['performance.path'] = entry.path;
     }
     if (typeof entry.duration === 'number') {
-      data.duration = entry.duration;
+      attrs['performance.duration_ms'] = entry.duration;
     }
-    return data;
+    return attrs;
   }
 
-  private _recordMeasurements(entry: PerformanceEntry, transaction: Transaction, startTimestamp: number): void {
+  private _recordMeasurements(entry: PerformanceEntry, spanStartTimestamp: number, entryStartTimestamp: number): void {
     const normalizedName = (entry.name || '').toLowerCase();
     const durationMs = entry.duration;
-    const relativeStartMs = Math.max((startTimestamp - transaction.startTimestamp) * 1000, 0);
+    const relativeStartMs = Math.max((entryStartTimestamp - spanStartTimestamp) * 1000, 0);
 
     if (normalizedName === 'first-paint' || normalizedName === 'firstpaint') {
       this._measurements['fp'] = { value: relativeStartMs, unit: 'millisecond' };
@@ -195,32 +228,24 @@ export class MetricsInstrumentation {
     return base.replace(/\s+/g, '_').toLowerCase();
   }
 
-  private _toTimestamp(startTimeMs: number, transactionStart: number): number {
+  private _toTimestamp(startTimeMs: number, spanStartTimestamp: number): number {
     if (startTimeMs > EPOCH_TIME_THRESHOLD) {
       return msToSec(startTimeMs);
     }
 
-    const origin = this._timeOrigin ?? transactionStart;
+    const origin = this._timeOrigin ?? spanStartTimestamp;
     return origin + msToSec(startTimeMs);
   }
 
-  private _stopObserver(transaction?: Transaction): void {
-    this._observer?.disconnect();
-    this._observer = undefined;
-
-    if (transaction && !transaction.endTimestamp) {
-      transaction.finish();
+  private _applyMeasurementsToSpan(): void {
+    // Apply collected measurements using setMeasurement
+    for (const [name, measurement] of Object.entries(this._measurements)) {
+      setMeasurement(name, measurement.value, measurement.unit);
     }
   }
-}
 
-function _startChild(transaction: Transaction, { startTimestamp, ...ctx }: SpanContext): Span {
-  if (startTimestamp && transaction.startTimestamp > startTimestamp) {
-    transaction.startTimestamp = startTimestamp;
+  private _stopObserver(): void {
+    this._observer?.disconnect();
+    this._observer = undefined;
   }
-
-  return transaction.startChild({
-    startTimestamp,
-    ...ctx,
-  });
 }

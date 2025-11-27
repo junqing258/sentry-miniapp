@@ -5,14 +5,16 @@ Sentry.init({
   //https://90ac29a4615f090525ea9f732038d105@sentry.inf.17usoft.com/293
   dsn: "https://607f106645b6ecb5420e7cf5a44cc90a@o325862.ingest.us.sentry.io/4510430332190720",
   integrations: [
-    new Sentry.MiniAppTracing({
+    Sentry.miniappTracingIntegration({
       // 三种模式：
       // 'session' - 整个会话使用同一个 traceId（所有导航共享一个 trace）
       // 'link'    - 每次导航新 traceId，但通过 span link 关联前一个 trace（推荐）
       // 'off'     - 每次导航独立 trace
-      traceContinuityMode: 'link', // 或 'link'
-      // 是否继承前一个 trace 的采样决定（保证会话内采样一致性）
-      consistentTraceSampling: true,
+      traceContinuityMode: 'link',
+      beforeStartSpan: (options) => ({
+        ...options,
+        // name: `Custom: ${options.name}`,
+      }),
     }),
     Sentry.consoleLoggingIntegration({ levels: ["log", "warn", "error"] }),
   ],

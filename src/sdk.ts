@@ -20,7 +20,6 @@ import {
   TryCatch,
 } from "./integrations/index";
 
-import { MiniAppTracing } from './tracing';
 
 export const defaultIntegrations = [
   inboundFiltersIntegration(),
@@ -33,7 +32,6 @@ export const defaultIntegrations = [
   new Router(),
   new IgnoreMpcrawlerErrors(),
 
-  new MiniAppTracing(),
 ];
 
 /**
