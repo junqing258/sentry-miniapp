@@ -66,6 +66,20 @@ export { addBreadcrumb }
 
 export { addEventProcessor }
 
+/** Options for adding performance entries */
+declare interface AddPerformanceEntriesOptions {
+    /**
+     * Resource spans with matching entry types will not be emitted.
+     * Default: []
+     */
+    ignoreResourceSpans?: string[];
+    /**
+     * Performance entry names matching strings in the array will not be emitted.
+     * Default: []
+     */
+    ignorePerformanceEntryNames?: Array<string | RegExp>;
+}
+
 export { Breadcrumb }
 
 export { BreadcrumbHint }
@@ -346,27 +360,55 @@ declare class MetricsInstrumentation {
     private _measurements;
     private _observer?;
     private _timeOrigin?;
+    private _performanceCursor;
     constructor(_reportAllChanges?: boolean);
     /**
      * Add performance entries from the miniapp performance API.
      * Called when the idle span is being ended.
+     * Following the pattern from @sentry-internal/browser-utils.
+     */
+    addPerformanceEntries(span: Span, options?: AddPerformanceEntriesOptions): void;
+    /**
+     * Legacy method for backward compatibility.
+     * @deprecated Use addPerformanceEntries instead.
      */
     addPerformanceEntriesFromSpan(span: Span): void;
     /**
      * Start observing performance entries and create child spans.
      * Should be called when a new route span starts.
      */
-    startObserving(parentSpan: Span): void;
+    startObserving(parentSpan: Span, options?: AddPerformanceEntriesOptions): void;
     private _getPerformance;
+    private _getMiniProgramTimeOrigin;
     private _getTimeOrigin;
+    private _shouldIgnoreEntry;
     private _handleEntry;
-    private _mapOp;
-    private _getDescription;
-    private _buildSpanAttributes;
+    /**
+     * Add navigation related spans (similar to browser's _addNavigationSpans).
+     */
+    private _addNavigationSpans;
+    /**
+     * Add render spans for UI rendering performance.
+     */
+    private _addRenderSpan;
+    /**
+     * Add script execution spans.
+     */
+    private _addScriptSpan;
+    /**
+     * Add package loading spans.
+     */
+    private _addPackageSpan;
+    /**
+     * Add resource loading spans (similar to browser's _addResourceSpans).
+     */
+    private _addResourceSpan;
+    /**
+     * Track system information (similar to browser's _trackNavigator).
+     */
+    private _trackSystemInfo;
     private _recordMeasurements;
     private _measurementKey;
-    private _toTimestamp;
-    private _applyMeasurementsToSpan;
     private _stopObserver;
 }
 
@@ -507,6 +549,16 @@ export declare interface MiniAppTracingIntegrationOptions extends Partial<Reques
         _reportAllChanges: boolean;
     }>;
     /**
+     * Resource spans with matching entry types will not be emitted.
+     * Default: []
+     */
+    ignoreResourceSpans?: string[];
+    /**
+     * Performance entry names matching strings in the array will not be emitted.
+     * Default: []
+     */
+    ignorePerformanceEntryNames?: Array<string | RegExp>;
+    /**
      * A callback which is called before a span for a pageload or navigation is started.
      * It receives the options passed to `startSpan`, and expects to return an updated options object.
      */
@@ -620,6 +672,7 @@ declare interface SpanCreationContext {
     consistentTraceSampling: boolean;
     beforeStartSpan?: (options: StartSpanOptions) => StartSpanOptions;
     metricsInstrumentation?: MetricsInstrumentation;
+    performanceEntriesOptions?: AddPerformanceEntriesOptions;
     latestRoute: {
         name?: string;
         source?: string;

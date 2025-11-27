@@ -16,7 +16,7 @@ import {
   type StartSpanOptions,
 } from '@sentry/core';
 
-import { MetricsInstrumentation } from './metrics';
+import { MetricsInstrumentation, type AddPerformanceEntriesOptions } from './metrics';
 import { defaultRequestInstrumentationOptions, RequestInstrumentationOptions } from './request';
 import { instrumentMiniAppRouter, type MiniAppRouterInstrumentationOptions } from './router';
 import { sdk } from '../../crossPlatform';
@@ -86,6 +86,18 @@ export interface MiniAppTracingIntegrationOptions
   _metricOptions?: Partial<{ _reportAllChanges: boolean }>;
 
   /**
+   * Resource spans with matching entry types will not be emitted.
+   * Default: []
+   */
+  ignoreResourceSpans?: string[];
+
+  /**
+   * Performance entry names matching strings in the array will not be emitted.
+   * Default: []
+   */
+  ignorePerformanceEntryNames?: Array<string | RegExp>;
+
+  /**
    * A callback which is called before a span for a pageload or navigation is started.
    * It receives the options passed to `startSpan`, and expects to return an updated options object.
    */
@@ -144,7 +156,15 @@ export function miniappTracingIntegration(
     consistentTraceSampling,
     beforeStartSpan,
     _metricOptions,
+    ignoreResourceSpans,
+    ignorePerformanceEntryNames,
   } = finalOptions;
+
+  // Build performance entries options
+  const performanceEntriesOptions: AddPerformanceEntriesOptions = {
+    ignoreResourceSpans,
+    ignorePerformanceEntryNames,
+  };
 
   let metricsInstrumentation: MetricsInstrumentation | undefined;
   let latestRouteName: string | undefined;
@@ -184,6 +204,7 @@ export function miniappTracingIntegration(
           consistentTraceSampling: consistentTraceSampling!,
           beforeStartSpan,
           metricsInstrumentation,
+          performanceEntriesOptions,
           latestRoute: {
             get name() {
               return latestRouteName;
@@ -222,6 +243,7 @@ interface SpanCreationContext {
   consistentTraceSampling: boolean;
   beforeStartSpan?: (options: StartSpanOptions) => StartSpanOptions;
   metricsInstrumentation?: MetricsInstrumentation;
+  performanceEntriesOptions?: AddPerformanceEntriesOptions;
   latestRoute: {
     name?: string;
     source?: string;
@@ -245,6 +267,7 @@ export function startMiniAppTracingNavigationSpan(
     consistentTraceSampling,
     beforeStartSpan,
     metricsInstrumentation,
+    performanceEntriesOptions,
     latestRoute,
   } = context;
 
@@ -279,8 +302,8 @@ export function startMiniAppTracingNavigationSpan(
     finalTimeout,
     childSpanTimeout,
     beforeSpanEnd: (span) => {
-      // Collect performance metrics
-      metricsInstrumentation?.addPerformanceEntriesFromSpan(span);
+      // Collect performance metrics using the new addPerformanceEntries method
+      metricsInstrumentation?.addPerformanceEntries(span, performanceEntriesOptions);
 
       // Clear active span
       setActiveIdleSpan(client, undefined);
