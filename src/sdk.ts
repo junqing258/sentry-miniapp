@@ -1,11 +1,11 @@
 import {
   functionToStringIntegration,
-  getCurrentHub,
+  getClient,
   inboundFiltersIntegration,
   initAndBind,
   lastEventId as coreLastEventId,
 } from '@sentry/core';
-import { resolvedSyncPromise } from '@sentry/utils';
+import { resolvedSyncPromise } from '@sentry/core';
 
 import { MiniappOptions } from "./backend";
 import { MiniappClient, ReportDialogOptions } from "./client";
@@ -120,7 +120,7 @@ export function showReportDialog(options: ReportDialogOptions = {}): void {
   if (!options.eventId) {
     options.eventId = coreLastEventId();
   }
-  const client = getCurrentHub().getClient<MiniappClient>();
+  const client = getClient<MiniappClient>();
   if (client) {
     client.showReportDialog(options);
   }
@@ -143,7 +143,7 @@ export function lastEventId(): string | undefined {
  * @param timeout Maximum time in ms the client should wait.
  */
 export function flush(timeout?: number): PromiseLike<boolean> {
-  const client = getCurrentHub().getClient<MiniappClient>();
+  const client = getClient<MiniappClient>();
   if (client) {
     return client.flush(timeout);
   }
@@ -157,7 +157,7 @@ export function flush(timeout?: number): PromiseLike<boolean> {
  * @param timeout Maximum time in ms the client should wait.
  */
 export function close(timeout?: number): PromiseLike<boolean> {
-  const client = getCurrentHub().getClient<MiniappClient>();
+  const client = getClient<MiniappClient>();
   if (client) {
     return client.close(timeout);
   }

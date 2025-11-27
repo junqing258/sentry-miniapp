@@ -1,5 +1,5 @@
+import { debug, dateTimestampInSeconds } from '@sentry/core';
 import { TransactionContext } from './types';
-import { logger, dateTimestampInSeconds } from '@sentry/utils';
 
 import { FINISH_REASON_TAG, IDLE_TRANSACTION_FINISH_REASONS } from './constants';
 import { IS_DEBUG_BUILD } from './flags';
@@ -88,7 +88,7 @@ export class IdleTransaction extends Transaction {
 
     if (_onScope) {
       // We set the transaction here so error events pick up the trace context.
-      IS_DEBUG_BUILD && logger.log(`Setting idle transaction as active. Span ID: ${this.spanId}`);
+      IS_DEBUG_BUILD && debug.log(`Setting idle transaction as active. Span ID: ${this.spanId}`);
       setActiveTransaction(this);
     }
 
@@ -106,7 +106,7 @@ export class IdleTransaction extends Transaction {
 
     if (this.spanRecorder) {
       IS_DEBUG_BUILD &&
-        logger.log('[Tracing] finishing IdleTransaction', new Date(endTimestamp * 1000).toISOString(), this.op);
+        debug.log('[Tracing] finishing IdleTransaction', new Date(endTimestamp * 1000).toISOString(), this.op);
 
       for (const callback of this._beforeFinishCallbacks) {
         callback(this, endTimestamp);
@@ -123,13 +123,13 @@ export class IdleTransaction extends Transaction {
           span.endTimestamp = endTimestamp;
           span.setStatus('cancelled');
           IS_DEBUG_BUILD &&
-            logger.log('[Tracing] cancelling span since transaction ended early', JSON.stringify(span, undefined, 2));
+            debug.log('[Tracing] cancelling span since transaction ended early', JSON.stringify(span, undefined, 2));
         }
 
         const keepSpan = span.startTimestamp < endTimestamp;
         if (!keepSpan) {
           IS_DEBUG_BUILD &&
-            logger.log(
+            debug.log(
               '[Tracing] discarding Span since it happened after Transaction was finished',
               JSON.stringify(span, undefined, 2),
             );
@@ -137,9 +137,9 @@ export class IdleTransaction extends Transaction {
         return keepSpan;
       });
 
-      IS_DEBUG_BUILD && logger.log('[Tracing] flushing IdleTransaction');
+      IS_DEBUG_BUILD && debug.log('[Tracing] flushing IdleTransaction');
     } else {
-      IS_DEBUG_BUILD && logger.log('[Tracing] No active IdleTransaction');
+      IS_DEBUG_BUILD && debug.log('[Tracing] No active IdleTransaction');
     }
 
     // if `this._onScope` is `true`, the transaction put itself on the scope when it started
@@ -182,7 +182,7 @@ export class IdleTransaction extends Transaction {
       this.spanRecorder = new IdleTransactionSpanRecorder(pushActivity, popActivity, this.spanId, maxlen);
 
       // Start heartbeat so that transactions do not run forever.
-      IS_DEBUG_BUILD && logger.log('Starting heartbeat');
+      IS_DEBUG_BUILD && debug.log('Starting heartbeat');
       this._pingHeartbeat();
     }
     this.spanRecorder.add(this);
@@ -197,9 +197,9 @@ export class IdleTransaction extends Transaction {
       clearTimeout(this._initTimeout);
       this._initTimeout = undefined;
     }
-    IS_DEBUG_BUILD && logger.log(`[Tracing] pushActivity: ${spanId}`);
+    IS_DEBUG_BUILD && debug.log(`[Tracing] pushActivity: ${spanId}`);
     this.activities[spanId] = true;
-    IS_DEBUG_BUILD && logger.log('[Tracing] new activities count', Object.keys(this.activities).length);
+    IS_DEBUG_BUILD && debug.log('[Tracing] new activities count', Object.keys(this.activities).length);
   }
 
   /**
@@ -208,10 +208,10 @@ export class IdleTransaction extends Transaction {
    */
   private _popActivity(spanId: string): void {
     if (this.activities[spanId]) {
-      IS_DEBUG_BUILD && logger.log(`[Tracing] popActivity ${spanId}`);
+      IS_DEBUG_BUILD && debug.log(`[Tracing] popActivity ${spanId}`);
       // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
       delete this.activities[spanId];
-      IS_DEBUG_BUILD && logger.log('[Tracing] new activities count', Object.keys(this.activities).length);
+      IS_DEBUG_BUILD && debug.log('[Tracing] new activities count', Object.keys(this.activities).length);
     }
 
     if (Object.keys(this.activities).length === 0) {
@@ -250,7 +250,7 @@ export class IdleTransaction extends Transaction {
     this._prevHeartbeatString = heartbeatString;
 
     if (this._heartbeatCounter >= 3) {
-      IS_DEBUG_BUILD && logger.log('[Tracing] Transaction finished because of no change for 3 heart beats');
+      IS_DEBUG_BUILD && debug.log('[Tracing] Transaction finished because of no change for 3 heart beats');
       this.setStatus('deadline_exceeded');
       this.setTag(FINISH_REASON_TAG, IDLE_TRANSACTION_FINISH_REASONS[0]);
       this.finish();
@@ -263,7 +263,7 @@ export class IdleTransaction extends Transaction {
    * Pings the heartbeat
    */
   private _pingHeartbeat(): void {
-    IS_DEBUG_BUILD && logger.log(`pinging Heartbeat -> current counter: ${this._heartbeatCounter}`);
+    IS_DEBUG_BUILD && debug.log(`pinging Heartbeat -> current counter: ${this._heartbeatCounter}`);
     setTimeout(() => {
       this._beat();
     }, HEARTBEAT_INTERVAL);

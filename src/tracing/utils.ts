@@ -1,5 +1,4 @@
-import { getClient } from '@sentry/core';
-import { Options } from '@sentry/types';
+import { getClient, type Options } from '@sentry/core';
 import type { Transaction } from './transaction';
 
 let activeTransaction: Transaction | undefined;
@@ -16,7 +15,7 @@ let activeTransaction: Transaction | undefined;
  *
  * See https://github.com/getsentry/sentry-javascript/issues/4642 for more details.
  */
-export { TRACEPARENT_REGEXP, extractTraceparentData } from '@sentry/utils';
+export { TRACEPARENT_REGEXP, extractTraceparentData } from '@sentry/core';
 
 /**
  * Determines if tracing is currently enabled.
@@ -55,4 +54,4 @@ export function secToMs(time: number): number {
 }
 
 // so it can be used in manual instrumentation without necessitating a hard dependency on @sentry/utils
-export { stripUrlQueryAndFragment } from '@sentry/utils';
+export { stripUrlQueryAndFragment } from '@sentry/core';

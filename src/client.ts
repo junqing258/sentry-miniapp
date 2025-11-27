@@ -1,6 +1,6 @@
 import {
   applySdkMetadata,
-  BaseClient,
+  Client,
   Scope,
   type DsnLike,
   type Event,
@@ -50,7 +50,7 @@ export interface ReportDialogOptions {
  * @see MiniappOptions for documentation on configuration options.
  * @see SentryClient for usage documentation.
  */
-export class MiniappClient extends BaseClient<MiniappOptions> {
+export class MiniappClient extends Client<MiniappOptions> {
   /**
    * Creates a new Miniapp SDK instance.
    *
@@ -79,7 +79,12 @@ export class MiniappClient extends BaseClient<MiniappOptions> {
   /**
    * @inheritDoc
    */
-  protected _prepareEvent(event: Event, hint: EventHint, scope?: Scope, isolationScope?: Scope): PromiseLike<Event | null> {
+  protected _prepareEvent(
+    event: Event,
+    hint: EventHint,
+    currentScope: Scope,
+    isolationScope: Scope,
+  ): PromiseLike<Event | null> {
     event.platform = event.platform || "javascript";
     event.sdk = {
       ...event.sdk,
@@ -94,7 +99,7 @@ export class MiniappClient extends BaseClient<MiniappOptions> {
       version: SDK_VERSION
     };
 
-    return super._prepareEvent(event, hint, scope, isolationScope);
+    return super._prepareEvent(event, hint, currentScope, isolationScope);
   }
 
   /**

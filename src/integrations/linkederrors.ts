@@ -1,4 +1,4 @@
-import { addEventProcessor, getCurrentHub } from '@sentry/core';
+import { addEventProcessor, getClient } from '@sentry/core';
 import { Event, EventHint, Exception, ExtendedError, Integration } from '@sentry/types';
 
 import { exceptionFromStacktrace } from '../parsers';
@@ -40,7 +40,8 @@ export class LinkedErrors implements Integration {
    */
   public setupOnce(): void {
     addEventProcessor((event: Event, hint?: EventHint) => {
-      const self = getCurrentHub().getIntegration(LinkedErrors);
+      const client = getClient();
+      const self = client && client.getIntegrationByName<LinkedErrors>(LinkedErrors.id);
       if (self) {
         return self._handler(event, hint);
       }

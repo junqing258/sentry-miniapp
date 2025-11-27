@@ -1,4 +1,4 @@
-import { GLOBAL_OBJ } from '@sentry/utils';
+import { GLOBAL_OBJ } from '@sentry/core';
 import type { TransactionContext } from '../types';
 import { sdk } from '../../crossPlatform';
 

@@ -1,6 +1,5 @@
-import { createTransport } from '@sentry/core';
+import { SyncPromise, createTransport } from '@sentry/core';
 import { BaseTransportOptions, Transport, TransportMakeRequestResponse, TransportRequest } from '@sentry/types';
-import { SyncPromise } from '@sentry/utils';
 
 import { sdk } from '../crossPlatform';
 

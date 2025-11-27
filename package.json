@@ -1,6 +1,6 @@
 {
   "name": "sentry-miniapp",
-  "version": "0.12.1",
+  "version": "10.27.0-rc.1",
   "description": "用于小程序/小游戏平台的 Sentry SDK",
   "repository": "git://github.com/junqing258/sentry-miniapp.git",
   "homepage": "https://github.com/junqing258/sentry-miniapp",
@@ -58,8 +58,6 @@
     "vite-plugin-dts": "^4.5.4"
   },
   "dependencies": {
-    "@sentry/core": "8.55.0",
-    "@sentry/types": "8.55.0",
-    "@sentry/utils": "8.55.0"
+    "@sentry/core": "10.27.0"
   }
 }

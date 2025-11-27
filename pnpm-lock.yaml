@@ -9,14 +9,11 @@ importers:
   .:
     dependencies:
       '@sentry/core':
-        specifier: 8.55.0
-        version: 8.55.0
+        specifier: 10.27.0
+        version: 10.27.0
       '@sentry/types':
-        specifier: 8.55.0
-        version: 8.55.0
-      '@sentry/utils':
-        specifier: 8.55.0
-        version: 8.55.0
+        specifier: 10.27.0
+        version: 10.27.0
     devDependencies:
       '@swc/core':
         specifier: ^1.15.3
@@ -440,17 +437,13 @@ packages:
   '@rushstack/ts-command-line@5.1.4':
     resolution: {integrity: sha512-H0I6VdJ6sOUbktDFpP2VW5N29w8v4hRoNZOQz02vtEi6ZTYL1Ju8u+TcFiFawUDrUsx/5MQTUhd79uwZZVwVlA==}
 
-  '@sentry/core@8.55.0':
-    resolution: {integrity: sha512-6g7jpbefjHYs821Z+EBJ8r4Z7LT5h80YSWRJaylGS4nW5W5Z2KXzpdnyFarv37O7QjauzVC2E+PABmpkw5/JGA==}
-    engines: {node: '>=14.18'}
+  '@sentry/core@10.27.0':
+    resolution: {integrity: sha512-Zc68kdH7tWTDtDbV1zWIbo3Jv0fHAU2NsF5aD2qamypKgfSIMSbWVxd22qZyDBkaX8gWIPm/0Sgx6aRXRBXrYQ==}
+    engines: {node: '>=18'}
 
-  '@sentry/types@8.55.0':
-    resolution: {integrity: sha512-6LRT0+r6NWQ+RtllrUW2yQfodST0cJnkOmdpHA75vONgBUhpKwiJ4H7AmgfoTET8w29pU6AnntaGOe0LJbOmog==}
-    engines: {node: '>=14.18'}
-
-  '@sentry/utils@8.55.0':
-    resolution: {integrity: sha512-cYcl39+xcOivBpN9d8ZKbALl+DxZKo/8H0nueJZ0PO4JA+MJGhSm6oHakXxLPaiMoNLTX7yor8ndnQIuFg+vmQ==}
-    engines: {node: '>=14.18'}
+  '@sentry/types@10.27.0':
+    resolution: {integrity: sha512-aVvieeh597PYdjUs8WaAMsPpzvv6u2ehpNqkG61xs9fHxD8Kgvt4xdtWK+BQ6GDlFQ9HNF8qA6QDY3AMpaz+tw==}
+    engines: {node: '>=18'}
 
   '@swc/core-darwin-arm64@1.15.3':
     resolution: {integrity: sha512-AXfeQn0CvcQ4cndlIshETx6jrAM45oeUrK8YeEY6oUZU/qzz0Id0CyvlEywxkWVC81Ajpd8TQQ1fW5yx6zQWkQ==}
@@ -1367,15 +1360,11 @@ snapshots:
     transitivePeerDependencies:
       - '@types/node'
 
-  '@sentry/core@8.55.0': {}
+  '@sentry/core@10.27.0': {}
 
-  '@sentry/types@8.55.0':
+  '@sentry/types@10.27.0':
     dependencies:
-      '@sentry/core': 8.55.0
-
-  '@sentry/utils@8.55.0':
-    dependencies:
-      '@sentry/core': 8.55.0
+      '@sentry/core': 10.27.0
 
   '@swc/core-darwin-arm64@1.15.3':
     optional: true

@@ -1,6 +1,5 @@
-import { captureEvent } from '@sentry/core';
+import { captureEvent, debug, dropUndefinedKeys } from '@sentry/core';
 import { DynamicSamplingContext, Event, MeasurementUnit, Measurements } from '@sentry/types';
-import { dropUndefinedKeys, logger } from '@sentry/utils';
 
 import { IS_DEBUG_BUILD } from './flags';
 import { Span as SpanClass, SpanRecorder } from './span';
@@ -117,7 +116,7 @@ export class Transaction extends SpanClass {
     }
 
     if (!this.name) {
-      IS_DEBUG_BUILD && logger.warn('Transaction has no name, falling back to `<unlabeled transaction>`.');
+      IS_DEBUG_BUILD && debug.warn('Transaction has no name, falling back to `<unlabeled transaction>`.');
       this.name = '<unlabeled transaction>';
     }
 
@@ -126,7 +125,7 @@ export class Transaction extends SpanClass {
 
     if (this.sampled !== true) {
       // At this point if `sampled !== true` we want to discard the transaction.
-      IS_DEBUG_BUILD && logger.log('[Tracing] Discarding transaction because its trace was not chosen to be sampled.');
+      IS_DEBUG_BUILD && debug.log('[Tracing] Discarding transaction because its trace was not chosen to be sampled.');
 
       // Transport no longer exposes recordLostEvent in v7; best effort no-op.
       return undefined;
@@ -162,14 +161,14 @@ export class Transaction extends SpanClass {
 
     if (hasMeasurements) {
       IS_DEBUG_BUILD &&
-        logger.log(
+        debug.log(
           '[Measurements] Adding measurements to transaction',
           JSON.stringify(this._measurements, undefined, 2),
         );
       transaction.measurements = this._measurements;
     }
 
-    IS_DEBUG_BUILD && logger.log(`[Tracing] Finishing ${this.op} transaction: ${this.name}.`);
+    IS_DEBUG_BUILD && debug.log(`[Tracing] Finishing ${this.op} transaction: ${this.name}.`);
 
     return captureEvent(transaction);
   }

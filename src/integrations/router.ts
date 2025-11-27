@@ -1,4 +1,4 @@
-import { addEventProcessor, getCurrentHub } from '@sentry/core';
+import { addEventProcessor, getClient } from '@sentry/core';
 import { Event, Integration } from '@sentry/types';
 
 declare const getCurrentPages: any;
@@ -36,7 +36,9 @@ export class Router implements Integration {
    */
   public setupOnce(): void {
     addEventProcessor((event: Event) => {
-      if (getCurrentHub().getIntegration(Router)) {
+      const client = getClient();
+      const integration = client && client.getIntegrationByName<Router>(Router.id);
+      if (integration) {
         if (this._options.enable) {
           try {
             const routers = getCurrentPages().map(

@@ -1,12 +1,12 @@
 import { addBreadcrumb } from '@sentry/core';
 import { addEventProcessor } from '@sentry/core';
-import { BaseClient } from '@sentry/core';
 import { BaseTransportOptions } from '@sentry/types';
 import { Breadcrumb } from '@sentry/types';
 import { BreadcrumbHint } from '@sentry/types';
 import { captureEvent } from '@sentry/core';
 import { captureException } from '@sentry/core';
 import { captureMessage } from '@sentry/core';
+import { Client } from '@sentry/core';
 import { ClientOptions } from '@sentry/types';
 import { DsnLike } from '@sentry/core';
 import { DynamicSamplingContext } from '@sentry/types';
@@ -15,16 +15,13 @@ import { Event as Event_3 } from '@sentry/core';
 import { EventHint } from '@sentry/types';
 import { EventHint as EventHint_2 } from '@sentry/core';
 import { Exception } from '@sentry/types';
-import { getCurrentHub } from '@sentry/core';
 import { getCurrentScope } from '@sentry/core';
-import { Hub } from '@sentry/core';
 import { Integration } from '@sentry/types';
 import { Integration as Integration_2 } from '@sentry/core';
 import { Measurements } from '@sentry/types';
 import { MeasurementUnit } from '@sentry/types';
 import { ParameterizedString } from '@sentry/core';
 import { Primitive } from '@sentry/types';
-import { Request as Request_2 } from '@sentry/types';
 import { Scope } from '@sentry/core';
 import { SdkInfo } from '@sentry/types';
 import { setContext } from '@sentry/core';
@@ -38,6 +35,7 @@ import { SeverityLevel as SeverityLevel_2 } from '@sentry/core';
 import { Span as Span_2 } from '@sentry/types';
 import { SpanAttributes } from '@sentry/types';
 import { SpanAttributeValue } from '@sentry/types';
+import { SpanJSON } from '@sentry/core';
 import { SpanOrigin } from '@sentry/types';
 import { SpanStatus } from '@sentry/types';
 import { SpanTimeInput } from '@sentry/types';
@@ -99,12 +97,10 @@ export { Exception }
  */
 export declare function flush(timeout?: number): PromiseLike<boolean>;
 
-export { getCurrentHub }
-
 export { getCurrentScope }
 
 /** Global handlers */
-declare class GlobalHandlers implements Integration {
+declare class GlobalHandlers implements Integration_2 {
     /**
      * @inheritDoc
      */
@@ -146,8 +142,6 @@ declare interface GlobalHandlersIntegrations {
     onpagenotfound: boolean;
     onmemorywarning: boolean;
 }
-
-export { Hub }
 
 /**
  * An IdleTransaction is a transaction that automatically finishes. It does this by tracking child spans as activities.
@@ -356,7 +350,7 @@ declare function makeMiniappTransport(options: BaseTransportOptions): Transport;
  * @see MiniappOptions for documentation on configuration options.
  * @see SentryClient for usage documentation.
  */
-export declare class MiniappClient extends BaseClient<MiniappOptions> {
+export declare class MiniappClient extends Client<MiniappOptions> {
     /**
      * Creates a new Miniapp SDK instance.
      *
@@ -366,7 +360,7 @@ export declare class MiniappClient extends BaseClient<MiniappOptions> {
     /**
      * @inheritDoc
      */
-    protected _prepareEvent(event: Event_3, hint: EventHint_2, scope?: Scope, isolationScope?: Scope): PromiseLike<Event_3 | null>;
+    protected _prepareEvent(event: Event_3, hint: EventHint_2, currentScope: Scope, isolationScope: Scope): PromiseLike<Event_3 | null>;
     /**
      * Show a report dialog to the user to send feedback to a specific event.
      * 向用户显示报告对话框以将反馈发送到特定事件。---> 小程序上暂时用不到&不考虑。
@@ -447,8 +441,6 @@ export declare interface ReportDialogOptions {
     /** Callback after reportDialog showed up */
     onLoad?(): void;
 }
-
-export { Request_2 as Request }
 
 declare interface RequestInstrumentationOptions {
     traceRequest: boolean;
@@ -565,9 +557,7 @@ declare class Span implements Span_2 {
     /**
      * @inheritDoc
      */
-    data: {
-        [key: string]: any;
-    };
+    data: SpanAttributes;
     /**
      * Attributes for the span (new Sentry/OpenTelemetry style).
      */
@@ -605,7 +595,7 @@ declare class Span implements Span_2 {
     /**
      * @inheritDoc
      */
-    setData(key: string, value: any): this;
+    setData(key: string, value: SpanAttributeValue | undefined): this;
     /**
      * @inheritDoc
      */
@@ -690,23 +680,7 @@ declare class Span implements Span_2 {
     /**
      * @inheritDoc
      */
-    toJSON(): {
-        data?: {
-            [key: string]: any;
-        };
-        description?: string;
-        op?: string;
-        parent_span_id?: string;
-        span_id: string;
-        start_timestamp: number;
-        status?: string;
-        tags?: {
-            [key: string]: Primitive;
-        };
-        attributes?: SpanAttributes;
-        timestamp?: number;
-        trace_id: string;
-    };
+    toJSON(): SpanJSON;
     /**
      * Return OTEL-like span context data.
      */

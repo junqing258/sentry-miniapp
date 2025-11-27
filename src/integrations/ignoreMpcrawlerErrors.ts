@@ -1,4 +1,4 @@
-import { addEventProcessor, getCurrentHub } from '@sentry/core';
+import { addEventProcessor, getClient } from '@sentry/core';
 import { Event, Integration } from '@sentry/types';
 
 import { appName, sdk } from "../crossPlatform";
@@ -22,8 +22,10 @@ export class IgnoreMpcrawlerErrors implements Integration {
    */
   public setupOnce(): void {
     addEventProcessor((event: Event) => {
+      const client = getClient();
+      const integration = client && client.getIntegrationByName<IgnoreMpcrawlerErrors>(IgnoreMpcrawlerErrors.id);
       if (
-        getCurrentHub().getIntegration(IgnoreMpcrawlerErrors) &&
+        integration &&
         appName === "wechat" &&
         sdk.getLaunchOptionsSync
       ) {

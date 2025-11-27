@@ -3,7 +3,6 @@ import './polyfills/urlsearchparams';
 export type {
   Breadcrumb,
   BreadcrumbHint,
-  Request,
   SdkInfo,
   Event,
   EventHint,
@@ -23,7 +22,6 @@ export {
   captureException,
   captureEvent,
   captureMessage,
-  getCurrentHub,
   getCurrentScope,
   setContext,
   setExtra,
@@ -34,7 +32,7 @@ export {
   withScope,
 } from '@sentry/core';
 
-export type { Hub, Scope } from '@sentry/core';
+export type { Scope } from '@sentry/core';
 export { configureScope } from './scope';
 export { startTransaction } from './tracing/hubextensions';
 

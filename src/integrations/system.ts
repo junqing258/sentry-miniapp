@@ -1,4 +1,4 @@
-import { addEventProcessor, getCurrentHub } from '@sentry/core';
+import { addEventProcessor, getClient } from '@sentry/core';
 import { Event, Integration } from '@sentry/types';
 
 import { appName as currentAppName, sdk } from "../crossPlatform";
@@ -18,8 +18,9 @@ export class System implements Integration {
    */
   public setupOnce(): void {
     addEventProcessor((event: Event) => {
-      const currentHub = getCurrentHub();
-      if (currentHub.getIntegration(System)) {
+      const client = getClient();
+      const integration = client && client.getIntegrationByName<System>(System.id);
+      if (integration) {
         try {
           const systemInfo = sdk.getSystemInfoSync();
           const {
@@ -45,15 +46,19 @@ export class System implements Integration {
           } = systemInfo;
           const [systemName, systemVersion] = system.split(" ");
 
-          currentHub.setTag("SDKVersion", SDKVersion);
+          const tags = {
+            ...event.tags,
+            SDKVersion,
+          };
 
           const appDisplay = app || appName || currentAppName || "app" // wechat
 
           return {
             ...event,
-            contexts: {
-              ...event.contexts,
-              device: {
+              tags,
+              contexts: {
+                ...event.contexts,
+                device: {
                 brand,
                 battery_level: batteryLevel || currentBattery || battery,
                 model,

@@ -8,7 +8,7 @@ import {
   isErrorEvent,
   isEvent,
   isPlainObject,
-} from '@sentry/utils';
+} from '@sentry/core';
 
 import { eventFromPlainObject, eventFromStacktrace, prepareFramesForEvent } from './parsers';
 import { computeStackTrace } from './tracekit';
