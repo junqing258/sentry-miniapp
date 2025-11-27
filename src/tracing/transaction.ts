@@ -1,5 +1,4 @@
-import { captureEvent, debug, dropUndefinedKeys } from '@sentry/core';
-import { DynamicSamplingContext, Event, MeasurementUnit, Measurements } from '@sentry/types';
+import { captureEvent, debug, dropUndefinedKeys, DynamicSamplingContext, Event, MeasurementUnit, Measurements } from '@sentry/core';
 
 import { IS_DEBUG_BUILD } from './flags';
 import { Span as SpanClass, SpanRecorder } from './span';

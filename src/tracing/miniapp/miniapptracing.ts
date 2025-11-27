@@ -1,5 +1,5 @@
 
-import { Integration } from '@sentry/types';
+import { Integration } from '@sentry/core';
 import { addTracingExtensions, startIdleTransaction } from '../hubextensions';
 import { MetricsInstrumentation } from './metrics';
 import { instrumentRoutingWithDefaults } from './router';

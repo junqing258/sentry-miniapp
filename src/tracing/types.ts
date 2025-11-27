@@ -6,7 +6,7 @@ import type {
   SpanAttributes,
   SpanOrigin,
   WorkerLocation,
-} from '@sentry/types';
+} from '@sentry/core';
 
 /** Lightweight span status type used throughout the custom tracing layer. */
 export type SpanStatusType =

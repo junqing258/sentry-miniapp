@@ -11,9 +11,6 @@ importers:
       '@sentry/core':
         specifier: 10.27.0
         version: 10.27.0
-      '@sentry/types':
-        specifier: 10.27.0
-        version: 10.27.0
     devDependencies:
       '@swc/core':
         specifier: ^1.15.3
@@ -439,10 +436,6 @@ packages:
 
   '@sentry/core@10.27.0':
     resolution: {integrity: sha512-Zc68kdH7tWTDtDbV1zWIbo3Jv0fHAU2NsF5aD2qamypKgfSIMSbWVxd22qZyDBkaX8gWIPm/0Sgx6aRXRBXrYQ==}
-    engines: {node: '>=18'}
-
-  '@sentry/types@10.27.0':
-    resolution: {integrity: sha512-aVvieeh597PYdjUs8WaAMsPpzvv6u2ehpNqkG61xs9fHxD8Kgvt4xdtWK+BQ6GDlFQ9HNF8qA6QDY3AMpaz+tw==}
     engines: {node: '>=18'}
 
   '@swc/core-darwin-arm64@1.15.3':
@@ -1361,10 +1354,6 @@ snapshots:
       - '@types/node'
 
   '@sentry/core@10.27.0': {}
-
-  '@sentry/types@10.27.0':
-    dependencies:
-      '@sentry/core': 10.27.0
 
   '@swc/core-darwin-arm64@1.15.3':
     optional: true

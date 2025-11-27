@@ -1,5 +1,4 @@
-import { addEventProcessor, getClient } from '@sentry/core';
-import { Event, Integration } from '@sentry/types';
+import { addEventProcessor, getClient,Event, Integration} from '@sentry/core';
 
 import { appName as currentAppName, sdk } from "../crossPlatform";
 

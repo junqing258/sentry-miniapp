@@ -12,9 +12,9 @@ export type {
   Thread,
   User,
   Integration,
-} from '@sentry/types';
+  SeverityLevel,
+} from '@sentry/core';
 
-export type { SeverityLevel } from '@sentry/types';
 
 export {
   addEventProcessor,

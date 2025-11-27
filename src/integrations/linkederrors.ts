@@ -1,5 +1,4 @@
-import { addEventProcessor, getClient } from '@sentry/core';
-import { Event, EventHint, Exception, ExtendedError, Integration } from '@sentry/types';
+import { addEventProcessor, getClient, Event, EventHint, Exception, ExtendedError, Integration } from '@sentry/core';
 
 import { exceptionFromStacktrace } from '../parsers';
 import { computeStackTrace } from '../tracekit';

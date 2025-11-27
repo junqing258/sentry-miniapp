@@ -1,50 +1,46 @@
 import { addBreadcrumb } from '@sentry/core';
 import { addEventProcessor } from '@sentry/core';
-import { BaseTransportOptions } from '@sentry/types';
-import { Breadcrumb } from '@sentry/types';
-import { BreadcrumbHint } from '@sentry/types';
+import { BaseTransportOptions } from '@sentry/core';
+import { Breadcrumb } from '@sentry/core';
+import { BreadcrumbHint } from '@sentry/core';
 import { captureEvent } from '@sentry/core';
 import { captureException } from '@sentry/core';
 import { captureMessage } from '@sentry/core';
 import { Client } from '@sentry/core';
-import { ClientOptions } from '@sentry/types';
+import { ClientOptions } from '@sentry/core';
 import { DsnLike } from '@sentry/core';
-import { DynamicSamplingContext } from '@sentry/types';
-import { Event as Event_2 } from '@sentry/types';
-import { Event as Event_3 } from '@sentry/core';
-import { EventHint } from '@sentry/types';
-import { EventHint as EventHint_2 } from '@sentry/core';
-import { Exception } from '@sentry/types';
+import { DynamicSamplingContext } from '@sentry/core';
+import { Event as Event_2 } from '@sentry/core';
+import { EventHint } from '@sentry/core';
+import { Exception } from '@sentry/core';
 import { getCurrentScope } from '@sentry/core';
-import { Integration } from '@sentry/types';
-import { Integration as Integration_2 } from '@sentry/core';
-import { Measurements } from '@sentry/types';
-import { MeasurementUnit } from '@sentry/types';
+import { Integration } from '@sentry/core';
+import { Measurements } from '@sentry/core';
+import { MeasurementUnit } from '@sentry/core';
 import { ParameterizedString } from '@sentry/core';
-import { Primitive } from '@sentry/types';
+import { Primitive } from '@sentry/core';
 import { Scope } from '@sentry/core';
-import { SdkInfo } from '@sentry/types';
+import { SdkInfo } from '@sentry/core';
 import { setContext } from '@sentry/core';
 import { setExtra } from '@sentry/core';
 import { setExtras } from '@sentry/core';
 import { setTag } from '@sentry/core';
 import { setTags } from '@sentry/core';
 import { setUser } from '@sentry/core';
-import { SeverityLevel } from '@sentry/types';
-import { SeverityLevel as SeverityLevel_2 } from '@sentry/core';
-import { Span as Span_2 } from '@sentry/types';
-import { SpanAttributes } from '@sentry/types';
-import { SpanAttributeValue } from '@sentry/types';
+import { SeverityLevel } from '@sentry/core';
+import { Span as Span_2 } from '@sentry/core';
+import { SpanAttributes } from '@sentry/core';
+import { SpanAttributeValue } from '@sentry/core';
 import { SpanJSON } from '@sentry/core';
-import { SpanOrigin } from '@sentry/types';
-import { SpanStatus } from '@sentry/types';
-import { SpanTimeInput } from '@sentry/types';
-import { StackFrame } from '@sentry/types';
-import { Stacktrace } from '@sentry/types';
-import { Thread } from '@sentry/types';
-import { TraceFlag } from '@sentry/types';
-import { Transport } from '@sentry/types';
-import { User } from '@sentry/types';
+import { SpanOrigin } from '@sentry/core';
+import { SpanStatus } from '@sentry/core';
+import { SpanTimeInput } from '@sentry/core';
+import { StackFrame } from '@sentry/core';
+import { Stacktrace } from '@sentry/core';
+import { Thread } from '@sentry/core';
+import { TraceFlag } from '@sentry/core';
+import { Transport } from '@sentry/core';
+import { User } from '@sentry/core';
 import { withScope } from '@sentry/core';
 
 export { addBreadcrumb }
@@ -80,7 +76,7 @@ export declare function configureScope(callback: (scope: Scope) => void): void;
 
 declare type CustomSamplingContext = Record<string, unknown>;
 
-export declare const defaultIntegrations: (Integration_2 | GlobalHandlers | TryCatch | LinkedErrors | System | Router | IgnoreMpcrawlerErrors | MiniAppTracing)[];
+export declare const defaultIntegrations: (Integration | GlobalHandlers | TryCatch | LinkedErrors | System | Router | IgnoreMpcrawlerErrors | MiniAppTracing)[];
 
 export { Event_2 as Event }
 
@@ -100,7 +96,7 @@ export declare function flush(timeout?: number): PromiseLike<boolean>;
 export { getCurrentScope }
 
 /** Global handlers */
-declare class GlobalHandlers implements Integration_2 {
+declare class GlobalHandlers implements Integration {
     /**
      * @inheritDoc
      */
@@ -360,7 +356,7 @@ export declare class MiniappClient extends Client<MiniappOptions> {
     /**
      * @inheritDoc
      */
-    protected _prepareEvent(event: Event_3, hint: EventHint_2, currentScope: Scope, isolationScope: Scope): PromiseLike<Event_3 | null>;
+    protected _prepareEvent(event: Event_2, hint: EventHint, currentScope: Scope, isolationScope: Scope): PromiseLike<Event_2 | null>;
     /**
      * Show a report dialog to the user to send feedback to a specific event.
      * 向用户显示报告对话框以将反馈发送到特定事件。---> 小程序上暂时用不到&不考虑。
@@ -371,11 +367,11 @@ export declare class MiniappClient extends Client<MiniappOptions> {
     /**
      * @inheritDoc
      */
-    eventFromException(exception: unknown, hint?: EventHint_2): PromiseLike<Event_3>;
+    eventFromException(exception: unknown, hint?: EventHint): PromiseLike<Event_2>;
     /**
      * @inheritDoc
      */
-    eventFromMessage(message: ParameterizedString, level?: SeverityLevel_2, hint?: EventHint_2): PromiseLike<Event_3>;
+    eventFromMessage(message: ParameterizedString, level?: SeverityLevel, hint?: EventHint): PromiseLike<Event_2>;
 }
 
 /**

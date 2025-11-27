@@ -1,5 +1,5 @@
 
-import { Measurements } from '@sentry/types';
+import { Measurements } from '@sentry/core';
 import type { SpanContext } from '../types';
 import { Span } from '../span';
 import { Transaction } from '../transaction';

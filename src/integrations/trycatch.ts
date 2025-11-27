@@ -1,5 +1,4 @@
-import { fill, GLOBAL_OBJ } from '@sentry/core';
-import { Integration, WrappedFunction } from '@sentry/types';
+import { fill, GLOBAL_OBJ, Integration, WrappedFunction} from '@sentry/core';
 
 import { wrap } from "../helpers";
 

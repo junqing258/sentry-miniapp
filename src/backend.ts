@@ -1,4 +1,4 @@
-import type { ClientOptions, Integration } from '@sentry/types';
+import type { ClientOptions, Integration } from '@sentry/core';
 
 /**
  * Configuration options for the Sentry Miniapp SDK.

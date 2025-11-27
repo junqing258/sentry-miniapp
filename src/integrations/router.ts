@@ -1,5 +1,4 @@
-import { addEventProcessor, getClient } from '@sentry/core';
-import { Event, Integration } from '@sentry/types';
+import { addEventProcessor, getClient, Event, Integration } from '@sentry/core';
 
 declare const getCurrentPages: any;
 

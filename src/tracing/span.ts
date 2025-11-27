@@ -8,7 +8,7 @@ import {
   SpanStatus,
   SpanTimeInput,
   TraceFlag,
-} from '@sentry/types';
+} from '@sentry/core';
 import { dateTimestampInSeconds, dropUndefinedKeys, uuid4, type SpanJSON } from '@sentry/core';
 import type { SpanContext, SpanStatusType } from './types';
 import type { Transaction } from './transaction';
