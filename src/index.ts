@@ -30,9 +30,43 @@ export {
   setTags,
   setUser,
   withScope,
-  logger,
   metrics,
 } from '@sentry/core';
+
+export {
+  registerSpanErrorInstrumentation,
+  getActiveSpan,
+  getRootSpan,
+  startSpan,
+  startInactiveSpan,
+  startSpanManual,
+  withActiveSpan,
+  startNewTrace,
+  getSpanDescendants,
+  setMeasurement,
+  getSpanStatusFromHttpCode,
+  setHttpStatus,
+  makeMultiplexedTransport,
+  moduleMetadataIntegration,
+  supabaseIntegration,
+  instrumentSupabaseClient,
+  zodErrorsIntegration,
+  thirdPartyErrorFilterIntegration,
+  featureFlagsIntegration,
+  instrumentAnthropicAiClient,
+  instrumentOpenAiClient,
+  instrumentGoogleGenAIClient,
+  logger,
+} from '@sentry/core';
+
+export {
+  captureConsoleIntegration,
+  extraErrorDataIntegration,
+  rewriteFramesIntegration,
+  consoleLoggingIntegration,
+  createConsolaReporter,
+} from '@sentry/core';
+
 
 export type { Scope } from '@sentry/core';
 export { configureScope } from './scope';

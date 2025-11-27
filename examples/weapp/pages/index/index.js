@@ -81,6 +81,7 @@ Page({
   },
 
   testCustomEvent() {
+    Sentry.metrics.count('button_click', 1);
     Sentry.captureMessage("自定义事件测试");
   },
 

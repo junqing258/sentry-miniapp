@@ -3,29 +3,48 @@ import { addEventProcessor } from '@sentry/core';
 import { BaseTransportOptions } from '@sentry/core';
 import { Breadcrumb } from '@sentry/core';
 import { BreadcrumbHint } from '@sentry/core';
+import { captureConsoleIntegration } from '@sentry/core';
 import { captureEvent } from '@sentry/core';
 import { captureException } from '@sentry/core';
 import { captureMessage } from '@sentry/core';
 import { Client } from '@sentry/core';
 import { ClientOptions } from '@sentry/core';
+import { consoleLoggingIntegration } from '@sentry/core';
+import { createConsolaReporter } from '@sentry/core';
 import { DsnLike } from '@sentry/core';
 import { DynamicSamplingContext } from '@sentry/core';
 import { Event as Event_2 } from '@sentry/core';
 import { EventHint } from '@sentry/core';
 import { Exception } from '@sentry/core';
+import { extraErrorDataIntegration } from '@sentry/core';
+import { featureFlagsIntegration } from '@sentry/core';
+import { getActiveSpan } from '@sentry/core';
 import { getCurrentScope } from '@sentry/core';
+import { getRootSpan } from '@sentry/core';
+import { getSpanDescendants } from '@sentry/core';
+import { getSpanStatusFromHttpCode } from '@sentry/core';
+import { instrumentAnthropicAiClient } from '@sentry/core';
+import { instrumentGoogleGenAIClient } from '@sentry/core';
+import { instrumentOpenAiClient } from '@sentry/core';
+import { instrumentSupabaseClient } from '@sentry/core';
 import { Integration } from '@sentry/core';
 import { logger } from '@sentry/core';
+import { makeMultiplexedTransport } from '@sentry/core';
 import { Measurements } from '@sentry/core';
 import { MeasurementUnit } from '@sentry/core';
 import { metrics } from '@sentry/core';
+import { moduleMetadataIntegration } from '@sentry/core';
 import { ParameterizedString } from '@sentry/core';
 import { Primitive } from '@sentry/core';
+import { registerSpanErrorInstrumentation } from '@sentry/core';
+import { rewriteFramesIntegration } from '@sentry/core';
 import { Scope } from '@sentry/core';
 import { SdkInfo } from '@sentry/core';
 import { setContext } from '@sentry/core';
 import { setExtra } from '@sentry/core';
 import { setExtras } from '@sentry/core';
+import { setHttpStatus } from '@sentry/core';
+import { setMeasurement } from '@sentry/core';
 import { setTag } from '@sentry/core';
 import { setTags } from '@sentry/core';
 import { setUser } from '@sentry/core';
@@ -39,11 +58,19 @@ import { SpanStatus } from '@sentry/core';
 import { SpanTimeInput } from '@sentry/core';
 import { StackFrame } from '@sentry/core';
 import { Stacktrace } from '@sentry/core';
+import { startInactiveSpan } from '@sentry/core';
+import { startNewTrace } from '@sentry/core';
+import { startSpan } from '@sentry/core';
+import { startSpanManual } from '@sentry/core';
+import { supabaseIntegration } from '@sentry/core';
+import { thirdPartyErrorFilterIntegration } from '@sentry/core';
 import { Thread } from '@sentry/core';
 import { TraceFlag } from '@sentry/core';
 import { Transport } from '@sentry/core';
 import { User } from '@sentry/core';
+import { withActiveSpan } from '@sentry/core';
 import { withScope } from '@sentry/core';
+import { zodErrorsIntegration } from '@sentry/core';
 
 export { addBreadcrumb }
 
@@ -54,6 +81,8 @@ declare type BeforeFinishCallback = (transactionSpan: IdleTransaction, endTimest
 export { Breadcrumb }
 
 export { BreadcrumbHint }
+
+export { captureConsoleIntegration }
 
 export { captureEvent }
 
@@ -76,6 +105,10 @@ export { close_2 as close }
  */
 export declare function configureScope(callback: (scope: Scope) => void): void;
 
+export { consoleLoggingIntegration }
+
+export { createConsolaReporter }
+
 declare type CustomSamplingContext = Record<string, unknown>;
 
 export declare const defaultIntegrations: (Integration | GlobalHandlers | TryCatch | LinkedErrors | System | Router | IgnoreMpcrawlerErrors | MiniAppTracing)[];
@@ -86,6 +119,10 @@ export { EventHint }
 
 export { Exception }
 
+export { extraErrorDataIntegration }
+
+export { featureFlagsIntegration }
+
 /**
  * A promise that resolves when all current events have been sent.
  * If you provide a timeout and the queue takes longer to drain the promise returns false.
@@ -95,7 +132,15 @@ export { Exception }
  */
 export declare function flush(timeout?: number): PromiseLike<boolean>;
 
+export { getActiveSpan }
+
 export { getCurrentScope }
+
+export { getRootSpan }
+
+export { getSpanDescendants }
+
+export { getSpanStatusFromHttpCode }
 
 /** Global handlers */
 declare class GlobalHandlers implements Integration {
@@ -280,6 +325,14 @@ declare class IgnoreMpcrawlerErrors implements Integration {
  */
 export declare function init(options?: Partial<MiniappOptions>): void;
 
+export { instrumentAnthropicAiClient }
+
+export { instrumentGoogleGenAIClient }
+
+export { instrumentOpenAiClient }
+
+export { instrumentSupabaseClient }
+
 export { Integration }
 
 declare namespace Integrations {
@@ -343,6 +396,8 @@ declare class LinkedErrors implements Integration {
 export { logger }
 
 declare function makeMiniappTransport(options: BaseTransportOptions): Transport;
+
+export { makeMultiplexedTransport }
 
 export { metrics }
 
@@ -417,6 +472,10 @@ export declare interface MiniAppTracingOptions extends RequestInstrumentationOpt
     routingInstrumentation<T extends IdleTransaction>(customStartTransaction: (context: TransactionContext) => T | undefined, startTransactionOnPageLoad?: boolean, startTransactionOnLocationChange?: boolean): void;
 }
 
+export { moduleMetadataIntegration }
+
+export { registerSpanErrorInstrumentation }
+
 /**
  * All properties the report dialog supports
  */
@@ -448,6 +507,8 @@ declare interface RequestInstrumentationOptions {
     traceRequest: boolean;
     shouldCreateSpanForRequest?(url: string): boolean;
 }
+
+export { rewriteFramesIntegration }
 
 /** UserAgent */
 declare class Router implements Integration {
@@ -489,6 +550,10 @@ export { setContext }
 export { setExtra }
 
 export { setExtras }
+
+export { setHttpStatus }
+
+export { setMeasurement }
 
 export { setTag }
 
@@ -728,6 +793,14 @@ export { StackFrame }
 
 export { Stacktrace }
 
+export { startInactiveSpan }
+
+export { startNewTrace }
+
+export { startSpan }
+
+export { startSpanManual }
+
 /**
  * Creates a new transaction and adds a sampling decision if it doesn't yet have one.
  * Supports trace continuity for maintaining consistent traceId across navigations.
@@ -751,6 +824,8 @@ declare interface StartTransactionOptions {
     consistentTraceSampling?: boolean;
 }
 
+export { supabaseIntegration }
+
 /** UserAgent */
 declare class System implements Integration {
     /**
@@ -766,6 +841,8 @@ declare class System implements Integration {
      */
     setupOnce(): void;
 }
+
+export { thirdPartyErrorFilterIntegration }
 
 export { Thread }
 
@@ -912,6 +989,8 @@ declare class TryCatch implements Integration {
 
 export { User }
 
+export { withActiveSpan }
+
 export { withScope }
 
 /**
@@ -924,5 +1003,7 @@ export { withScope }
  * @returns The result of wrapped function call.
  */
 export declare function wrap(fn: Function): any;
+
+export { zodErrorsIntegration }
 
 export { }

@@ -1,24 +1,28 @@
 import * as Sentry from "./vender/sentry-miniapp";
+
 // 初始化 Sentry
 Sentry.init({
+  //https://90ac29a4615f090525ea9f732038d105@sentry.inf.17usoft.com/293
   dsn: "https://607f106645b6ecb5420e7cf5a44cc90a@o325862.ingest.us.sentry.io/4510430332190720",
-   integrations: [
+  integrations: [
     new Sentry.MiniAppTracing({
       // 三种模式：
       // 'session' - 整个会话使用同一个 traceId（所有导航共享一个 trace）
       // 'link'    - 每次导航新 traceId，但通过 span link 关联前一个 trace（推荐）
       // 'off'     - 每次导航独立 trace
-      traceContinuityMode: 'session', // 或 'link'
+      traceContinuityMode: 'link', // 或 'link'
       // 是否继承前一个 trace 的采样决定（保证会话内采样一致性）
       consistentTraceSampling: true,
     }),
+    Sentry.consoleLoggingIntegration({ levels: ["log", "warn", "error"] }),
   ],
+  enableLogs: true,
   tracesSampleRate: 1.0, //  Capture 100% of the transactions
   // Set 'tracePropagationTargets' to control for which URLs distributed tracing should be enabled
   tracePropagationTargets: ["localhost", /^https:\/\/yourserver\.io\/api/],
   // Session Replay
   replaysSessionSampleRate: 0.1, // This sets the sample rate at 10%. You may want to change it to 100% while in development and then sample at a lower rate in production.
-  replaysOnErrorSampleRate: 1.0, 
+  replaysOnErrorSampleRate: 1.0,
 });
 
 App({
@@ -35,6 +39,7 @@ App({
     wx.login({
       success: (res) => {
         // 发送 res.code 到后台换取 openId, sessionKey, unionId
+        Sentry.logger.info('wx.login', { log_source: 'sentry_test' })
       },
     });
 
