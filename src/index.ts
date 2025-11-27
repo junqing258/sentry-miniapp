@@ -30,6 +30,8 @@ export {
   setTags,
   setUser,
   withScope,
+  logger,
+  metrics,
 } from '@sentry/core';
 
 export type { Scope } from '@sentry/core';

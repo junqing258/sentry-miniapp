@@ -15,8 +15,10 @@ import { EventHint } from '@sentry/core';
 import { Exception } from '@sentry/core';
 import { getCurrentScope } from '@sentry/core';
 import { Integration } from '@sentry/core';
+import { logger } from '@sentry/core';
 import { Measurements } from '@sentry/core';
 import { MeasurementUnit } from '@sentry/core';
+import { metrics } from '@sentry/core';
 import { ParameterizedString } from '@sentry/core';
 import { Primitive } from '@sentry/core';
 import { Scope } from '@sentry/core';
@@ -338,7 +340,11 @@ declare class LinkedErrors implements Integration {
     private _walkErrorTree;
 }
 
+export { logger }
+
 declare function makeMiniappTransport(options: BaseTransportOptions): Transport;
+
+export { metrics }
 
 /**
  * The Sentry Miniapp SDK Client.
