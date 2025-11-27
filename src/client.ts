@@ -12,7 +12,7 @@ import {
 
 import { MiniappOptions } from './backend';
 import { SDK_NAME, SDK_VERSION } from "./version";
-import { eventFromString, eventFromUnknownInput } from './eventbuilder';
+import { eventFromException, eventFromMessage } from './eventbuilder';
 import { makeMiniappTransport } from './transports';
 
 const noopStackParser: StackParser = () => [];
@@ -118,14 +118,7 @@ export class MiniappClient extends Client<MiniappOptions> {
    */
   // eslint-disable-next-line deprecation/deprecation
   public eventFromException(exception: unknown, hint?: EventHint): PromiseLike<Event> {
-    const syntheticException = hint && hint.syntheticException ? hint.syntheticException : undefined;
-    const event = eventFromUnknownInput(exception, syntheticException, {
-      attachStacktrace: this._options.attachStacktrace,
-    });
-    if (hint && hint.event_id) {
-      event.event_id = hint.event_id;
-    }
-    return Promise.resolve(event);
+    return eventFromException(exception, hint, this._options.attachStacktrace);
   }
 
   /**
@@ -137,14 +130,6 @@ export class MiniappClient extends Client<MiniappOptions> {
     level: SeverityLevel = 'info',
     hint?: EventHint,
   ): PromiseLike<Event> {
-    const syntheticException = hint && hint.syntheticException ? hint.syntheticException : undefined;
-    const event = eventFromString(String(message), syntheticException, {
-      attachStacktrace: this._options.attachStacktrace,
-    });
-    event.level = level;
-    if (hint && hint.event_id) {
-      event.event_id = hint.event_id;
-    }
-    return Promise.resolve(event);
+    return eventFromMessage(message, level, hint, this._options.attachStacktrace);
   }
 }

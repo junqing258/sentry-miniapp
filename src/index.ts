@@ -69,7 +69,6 @@ export {
 
 
 export type { Scope } from '@sentry/core';
-export { configureScope } from './scope';
 
 export { SDK_NAME, SDK_VERSION } from "./version";
 export {

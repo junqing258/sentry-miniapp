@@ -87,12 +87,6 @@ export { captureMessage }
 declare function close_2(timeout?: number): PromiseLike<boolean>;
 export { close_2 as close }
 
-/**
- * Lightweight replacement for the removed `configureScope` helper.
- * Invokes the provided callback with the current scope.
- */
-export declare function configureScope(callback: (scope: Scope) => void): void;
-
 export { consoleLoggingIntegration }
 
 export { createConsolaReporter }

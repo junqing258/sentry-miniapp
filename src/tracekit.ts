@@ -1,4 +1,3 @@
-// tslint:disable:object-literal-sort-keys
 
 /**
  * This was originally forked from https://github.com/occ/TraceKit, but has since been
@@ -46,9 +45,9 @@ const chrome = /^\s*at (?:(.*?) ?\()?((?:file|https?|blob|chrome-extension|addre
 // gecko regex: `(?:bundle|\d+\.js)`: `bundle` is for react native, `\d+\.js` also but specifically for ram bundles because it
 // generates filenames without a prefix like `file://` the filenames in the stacktrace are just 42.js
 // We need this specific case for now because we want no other regex to match.
-const gecko = /^\s*(.*?)(?:\((.*?)\))?(?:^|@)?((?:file|https?|blob|chrome|webpack|resource|moz-extension).*?:\/.*?|\[native code\]|[^@]*(?:bundle|\d+\.js))(?::(\d+))?(?::(\d+))?\s*$/i;
-const winjs = /^\s*at (?:((?:\[object object\])?.+) )?\(?((?:file|ms-appx|https?|webpack|blob):.*?):(\d+)(?::(\d+))?\)?\s*$/i;
-const geckoEval = /(\S+) line (\d+)(?: > eval line \d+)* > eval/i;
+// const gecko = /^\s*(.*?)(?:\((.*?)\))?(?:^|@)?((?:file|https?|blob|chrome|webpack|resource|moz-extension).*?:\/.*?|\[native code\]|[^@]*(?:bundle|\d+\.js))(?::(\d+))?(?::(\d+))?\s*$/i;
+// const winjs = /^\s*at (?:((?:\[object object\])?.+) )?\(?((?:file|ms-appx|https?|webpack|blob):.*?):(\d+)(?::(\d+))?\)?\s*$/i;
+// const geckoEval = /(\S+) line (\d+)(?: > eval line \d+)* > eval/i;
 const chromeEval = /\((\S*)(?::(\d+))(?::(\d+))\)/;
 // const miniapp = /^\s*at (\w.*) \((\w*.js):(\d*):(\d*)/i;
 const miniapp = /^\s*at (.*?) ?\((\S*):(\d+):(\d+)\)/i;
@@ -126,7 +125,8 @@ function computeStackTraceFromStackProp(ex: any): StackTrace | null {
         line: parts[3] ? +parts[3] : null,
         column: parts[4] ? +parts[4] : null,
       };
-    } else if ((parts = winjs.exec(lines[i]))) {
+    } 
+    /* else if ((parts = winjs.exec(lines[i]))) {
       element = {
         url: parts[2],
         func: parts[1] || UNKNOWN_FUNCTION,
@@ -156,7 +156,8 @@ function computeStackTraceFromStackProp(ex: any): StackTrace | null {
         line: parts[4] ? +parts[4] : null,
         column: parts[5] ? +parts[5] : null,
       };
-    } else if ((parts = miniapp.exec(lines[i]))) {
+    } */ 
+   else if ((parts = miniapp.exec(lines[i]))) {
       element = {
         url: parts[2],
         func: parts[1] || UNKNOWN_FUNCTION,
