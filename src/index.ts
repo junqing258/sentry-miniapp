@@ -51,6 +51,8 @@ export {
 export type { MiniappOptions } from "./backend";
 export { MiniappClient, type ReportDialogOptions } from "./client";
 
+export { MiniAppTracing, type MiniAppTracingOptions } from "./tracing/miniapp/miniapptracing";
+
 import * as Integrations from "./integrations/index";
 import * as Transports from "./transports/index";
 

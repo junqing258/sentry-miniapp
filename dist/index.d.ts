@@ -387,7 +387,7 @@ export declare interface MiniappOptions extends ClientOptions {
     defaultIntegrations?: Integration[];
 }
 
-declare class MiniAppTracing implements Integration {
+export declare class MiniAppTracing implements Integration {
     /**
      * @inheritDoc
      */
@@ -405,7 +405,7 @@ declare class MiniAppTracing implements Integration {
     private _createRouteTransaction;
 }
 
-declare interface MiniAppTracingOptions extends RequestInstrumentationOptions {
+export declare interface MiniAppTracingOptions extends RequestInstrumentationOptions, TraceContinuityOptions {
     idleTimeout: number;
     startTransactionOnLocationChange: boolean;
     startTransactionOnPageLoad: boolean;
@@ -730,8 +730,26 @@ export { Stacktrace }
 
 /**
  * Creates a new transaction and adds a sampling decision if it doesn't yet have one.
+ * Supports trace continuity for maintaining consistent traceId across navigations.
  */
-export declare function startTransaction(transactionContext: TransactionContext, customSamplingContext?: CustomSamplingContext): Transaction;
+export declare function startTransaction(transactionContext: TransactionContext, customSamplingContext?: CustomSamplingContext, traceOptions?: StartTransactionOptions): Transaction;
+
+/**
+ * Options for trace continuity when starting transactions.
+ */
+declare interface StartTransactionOptions {
+    /**
+     * Trace continuity mode.
+     * - 'session': Reuse the same traceId for the entire session
+     * - 'link': Create new trace but link to previous
+     * - 'off': Independent traces (legacy behavior)
+     */
+    traceContinuityMode?: TraceContinuityMode;
+    /**
+     * Inherit sampling decision from previous trace.
+     */
+    consistentTraceSampling?: boolean;
+}
 
 /** UserAgent */
 declare class System implements Integration {
@@ -750,6 +768,40 @@ declare class System implements Integration {
 }
 
 export { Thread }
+
+/**
+ * Trace continuity mode for maintaining trace relationships across navigations.
+ *
+ * - `'session'`: Keep the same traceId for the entire session. All navigations share one trace.
+ * - `'link'`: Each navigation gets a new traceId, but links to the previous trace (recommended).
+ * - `'off'`: Each navigation starts a completely independent trace (legacy behavior).
+ */
+declare type TraceContinuityMode = 'session' | 'link' | 'off';
+
+/**
+ * Options for trace continuity behavior.
+ */
+declare interface TraceContinuityOptions {
+    /**
+     * How to handle trace continuity across navigations.
+     *
+     * - `'session'`: Keep the same traceId for the entire session (all navigations share one trace).
+     * - `'link'`: Each navigation gets a new traceId but links to previous trace via span links.
+     * - `'off'`: Each navigation starts an independent trace (legacy behavior).
+     *
+     * @default 'link'
+     */
+    traceContinuityMode?: TraceContinuityMode;
+    /**
+     * If true, subsequent traces will inherit the sampling decision from the initial trace.
+     * This ensures consistent sampling across all traces in a session.
+     *
+     * Only effective when `traceContinuityMode` is not `'off'`.
+     *
+     * @default false
+     */
+    consistentTraceSampling?: boolean;
+}
 
 /** JSDoc */
 declare class Transaction extends Span {

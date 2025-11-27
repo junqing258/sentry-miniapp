@@ -1,25 +1,25 @@
-var mr = Object.defineProperty, gr = Object.defineProperties;
-var _r = Object.getOwnPropertyDescriptors;
-var gt = Object.getOwnPropertySymbols;
-var Ae = Object.prototype.hasOwnProperty, we = Object.prototype.propertyIsEnumerable;
-var Oe = (e, t, n) => t in e ? mr(e, t, { enumerable: !0, configurable: !0, writable: !0, value: n }) : e[t] = n, l = (e, t) => {
+var br = Object.defineProperty, Er = Object.defineProperties;
+var Tr = Object.getOwnPropertyDescriptors;
+var _t = Object.getOwnPropertySymbols;
+var Pe = Object.prototype.hasOwnProperty, xe = Object.prototype.propertyIsEnumerable;
+var Ce = (e, t, n) => t in e ? br(e, t, { enumerable: !0, configurable: !0, writable: !0, value: n }) : e[t] = n, l = (e, t) => {
   for (var n in t || (t = {}))
-    Ae.call(t, n) && Oe(e, n, t[n]);
-  if (gt)
-    for (var n of gt(t))
-      we.call(t, n) && Oe(e, n, t[n]);
+    Pe.call(t, n) && Ce(e, n, t[n]);
+  if (_t)
+    for (var n of _t(t))
+      xe.call(t, n) && Ce(e, n, t[n]);
   return e;
-}, _ = (e, t) => gr(e, _r(t));
-var Yt = (e, t) => {
+}, _ = (e, t) => Er(e, Tr(t));
+var Jt = (e, t) => {
   var n = {};
   for (var r in e)
-    Ae.call(e, r) && t.indexOf(r) < 0 && (n[r] = e[r]);
-  if (e != null && gt)
-    for (var r of gt(e))
-      t.indexOf(r) < 0 && we.call(e, r) && (n[r] = e[r]);
+    Pe.call(e, r) && t.indexOf(r) < 0 && (n[r] = e[r]);
+  if (e != null && _t)
+    for (var r of _t(e))
+      t.indexOf(r) < 0 && xe.call(e, r) && (n[r] = e[r]);
   return n;
 };
-var Z = (e, t, n) => new Promise((r, s) => {
+var Q = (e, t, n) => new Promise((r, s) => {
   var i = (c) => {
     try {
       a(n.next(c));
@@ -35,14 +35,14 @@ var Z = (e, t, n) => new Promise((r, s) => {
   }, a = (c) => c.done ? r(c.value) : Promise.resolve(c.value).then(i, o);
   a((n = n.apply(e, t)).next());
 });
-const Me = (
+const $e = (
   // eslint-disable-next-line no-undef
   typeof globalThis != "undefined" && globalThis || // eslint-disable-next-line no-undef
   typeof self != "undefined" && self || // eslint-disable-next-line no-undef
   typeof window != "undefined" && window || // eslint-disable-next-line no-undef
   typeof global != "undefined" && global || {}
 );
-class yr {
+class Ir {
   constructor(t) {
     if (this._entries = [], !!t) {
       if (typeof t == "string") {
@@ -72,26 +72,26 @@ class yr {
     return this._entries.map(([t, n]) => `${encodeURIComponent(t)}=${encodeURIComponent(n)}`).join("&");
   }
 }
-Me.URLSearchParams || (Me.URLSearchParams = yr);
-const m = typeof __SENTRY_DEBUG__ == "undefined" || __SENTRY_DEBUG__, I = globalThis, j = "10.27.0";
-function ut() {
-  return Lt(I), I;
+$e.URLSearchParams || ($e.URLSearchParams = Ir);
+const g = typeof __SENTRY_DEBUG__ == "undefined" || __SENTRY_DEBUG__, v = globalThis, U = "10.27.0";
+function lt() {
+  return jt(v), v;
 }
-function Lt(e) {
+function jt(e) {
   const t = e.__SENTRY__ = e.__SENTRY__ || {};
-  return t.version = t.version || j, t[j] = t[j] || {};
+  return t.version = t.version || U, t[U] = t[U] || {};
 }
-function Y(e, t, n = I) {
-  const r = n.__SENTRY__ = n.__SENTRY__ || {}, s = r[j] = r[j] || {};
+function q(e, t, n = v) {
+  const r = n.__SENTRY__ = n.__SENTRY__ || {}, s = r[U] = r[U] || {};
   return s[e] || (s[e] = t());
 }
-const Sr = "Sentry Logger ", De = {};
-function q(e) {
-  if (!("console" in I))
+const vr = "Sentry Logger ", Le = {};
+function V(e) {
+  if (!("console" in v))
     return e();
-  const t = I.console, n = {}, r = Object.keys(De);
+  const t = v.console, n = {}, r = Object.keys(Le);
   r.forEach((s) => {
-    const i = De[s];
+    const i = Le[s];
     n[s] = t[s], t[s] = i;
   });
   try {
@@ -102,119 +102,119 @@ function q(e) {
     });
   }
 }
-function br() {
-  le().enabled = !0;
+function kr() {
+  he().enabled = !0;
 }
-function Er() {
-  le().enabled = !1;
+function Nr() {
+  he().enabled = !1;
 }
-function bn() {
-  return le().enabled;
+function vn() {
+  return he().enabled;
 }
-function Tr(...e) {
-  ue("log", ...e);
+function Rr(...e) {
+  pe("log", ...e);
 }
-function Ir(...e) {
-  ue("warn", ...e);
+function wr(...e) {
+  pe("warn", ...e);
 }
-function vr(...e) {
-  ue("error", ...e);
+function Ar(...e) {
+  pe("error", ...e);
 }
-function ue(e, ...t) {
-  m && bn() && q(() => {
-    I.console[e](`${Sr}[${e}]:`, ...t);
+function pe(e, ...t) {
+  g && vn() && V(() => {
+    v.console[e](`${vr}[${e}]:`, ...t);
   });
 }
-function le() {
-  return m ? Y("loggerSettings", () => ({ enabled: !1 })) : { enabled: !1 };
+function he() {
+  return g ? q("loggerSettings", () => ({ enabled: !1 })) : { enabled: !1 };
 }
-const p = {
+const h = {
   /** Enable logging. */
-  enable: br,
+  enable: kr,
   /** Disable logging. */
-  disable: Er,
+  disable: Nr,
   /** Check if logging is enabled. */
-  isEnabled: bn,
+  isEnabled: vn,
   /** Log a message. */
-  log: Tr,
+  log: Rr,
   /** Log a warning. */
-  warn: Ir,
+  warn: wr,
   /** Log an error. */
-  error: vr
-}, qt = "<anonymous>";
-function Nr(e) {
+  error: Ar
+}, Xt = "<anonymous>";
+function Or(e) {
   try {
-    return !e || typeof e != "function" ? qt : e.name || qt;
+    return !e || typeof e != "function" ? Xt : e.name || Xt;
   } catch (t) {
-    return qt;
+    return Xt;
   }
 }
-function kr(e) {
+function Mr(e) {
   return "__v_isVNode" in e && e.__v_isVNode ? "[VueVNode]" : "[VueViewModel]";
 }
-const En = Object.prototype.toString;
-function Tn(e) {
-  switch (En.call(e)) {
+const kn = Object.prototype.toString;
+function Nn(e) {
+  switch (kn.call(e)) {
     case "[object Error]":
     case "[object Exception]":
     case "[object DOMException]":
     case "[object WebAssembly.Exception]":
       return !0;
     default:
-      return $t(e, Error);
+      return Ut(e, Error);
   }
 }
 function K(e, t) {
-  return En.call(e) === `[object ${t}]`;
+  return kn.call(e) === `[object ${t}]`;
 }
-function Rr(e) {
+function Dr(e) {
   return K(e, "ErrorEvent");
 }
-function Pe(e) {
+function Fe(e) {
   return K(e, "DOMError");
 }
-function Or(e) {
+function Cr(e) {
   return K(e, "DOMException");
 }
-function It(e) {
+function vt(e) {
   return K(e, "String");
 }
-function de(e) {
+function me(e) {
   return typeof e == "object" && e !== null && "__sentry_template_string__" in e && "__sentry_template_values__" in e;
 }
-function In(e) {
-  return e === null || de(e) || typeof e != "object" && typeof e != "function";
+function Rn(e) {
+  return e === null || me(e) || typeof e != "object" && typeof e != "function";
 }
-function ot(e) {
+function at(e) {
   return K(e, "Object");
 }
-function fe(e) {
-  return typeof Event != "undefined" && $t(e, Event);
+function ge(e) {
+  return typeof Event != "undefined" && Ut(e, Event);
 }
-function Ar(e) {
-  return typeof Element != "undefined" && $t(e, Element);
+function Pr(e) {
+  return typeof Element != "undefined" && Ut(e, Element);
 }
-function wr(e) {
+function xr(e) {
   return K(e, "RegExp");
 }
-function lt(e) {
+function dt(e) {
   return !!(e != null && e.then && typeof e.then == "function");
 }
-function Mr(e) {
-  return ot(e) && "nativeEvent" in e && "preventDefault" in e && "stopPropagation" in e;
+function $r(e) {
+  return at(e) && "nativeEvent" in e && "preventDefault" in e && "stopPropagation" in e;
 }
-function $t(e, t) {
+function Ut(e, t) {
   try {
     return e instanceof t;
   } catch (n) {
     return !1;
   }
 }
-function Dr(e) {
+function Lr(e) {
   return !!(typeof e == "object" && e !== null && (e.__isVue || e._isVue || e.__v_isVNode));
 }
-const Pr = I, Cr = 80;
-function xr(e, t = {}) {
+const Fr = v, jr = 80;
+function Ur(e, t = {}) {
   if (!e)
     return "<unknown>";
   try {
@@ -223,19 +223,19 @@ function xr(e, t = {}) {
     let i = 0, o = 0;
     const a = " > ", c = a.length;
     let u;
-    const d = Array.isArray(t) ? t : t.keyAttrs, f = !Array.isArray(t) && t.maxStringLength || Cr;
-    for (; n && i++ < r && (u = Lr(n, d), !(u === "html" || i > 1 && o + s.length * c + u.length >= f)); )
+    const d = Array.isArray(t) ? t : t.keyAttrs, f = !Array.isArray(t) && t.maxStringLength || jr;
+    for (; n && i++ < r && (u = Br(n, d), !(u === "html" || i > 1 && o + s.length * c + u.length >= f)); )
       s.push(u), o += u.length, n = n.parentNode;
     return s.reverse().join(a);
   } catch (n) {
     return "<unknown>";
   }
 }
-function Lr(e, t) {
+function Br(e, t) {
   const n = e, r = [];
   if (!(n != null && n.tagName))
     return "";
-  if (Pr.HTMLElement && n instanceof HTMLElement && n.dataset) {
+  if (Fr.HTMLElement && n instanceof HTMLElement && n.dataset) {
     if (n.dataset.sentryComponent)
       return n.dataset.sentryComponent;
     if (n.dataset.sentryElement)
@@ -250,7 +250,7 @@ function Lr(e, t) {
   else {
     n.id && r.push(`#${n.id}`);
     const o = n.className;
-    if (o && It(o)) {
+    if (o && vt(o)) {
       const a = o.split(/\s+/);
       for (const c of a)
         r.push(`.${c}`);
@@ -263,21 +263,21 @@ function Lr(e, t) {
   }
   return r.join("");
 }
-function Q(e, t, n) {
+function et(e, t, n) {
   if (!(t in e))
     return;
   const r = e[t];
   if (typeof r != "function")
     return;
   const s = n(r);
-  typeof s == "function" && vn(s, r);
+  typeof s == "function" && wn(s, r);
   try {
     e[t] = s;
   } catch (i) {
-    m && p.log(`Failed to replace method "${t}" in object`, e);
+    g && h.log(`Failed to replace method "${t}" in object`, e);
   }
 }
-function Ft(e, t, n) {
+function Bt(e, t, n) {
   try {
     Object.defineProperty(e, t, {
       // enumerable: false, // the default, so we can save on bundle size by not explicitly setting it
@@ -286,44 +286,44 @@ function Ft(e, t, n) {
       configurable: !0
     });
   } catch (r) {
-    m && p.log(`Failed to add non-enumerable property "${t}" to object`, e);
+    g && h.log(`Failed to add non-enumerable property "${t}" to object`, e);
   }
 }
-function vn(e, t) {
+function wn(e, t) {
   try {
     const n = t.prototype || {};
-    e.prototype = t.prototype = n, Ft(e, "__sentry_original__", t);
+    e.prototype = t.prototype = n, Bt(e, "__sentry_original__", t);
   } catch (n) {
   }
 }
-function Nn(e) {
+function An(e) {
   return e.__sentry_original__;
 }
-function kn(e) {
-  if (Tn(e))
+function On(e) {
+  if (Nn(e))
     return l({
       message: e.message,
       name: e.name,
       stack: e.stack
-    }, xe(e));
-  if (fe(e)) {
+    }, Ue(e));
+  if (ge(e)) {
     const t = l({
       type: e.type,
-      target: Ce(e.target),
-      currentTarget: Ce(e.currentTarget)
-    }, xe(e));
-    return typeof CustomEvent != "undefined" && $t(e, CustomEvent) && (t.detail = e.detail), t;
+      target: je(e.target),
+      currentTarget: je(e.currentTarget)
+    }, Ue(e));
+    return typeof CustomEvent != "undefined" && Ut(e, CustomEvent) && (t.detail = e.detail), t;
   } else
     return e;
 }
-function Ce(e) {
+function je(e) {
   try {
-    return Ar(e) ? xr(e) : Object.prototype.toString.call(e);
+    return Pr(e) ? Ur(e) : Object.prototype.toString.call(e);
   } catch (t) {
     return "<unknown>";
   }
 }
-function xe(e) {
+function Ue(e) {
   if (typeof e == "object" && e !== null) {
     const t = {};
     for (const n in e)
@@ -332,14 +332,14 @@ function xe(e) {
   } else
     return {};
 }
-function $r(e) {
-  const t = Object.keys(kn(e));
+function Hr(e) {
+  const t = Object.keys(On(e));
   return t.sort(), t[0] ? t.join(", ") : "[object has no keys]";
 }
-function bt(e) {
-  return Xt(e, /* @__PURE__ */ new Map());
+function Et(e) {
+  return ee(e, /* @__PURE__ */ new Map());
 }
-function Xt(e, t) {
+function ee(e, t) {
   if (e === null || typeof e != "object")
     return e;
   const n = t.get(e);
@@ -348,70 +348,70 @@ function Xt(e, t) {
   if (Array.isArray(e)) {
     const r = [];
     return t.set(e, r), e.forEach((s) => {
-      r.push(Xt(s, t));
+      r.push(ee(s, t));
     }), r;
   }
-  if (Fr(e)) {
+  if (Gr(e)) {
     const r = {};
     return t.set(e, r), Object.keys(e).forEach((i) => {
       const o = e[i];
-      o !== void 0 && (r[i] = Xt(o, t));
+      o !== void 0 && (r[i] = ee(o, t));
     }), r;
   }
   return e;
 }
-function Fr(e) {
+function Gr(e) {
   const t = e.constructor;
   return t === Object || t === void 0;
 }
-function Zt(e, t = 0) {
+function ne(e, t = 0) {
   return typeof e != "string" || t === 0 || e.length <= t ? e : `${e.slice(0, t)}...`;
 }
-function Et(e, t, n = !1) {
-  return It(e) ? wr(t) ? t.test(e) : It(t) ? n ? e === t : e.includes(t) : !1 : !1;
+function Tt(e, t, n = !1) {
+  return vt(e) ? xr(t) ? t.test(e) : vt(t) ? n ? e === t : e.includes(t) : !1 : !1;
 }
-function jt(e, t = [], n = !1) {
-  return t.some((r) => Et(e, r, n));
+function Ht(e, t = [], n = !1) {
+  return t.some((r) => Tt(e, r, n));
 }
-function jr() {
-  const e = I;
+function zr() {
+  const e = v;
   return e.crypto || e.msCrypto;
 }
-let Kt;
-function Ur() {
+let Zt;
+function Wr() {
   return Math.random() * 16;
 }
-function R(e = jr()) {
+function R(e = zr()) {
   try {
     if (e != null && e.randomUUID)
       return e.randomUUID().replace(/-/g, "");
   } catch (t) {
   }
-  return Kt || (Kt = "10000000100040008000" + 1e11), Kt.replace(
+  return Zt || (Zt = "10000000100040008000" + 1e11), Zt.replace(
     /[018]/g,
     (t) => (
       // eslint-disable-next-line no-bitwise
-      (t ^ (Ur() & 15) >> t / 4).toString(16)
+      (t ^ (Wr() & 15) >> t / 4).toString(16)
     )
   );
 }
-function Rn(e) {
+function Mn(e) {
   var t, n;
   return (n = (t = e.exception) == null ? void 0 : t.values) == null ? void 0 : n[0];
 }
-function U(e) {
+function B(e) {
   const { message: t, event_id: n } = e;
   if (t)
     return t;
-  const r = Rn(e);
+  const r = Mn(e);
   return r ? r.type && r.value ? `${r.type}: ${r.value}` : r.type || r.value || n || "<unknown>" : n || "<unknown>";
 }
-function Qt(e, t, n) {
+function re(e, t, n) {
   const r = e.exception = e.exception || {}, s = r.values = r.values || [], i = s[0] = s[0] || {};
   i.value || (i.value = t || ""), i.type || (i.type = "Error");
 }
-function vt(e, t) {
-  const n = Rn(e);
+function kt(e, t) {
+  const n = Mn(e);
   if (!n)
     return;
   const r = { type: "generic", handled: !0 }, s = n.mechanism;
@@ -420,38 +420,38 @@ function vt(e, t) {
     n.mechanism.data = i;
   }
 }
-function Le(e) {
-  if (Br(e))
+function Be(e) {
+  if (Yr(e))
     return !0;
   try {
-    Ft(e, "__sentry_captured__", !0);
+    Bt(e, "__sentry_captured__", !0);
   } catch (t) {
   }
   return !1;
 }
-function Br(e) {
+function Yr(e) {
   try {
     return e.__sentry_captured__;
   } catch (t) {
   }
 }
-const On = 1e3;
-function O() {
-  return Date.now() / On;
+const Dn = 1e3;
+function w() {
+  return Date.now() / Dn;
 }
-function Hr() {
-  const { performance: e } = I;
+function qr() {
+  const { performance: e } = v;
   if (!(e != null && e.now) || !e.timeOrigin)
-    return O;
+    return w;
   const t = e.timeOrigin;
-  return () => (t + e.now()) / On;
+  return () => (t + e.now()) / Dn;
 }
-let _t;
-function Ut() {
-  return (_t != null ? _t : _t = Hr())();
+let yt;
+function Gt() {
+  return (yt != null ? yt : yt = qr())();
 }
-function te(e, t = {}) {
-  if (t.user && (!e.ipAddress && t.user.ip_address && (e.ipAddress = t.user.ip_address), !e.did && !t.did && (e.did = t.user.id || t.user.email || t.user.username)), e.timestamp = t.timestamp || Ut(), t.abnormal_mechanism && (e.abnormal_mechanism = t.abnormal_mechanism), t.ignoreDuration && (e.ignoreDuration = t.ignoreDuration), t.sid && (e.sid = t.sid.length === 32 ? t.sid : R()), t.init !== void 0 && (e.init = t.init), !e.did && t.did && (e.did = `${t.did}`), typeof t.started == "number" && (e.started = t.started), e.ignoreDuration)
+function se(e, t = {}) {
+  if (t.user && (!e.ipAddress && t.user.ip_address && (e.ipAddress = t.user.ip_address), !e.did && !t.did && (e.did = t.user.id || t.user.email || t.user.username)), e.timestamp = t.timestamp || Gt(), t.abnormal_mechanism && (e.abnormal_mechanism = t.abnormal_mechanism), t.ignoreDuration && (e.ignoreDuration = t.ignoreDuration), t.sid && (e.sid = t.sid.length === 32 ? t.sid : R()), t.init !== void 0 && (e.init = t.init), !e.did && t.did && (e.did = `${t.did}`), typeof t.started == "number" && (e.started = t.started), e.ignoreDuration)
     e.duration = void 0;
   else if (typeof t.duration == "number")
     e.duration = t.duration;
@@ -461,31 +461,31 @@ function te(e, t = {}) {
   }
   t.release && (e.release = t.release), t.environment && (e.environment = t.environment), !e.ipAddress && t.ipAddress && (e.ipAddress = t.ipAddress), !e.userAgent && t.userAgent && (e.userAgent = t.userAgent), typeof t.errors == "number" && (e.errors = t.errors), t.status && (e.status = t.status);
 }
-function dt(e, t, n = 2) {
+function ft(e, t, n = 2) {
   if (!t || typeof t != "object" || n <= 0)
     return t;
   if (e && Object.keys(t).length === 0)
     return e;
   const r = l({}, e);
   for (const s in t)
-    Object.prototype.hasOwnProperty.call(t, s) && (r[s] = dt(r[s], t[s], n - 1));
+    Object.prototype.hasOwnProperty.call(t, s) && (r[s] = ft(r[s], t[s], n - 1));
   return r;
 }
-function $e() {
+function Nt() {
   return R();
 }
-function An() {
+function zt() {
   return R().substring(16);
 }
-const ee = "_sentrySpan";
-function Fe(e, t) {
-  t ? Ft(e, ee, t) : delete e[ee];
+const ie = "_sentrySpan";
+function He(e, t) {
+  t ? Bt(e, ie, t) : delete e[ie];
 }
-function at(e) {
-  return e[ee];
+function ct(e) {
+  return e[ie];
 }
-const Gr = 100;
-class P {
+const Vr = 100;
+class C {
   /** Flag if notifying is happening. */
   /** Callback for client to receive scope changes. */
   /** Callback list that will be called during event processing. */
@@ -515,7 +515,7 @@ class P {
   // NOTE: Any field which gets added here should get added not only to the constructor but also to the `clone` method.
   constructor() {
     this._notifyingListeners = !1, this._scopeListeners = [], this._eventProcessors = [], this._breadcrumbs = [], this._attachments = [], this._user = {}, this._tags = {}, this._attributes = {}, this._extra = {}, this._contexts = {}, this._sdkProcessingMetadata = {}, this._propagationContext = {
-      traceId: $e(),
+      traceId: Nt(),
       sampleRand: Math.random()
     };
   }
@@ -523,10 +523,10 @@ class P {
    * Clone all data from this scope into a new scope.
    */
   clone() {
-    const t = new P();
+    const t = new C();
     return t._breadcrumbs = [...this._breadcrumbs], t._tags = l({}, this._tags), t._attributes = l({}, this._attributes), t._extra = l({}, this._extra), t._contexts = l({}, this._contexts), this._contexts.flags && (t._contexts.flags = {
       values: [...this._contexts.flags.values]
-    }), t._user = this._user, t._level = this._level, t._session = this._session, t._transactionName = this._transactionName, t._fingerprint = this._fingerprint, t._eventProcessors = [...this._eventProcessors], t._attachments = [...this._attachments], t._sdkProcessingMetadata = l({}, this._sdkProcessingMetadata), t._propagationContext = l({}, this._propagationContext), t._client = this._client, t._lastEventId = this._lastEventId, Fe(t, at(this)), t;
+    }), t._user = this._user, t._level = this._level, t._session = this._session, t._transactionName = this._transactionName, t._fingerprint = this._fingerprint, t._eventProcessors = [...this._eventProcessors], t._attachments = [...this._attachments], t._sdkProcessingMetadata = l({}, this._sdkProcessingMetadata), t._propagationContext = l({}, this._propagationContext), t._client = this._client, t._lastEventId = this._lastEventId, He(t, ct(this)), t;
   }
   /**
    * Update the client assigned to this scope.
@@ -578,7 +578,7 @@ class P {
       id: void 0,
       ip_address: void 0,
       username: void 0
-    }, this._session && te(this._session, { user: t }), this._notifyScopeListeners(), this;
+    }, this._session && se(this._session, { user: t }), this._notifyScopeListeners(), this;
   }
   /**
    * Get the user from this scope.
@@ -724,7 +724,7 @@ class P {
   update(t) {
     if (!t)
       return this;
-    const n = typeof t == "function" ? t(this) : t, r = n instanceof P ? n.getScopeData() : ot(n) ? t : void 0, {
+    const n = typeof t == "function" ? t(this) : t, r = n instanceof C ? n.getScopeData() : at(n) ? t : void 0, {
       tags: s,
       attributes: i,
       extra: o,
@@ -741,7 +741,7 @@ class P {
    * Note: The client will not be cleared.
    */
   clear() {
-    return this._breadcrumbs = [], this._tags = {}, this._attributes = {}, this._extra = {}, this._user = {}, this._contexts = {}, this._level = void 0, this._transactionName = void 0, this._fingerprint = void 0, this._session = void 0, Fe(this, void 0), this._attachments = [], this.setPropagationContext({ traceId: $e(), sampleRand: Math.random() }), this._notifyScopeListeners(), this;
+    return this._breadcrumbs = [], this._tags = {}, this._attributes = {}, this._extra = {}, this._user = {}, this._contexts = {}, this._level = void 0, this._transactionName = void 0, this._fingerprint = void 0, this._session = void 0, He(this, void 0), this._attachments = [], this.setPropagationContext({ traceId: Nt(), sampleRand: Math.random() }), this._notifyScopeListeners(), this;
   }
   /**
    * Adds a breadcrumb to the scope.
@@ -749,14 +749,14 @@ class P {
    */
   addBreadcrumb(t, n) {
     var i;
-    const r = typeof n == "number" ? n : Gr;
+    const r = typeof n == "number" ? n : Vr;
     if (r <= 0)
       return this;
     const s = _(l({
-      timestamp: O()
+      timestamp: w()
     }, t), {
       // Breadcrumb messages can theoretically be infinitely large and they're held in memory so we truncate them not to leak (too much) memory
-      message: t.message ? Zt(t.message, 2048) : t.message
+      message: t.message ? ne(t.message, 2048) : t.message
     });
     return this._breadcrumbs.push(s), this._breadcrumbs.length > r && (this._breadcrumbs = this._breadcrumbs.slice(-r), (i = this._client) == null || i.recordDroppedEvent("buffer_overflow", "log_item")), this._notifyScopeListeners(), this;
   }
@@ -802,14 +802,14 @@ class P {
       propagationContext: this._propagationContext,
       sdkProcessingMetadata: this._sdkProcessingMetadata,
       transactionName: this._transactionName,
-      span: at(this)
+      span: ct(this)
     };
   }
   /**
    * Add data which will be accessible during event processing but won't get sent to Sentry.
    */
   setSDKProcessingMetadata(t) {
-    return this._sdkProcessingMetadata = dt(this._sdkProcessingMetadata, t, 2), this;
+    return this._sdkProcessingMetadata = ft(this._sdkProcessingMetadata, t, 2), this;
   }
   /**
    * Add propagation context to the scope, used for distributed tracing
@@ -831,7 +831,7 @@ class P {
   captureException(t, n) {
     const r = (n == null ? void 0 : n.event_id) || R();
     if (!this._client)
-      return m && p.warn("No client configured on scope - will not capture exception!"), r;
+      return g && h.warn("No client configured on scope - will not capture exception!"), r;
     const s = new Error("Sentry syntheticException");
     return this._client.captureException(
       t,
@@ -853,7 +853,7 @@ class P {
     var o;
     const s = (r == null ? void 0 : r.event_id) || R();
     if (!this._client)
-      return m && p.warn("No client configured on scope - will not capture message!"), s;
+      return g && h.warn("No client configured on scope - will not capture message!"), s;
     const i = (o = r == null ? void 0 : r.syntheticException) != null ? o : new Error(t);
     return this._client.captureMessage(
       t,
@@ -874,7 +874,7 @@ class P {
    */
   captureEvent(t, n) {
     const r = (n == null ? void 0 : n.event_id) || R();
-    return this._client ? (this._client.captureEvent(t, _(l({}, n), { event_id: r }), this), r) : (m && p.warn("No client configured on scope - will not capture event!"), r);
+    return this._client ? (this._client.captureEvent(t, _(l({}, n), { event_id: r }), this), r) : (g && h.warn("No client configured on scope - will not capture event!"), r);
   }
   /**
    * This will be called on every set call.
@@ -885,18 +885,18 @@ class P {
     }), this._notifyingListeners = !1);
   }
 }
-function zr() {
-  return Y("defaultCurrentScope", () => new P());
+function Kr() {
+  return q("defaultCurrentScope", () => new C());
 }
-function Wr() {
-  return Y("defaultIsolationScope", () => new P());
+function Jr() {
+  return q("defaultIsolationScope", () => new C());
 }
-class Yr {
+class Xr {
   constructor(t, n) {
     let r;
-    t ? r = t : r = new P();
+    t ? r = t : r = new C();
     let s;
-    n ? s = n : s = new P(), this._stack = [{ scope: r }], this._isolationScope = s;
+    n ? s = n : s = new C(), this._stack = [{ scope: r }], this._isolationScope = s;
   }
   /**
    * Fork a scope for the stack.
@@ -909,7 +909,7 @@ class Yr {
     } catch (s) {
       throw this._popScope(), s;
     }
-    return lt(r) ? r.then(
+    return dt(r) ? r.then(
       (s) => (this._popScope(), s),
       (s) => {
         throw this._popScope(), s;
@@ -957,65 +957,65 @@ class Yr {
     return this._stack.length <= 1 ? !1 : !!this._stack.pop();
   }
 }
-function G() {
-  const e = ut(), t = Lt(e);
-  return t.stack = t.stack || new Yr(zr(), Wr());
+function z() {
+  const e = lt(), t = jt(e);
+  return t.stack = t.stack || new Xr(Kr(), Jr());
 }
-function qr(e) {
-  return G().withScope(e);
+function Zr(e) {
+  return z().withScope(e);
 }
-function Kr(e, t) {
-  const n = G();
+function Qr(e, t) {
+  const n = z();
   return n.withScope(() => (n.getStackTop().scope = e, t(e)));
 }
-function je(e) {
-  return G().withScope(() => e(G().getIsolationScope()));
+function Ge(e) {
+  return z().withScope(() => e(z().getIsolationScope()));
 }
-function Jr() {
+function ts() {
   return {
-    withIsolationScope: je,
-    withScope: qr,
-    withSetScope: Kr,
-    withSetIsolationScope: (e, t) => je(t),
-    getCurrentScope: () => G().getScope(),
-    getIsolationScope: () => G().getIsolationScope()
+    withIsolationScope: Ge,
+    withScope: Zr,
+    withSetScope: Qr,
+    withSetIsolationScope: (e, t) => Ge(t),
+    getCurrentScope: () => z().getScope(),
+    getIsolationScope: () => z().getIsolationScope()
   };
 }
-function Bt(e) {
-  const t = Lt(e);
-  return t.acs ? t.acs : Jr();
+function Wt(e) {
+  const t = jt(e);
+  return t.acs ? t.acs : ts();
 }
-function w() {
-  const e = ut();
-  return Bt(e).getCurrentScope();
+function O() {
+  const e = lt();
+  return Wt(e).getCurrentScope();
 }
 function A() {
-  const e = ut();
-  return Bt(e).getIsolationScope();
+  const e = lt();
+  return Wt(e).getIsolationScope();
 }
-function pe() {
-  return Y("globalScope", () => new P());
+function _e() {
+  return q("globalScope", () => new C());
 }
-function wn(...e) {
-  const t = ut(), n = Bt(t);
+function Cn(...e) {
+  const t = lt(), n = Wt(t);
   if (e.length === 2) {
     const [r, s] = e;
     return r ? n.withSetScope(r, s) : n.withScope(s);
   }
   return n.withScope(e[0]);
 }
-function v() {
-  return w().getClient();
+function k() {
+  return O().getClient();
 }
-function Mn(e) {
+function Pn(e) {
   const t = e.getPropagationContext(), { traceId: n, parentSpanId: r, propagationSpanId: s } = t, i = {
     trace_id: n,
-    span_id: s || An()
+    span_id: s || zt()
   };
   return r && (i.parent_span_id = r), i;
 }
-const Vr = "sentry.source", Xr = "sentry.sample_rate", Zr = "sentry.previous_trace_sample_rate", Qr = "sentry.op", ts = "sentry.origin", Dn = "sentry.profile_id", Pn = "sentry.exclusive_time", es = 0, ns = 1, rs = "_sentryScope", ss = "_sentryIsolationScope";
-function is(e) {
+const es = "sentry.source", ns = "sentry.sample_rate", rs = "sentry.previous_trace_sample_rate", ss = "sentry.op", is = "sentry.origin", xn = "sentry.profile_id", $n = "sentry.exclusive_time", os = 0, as = 1, cs = "_sentryScope", us = "_sentryIsolationScope";
+function ls(e) {
   if (e) {
     if (typeof e == "object" && "deref" in e && typeof e.deref == "function")
       try {
@@ -1026,21 +1026,21 @@ function is(e) {
     return e;
   }
 }
-function Cn(e) {
+function Ln(e) {
   const t = e;
   return {
-    scope: t[rs],
-    isolationScope: is(t[ss])
+    scope: t[cs],
+    isolationScope: ls(t[us])
   };
 }
-const os = "sentry-", as = /^sentry-/;
-function cs(e) {
-  const t = us(e);
+const ds = "sentry-", fs = /^sentry-/;
+function ps(e) {
+  const t = hs(e);
   if (!t)
     return;
   const n = Object.entries(t).reduce((r, [s, i]) => {
-    if (s.match(as)) {
-      const o = s.slice(os.length);
+    if (s.match(fs)) {
+      const o = s.slice(ds.length);
       r[o] = i;
     }
     return r;
@@ -1048,16 +1048,16 @@ function cs(e) {
   if (Object.keys(n).length > 0)
     return n;
 }
-function us(e) {
-  if (!(!e || !It(e) && !Array.isArray(e)))
+function hs(e) {
+  if (!(!e || !vt(e) && !Array.isArray(e)))
     return Array.isArray(e) ? e.reduce((t, n) => {
-      const r = Ue(n);
+      const r = ze(n);
       return Object.entries(r).forEach(([s, i]) => {
         t[s] = i;
       }), t;
-    }, {}) : Ue(e);
+    }, {}) : ze(e);
 }
-function Ue(e) {
+function ze(e) {
   return e.split(",").map((t) => {
     const n = t.indexOf("=");
     if (n === -1)
@@ -1072,18 +1072,18 @@ function Ue(e) {
     });
   }).reduce((t, [n, r]) => (n && r && (t[n] = r), t), {});
 }
-const ls = /^o(\d+)\./, ds = /^(?:(\w+):)\/\/(?:(\w+)(?::(\w+)?)?@)([\w.-]+)(?::(\d+))?\/(.+)/;
-function fs(e) {
+const ms = /^o(\d+)\./, gs = /^(?:(\w+):)\/\/(?:(\w+)(?::(\w+)?)?@)([\w.-]+)(?::(\d+))?\/(.+)/;
+function _s(e) {
   return e === "http" || e === "https";
 }
-function ft(e, t = !1) {
+function pt(e, t = !1) {
   const { host: n, path: r, pass: s, port: i, projectId: o, protocol: a, publicKey: c } = e;
   return `${a}://${c}${t && s ? `:${s}` : ""}@${n}${i ? `:${i}` : ""}/${r && `${r}/`}${o}`;
 }
-function ps(e) {
-  const t = ds.exec(e);
+function ys(e) {
+  const t = gs.exec(e);
   if (!t) {
-    q(() => {
+    V(() => {
       console.error(`Invalid Sentry Dsn: ${e}`);
     });
     return;
@@ -1095,9 +1095,9 @@ function ps(e) {
     const f = u.match(/^\d+/);
     f && (u = f[0]);
   }
-  return xn({ host: i, pass: s, path: c, projectId: u, port: o, protocol: n, publicKey: r });
+  return Fn({ host: i, pass: s, path: c, projectId: u, port: o, protocol: n, publicKey: r });
 }
-function xn(e) {
+function Fn(e) {
   return {
     protocol: e.protocol,
     publicKey: e.publicKey || "",
@@ -1108,67 +1108,67 @@ function xn(e) {
     projectId: e.projectId
   };
 }
-function hs(e) {
-  if (!m)
+function Ss(e) {
+  if (!g)
     return !0;
   const { port: t, projectId: n, protocol: r } = e;
-  return ["protocol", "publicKey", "host", "projectId"].find((o) => e[o] ? !1 : (p.error(`Invalid Sentry Dsn: ${o} missing`), !0)) ? !1 : n.match(/^\d+$/) ? fs(r) ? t && isNaN(parseInt(t, 10)) ? (p.error(`Invalid Sentry Dsn: Invalid port ${t}`), !1) : !0 : (p.error(`Invalid Sentry Dsn: Invalid protocol ${r}`), !1) : (p.error(`Invalid Sentry Dsn: Invalid projectId ${n}`), !1);
+  return ["protocol", "publicKey", "host", "projectId"].find((o) => e[o] ? !1 : (h.error(`Invalid Sentry Dsn: ${o} missing`), !0)) ? !1 : n.match(/^\d+$/) ? _s(r) ? t && isNaN(parseInt(t, 10)) ? (h.error(`Invalid Sentry Dsn: Invalid port ${t}`), !1) : !0 : (h.error(`Invalid Sentry Dsn: Invalid protocol ${r}`), !1) : (h.error(`Invalid Sentry Dsn: Invalid projectId ${n}`), !1);
 }
-function ms(e) {
-  const t = e.match(ls);
+function bs(e) {
+  const t = e.match(ms);
   return t == null ? void 0 : t[1];
 }
-function gs(e) {
+function Es(e) {
   const t = e.getOptions(), { host: n } = e.getDsn() || {};
   let r;
-  return t.orgId ? r = String(t.orgId) : n && (r = ms(n)), r;
+  return t.orgId ? r = String(t.orgId) : n && (r = bs(n)), r;
 }
-function _s(e) {
-  const t = typeof e == "string" ? ps(e) : xn(e);
-  if (!(!t || !hs(t)))
+function Ts(e) {
+  const t = typeof e == "string" ? ys(e) : Fn(e);
+  if (!(!t || !Ss(t)))
     return t;
 }
-function Ln(e) {
+function jn(e) {
   if (typeof e == "boolean")
     return Number(e);
   const t = typeof e == "string" ? parseFloat(e) : e;
   if (!(typeof t != "number" || isNaN(t) || t < 0 || t > 1))
     return t;
 }
-const $n = 1;
-let Be = !1;
-function Fn(e) {
-  const { spanId: t, traceId: n, isRemote: r } = e.spanContext(), s = r ? t : he(e).parent_span_id, i = Cn(e).scope, o = r ? (i == null ? void 0 : i.getPropagationContext().propagationSpanId) || An() : t;
+const Un = 1;
+let We = !1;
+function Bn(e) {
+  const { spanId: t, traceId: n, isRemote: r } = e.spanContext(), s = r ? t : ye(e).parent_span_id, i = Ln(e).scope, o = r ? (i == null ? void 0 : i.getPropagationContext().propagationSpanId) || zt() : t;
   return {
     parent_span_id: s,
     span_id: o,
     trace_id: n
   };
 }
-function ys(e) {
+function Is(e) {
   if (e && e.length > 0)
     return e.map((o) => {
-      var a = o, { context: c } = a, u = c, { spanId: t, traceId: n, traceFlags: r } = u, s = Yt(u, ["spanId", "traceId", "traceFlags"]), { attributes: i } = a;
+      var a = o, { context: c } = a, u = c, { spanId: t, traceId: n, traceFlags: r } = u, s = Jt(u, ["spanId", "traceId", "traceFlags"]), { attributes: i } = a;
       return l({
         span_id: t,
         trace_id: n,
-        sampled: r === $n,
+        sampled: r === Un,
         attributes: i
       }, s);
     });
 }
-function He(e) {
-  return typeof e == "number" ? Ge(e) : Array.isArray(e) ? e[0] + e[1] / 1e9 : e instanceof Date ? Ge(e.getTime()) : Ut();
+function Ye(e) {
+  return typeof e == "number" ? qe(e) : Array.isArray(e) ? e[0] + e[1] / 1e9 : e instanceof Date ? qe(e.getTime()) : Gt();
 }
-function Ge(e) {
+function qe(e) {
   return e > 9999999999 ? e / 1e3 : e;
 }
-function he(e) {
+function ye(e) {
   var r;
-  if (bs(e))
+  if (ks(e))
     return e.getSpanJSON();
   const { spanId: t, traceId: n } = e.spanContext();
-  if (Ss(e)) {
+  if (vs(e)) {
     const { attributes: s, startTime: i, name: o, endTime: a, status: c, links: u } = e, d = "parentSpanId" in e ? e.parentSpanId : "parentSpanContext" in e ? (r = e.parentSpanContext) == null ? void 0 : r.spanId : void 0;
     return {
       span_id: t,
@@ -1176,13 +1176,13 @@ function he(e) {
       data: s,
       description: o,
       parent_span_id: d,
-      start_timestamp: He(i),
+      start_timestamp: Ye(i),
       // This is [0,0] by default in OTEL, in which case we want to interpret this as no end time
-      timestamp: He(a) || void 0,
-      status: Ts(c),
-      op: s[Qr],
-      origin: s[ts],
-      links: ys(u)
+      timestamp: Ye(a) || void 0,
+      status: Rs(c),
+      op: s[ss],
+      origin: s[is],
+      links: Is(u)
     };
   }
   return {
@@ -1192,128 +1192,128 @@ function he(e) {
     data: {}
   };
 }
-function Ss(e) {
+function vs(e) {
   const t = e;
   return !!t.attributes && !!t.startTime && !!t.name && !!t.endTime && !!t.status;
 }
-function bs(e) {
+function ks(e) {
   return typeof e.getSpanJSON == "function";
 }
-function Es(e) {
+function Ns(e) {
   const { traceFlags: t } = e.spanContext();
-  return t === $n;
+  return t === Un;
 }
-function Ts(e) {
-  if (!(!e || e.code === es))
-    return e.code === ns ? "ok" : e.message || "internal_error";
+function Rs(e) {
+  if (!(!e || e.code === os))
+    return e.code === as ? "ok" : e.message || "internal_error";
 }
-const Is = "_sentryRootSpan";
-function jn(e) {
-  return e[Is] || e;
+const ws = "_sentryRootSpan";
+function Hn(e) {
+  return e[ws] || e;
 }
-function vs() {
-  const e = ut(), t = Bt(e);
-  return t.getActiveSpan ? t.getActiveSpan() : at(w());
+function As() {
+  const e = lt(), t = Wt(e);
+  return t.getActiveSpan ? t.getActiveSpan() : ct(O());
 }
-function ze() {
-  Be || (q(() => {
+function Ve() {
+  We || (V(() => {
     console.warn(
       "[Sentry] Returning null from `beforeSendSpan` is disallowed. To drop certain spans, configure the respective integrations directly or use `ignoreSpans`."
     );
-  }), Be = !0);
+  }), We = !0);
 }
-function Un(e) {
+function Gn(e) {
   var n;
   if (typeof __SENTRY_TRACING__ == "boolean" && !__SENTRY_TRACING__)
     return !1;
-  const t = e || ((n = v()) == null ? void 0 : n.getOptions());
+  const t = e || ((n = k()) == null ? void 0 : n.getOptions());
   return !!t && // Note: This check is `!= null`, meaning "nullish". `0` is not "nullish", `undefined` and `null` are. (This comment was brought to you by 15 minutes of questioning life)
   (t.tracesSampleRate != null || !!t.tracesSampler);
 }
-function We(e) {
-  p.log(`Ignoring span ${e.op} - ${e.description} because it matches \`ignoreSpans\`.`);
+function Ke(e) {
+  h.log(`Ignoring span ${e.op} - ${e.description} because it matches \`ignoreSpans\`.`);
 }
-function Ye(e, t) {
+function Je(e, t) {
   if (!(t != null && t.length) || !e.description)
     return !1;
   for (const n of t) {
-    if (ks(n)) {
-      if (Et(e.description, n))
-        return m && We(e), !0;
+    if (Ms(n)) {
+      if (Tt(e.description, n))
+        return g && Ke(e), !0;
       continue;
     }
     if (!n.name && !n.op)
       continue;
-    const r = n.name ? Et(e.description, n.name) : !0, s = n.op ? e.op && Et(e.op, n.op) : !0;
+    const r = n.name ? Tt(e.description, n.name) : !0, s = n.op ? e.op && Tt(e.op, n.op) : !0;
     if (r && s)
-      return m && We(e), !0;
+      return g && Ke(e), !0;
   }
   return !1;
 }
-function Ns(e, t) {
+function Os(e, t) {
   const n = t.parent_span_id, r = t.span_id;
   if (n)
     for (const s of e)
       s.parent_span_id === r && (s.parent_span_id = n);
 }
-function ks(e) {
+function Ms(e) {
   return typeof e == "string" || e instanceof RegExp;
 }
-const me = "production", Rs = "_frozenDsc";
-function Bn(e, t) {
+const Se = "production", Ds = "_frozenDsc";
+function zn(e, t) {
   const n = t.getOptions(), { publicKey: r } = t.getDsn() || {}, s = {
-    environment: n.environment || me,
+    environment: n.environment || Se,
     release: n.release,
     public_key: r,
     trace_id: e,
-    org_id: gs(t)
+    org_id: Es(t)
   };
   return t.emit("createDsc", s), s;
 }
-function Hn(e, t) {
+function Wn(e, t) {
   const n = t.getPropagationContext();
-  return n.dsc || Bn(n.traceId, e);
+  return n.dsc || zn(n.traceId, e);
 }
-function Gn(e) {
-  var y, b, S, N;
-  const t = v();
+function Yn(e) {
+  var y, S, b, N;
+  const t = k();
   if (!t)
     return {};
-  const n = jn(e), r = he(n), s = r.data, i = n.spanContext().traceState, o = (b = (y = i == null ? void 0 : i.get("sentry.sample_rate")) != null ? y : s[Xr]) != null ? b : s[Zr];
-  function a(k) {
-    return (typeof o == "number" || typeof o == "string") && (k.sample_rate = `${o}`), k;
+  const n = Hn(e), r = ye(n), s = r.data, i = n.spanContext().traceState, o = (S = (y = i == null ? void 0 : i.get("sentry.sample_rate")) != null ? y : s[ns]) != null ? S : s[rs];
+  function a(I) {
+    return (typeof o == "number" || typeof o == "string") && (I.sample_rate = `${o}`), I;
   }
-  const c = n[Rs];
+  const c = n[Ds];
   if (c)
     return a(c);
-  const u = i == null ? void 0 : i.get("sentry.dsc"), d = u && cs(u);
+  const u = i == null ? void 0 : i.get("sentry.dsc"), d = u && ps(u);
   if (d)
     return a(d);
-  const f = Bn(e.spanContext().traceId, t), g = s[Vr], h = r.description;
-  return g !== "url" && h && (f.transaction = h), Un() && (f.sampled = String(Es(n)), f.sample_rand = // In OTEL we store the sample rand on the trace state because we cannot access scopes for NonRecordingSpans
+  const f = zn(e.spanContext().traceId, t), m = s[es], p = r.description;
+  return m !== "url" && p && (f.transaction = p), Gn() && (f.sampled = String(Ns(n)), f.sample_rand = // In OTEL we store the sample rand on the trace state because we cannot access scopes for NonRecordingSpans
   // The Sentry OTEL SpanSampler takes care of writing the sample rand on the root span
   (N = i == null ? void 0 : i.get("sentry.sample_rand")) != null ? N : (
     // On all other platforms we can actually get the scopes from a root span (we use this as a fallback)
-    (S = Cn(n).scope) == null ? void 0 : S.getPropagationContext().sampleRand.toString()
+    (b = Ln(n).scope) == null ? void 0 : b.getPropagationContext().sampleRand.toString()
   )), a(f), t.emit("createDsc", f, n), f;
 }
 function D(e, t = 100, n = 1 / 0) {
   try {
-    return ne("", e, t, n);
+    return oe("", e, t, n);
   } catch (r) {
     return { ERROR: `**non-serializable** (${r})` };
   }
 }
-function zn(e, t = 3, n = 100 * 1024) {
+function qn(e, t = 3, n = 100 * 1024) {
   const r = D(e, t);
-  return Ms(r) > n ? zn(e, t - 1, n) : r;
+  return $s(r) > n ? qn(e, t - 1, n) : r;
 }
-function ne(e, t, n = 1 / 0, r = 1 / 0, s = Ds()) {
+function oe(e, t, n = 1 / 0, r = 1 / 0, s = Ls()) {
   const [i, o] = s;
   if (t == null || // this matches null and undefined -> eqeq not eqeqeq
   ["boolean", "string"].includes(typeof t) || typeof t == "number" && Number.isFinite(t))
     return t;
-  const a = Os(e, t);
+  const a = Cs(e, t);
   if (!a.startsWith("[object "))
     return a;
   if (t.__sentry_skip_normalization__)
@@ -1326,26 +1326,26 @@ function ne(e, t, n = 1 / 0, r = 1 / 0, s = Ds()) {
   const u = t;
   if (u && typeof u.toJSON == "function")
     try {
-      const h = u.toJSON();
-      return ne("", h, c - 1, r, s);
-    } catch (h) {
+      const p = u.toJSON();
+      return oe("", p, c - 1, r, s);
+    } catch (p) {
     }
   const d = Array.isArray(t) ? [] : {};
   let f = 0;
-  const g = kn(t);
-  for (const h in g) {
-    if (!Object.prototype.hasOwnProperty.call(g, h))
+  const m = On(t);
+  for (const p in m) {
+    if (!Object.prototype.hasOwnProperty.call(m, p))
       continue;
     if (f >= r) {
-      d[h] = "[MaxProperties ~]";
+      d[p] = "[MaxProperties ~]";
       break;
     }
-    const y = g[h];
-    d[h] = ne(h, y, c - 1, r, s), f++;
+    const y = m[p];
+    d[p] = oe(p, y, c - 1, r, s), f++;
   }
   return o(t), d;
 }
-function Os(e, t) {
+function Cs(e, t) {
   try {
     if (e === "domain" && t && typeof t == "object" && t._events)
       return "[Domain]";
@@ -1357,35 +1357,35 @@ function Os(e, t) {
       return "[Window]";
     if (typeof document != "undefined" && t === document)
       return "[Document]";
-    if (Dr(t))
-      return kr(t);
-    if (Mr(t))
+    if (Lr(t))
+      return Mr(t);
+    if ($r(t))
       return "[SyntheticEvent]";
     if (typeof t == "number" && !Number.isFinite(t))
       return `[${t}]`;
     if (typeof t == "function")
-      return `[Function: ${Nr(t)}]`;
+      return `[Function: ${Or(t)}]`;
     if (typeof t == "symbol")
       return `[${String(t)}]`;
     if (typeof t == "bigint")
       return `[BigInt: ${String(t)}]`;
-    const n = As(t);
+    const n = Ps(t);
     return /^HTML(\w*)Element$/.test(n) ? `[HTMLElement: ${n}]` : `[object ${n}]`;
   } catch (n) {
     return `**non-serializable** (${n})`;
   }
 }
-function As(e) {
+function Ps(e) {
   const t = Object.getPrototypeOf(e);
   return t != null && t.constructor ? t.constructor.name : "null prototype";
 }
-function ws(e) {
+function xs(e) {
   return ~-encodeURI(e).split(/%..|./).length;
 }
-function Ms(e) {
-  return ws(JSON.stringify(e));
+function $s(e) {
+  return xs(JSON.stringify(e));
 }
-function Ds() {
+function Ls() {
   const e = /* @__PURE__ */ new WeakSet();
   function t(r) {
     return e.has(r) ? !0 : (e.add(r), !1);
@@ -1398,11 +1398,11 @@ function Ds() {
 function J(e, t = []) {
   return [e, t];
 }
-function Ps(e, t) {
+function Fs(e, t) {
   const [n, r] = e;
   return [n, [...r, t]];
 }
-function qe(e, t) {
+function Xe(e, t) {
   const n = e[1];
   for (const r of n) {
     const s = r[0].type;
@@ -1411,15 +1411,15 @@ function qe(e, t) {
   }
   return !1;
 }
-function re(e) {
-  const t = Lt(I);
+function ae(e) {
+  const t = jt(v);
   return t.encodePolyfill ? t.encodePolyfill(e) : new TextEncoder().encode(e);
 }
-function Cs(e) {
+function js(e) {
   const [t, n] = e;
   let r = JSON.stringify(t);
   function s(i) {
-    typeof r == "string" ? r = typeof i == "string" ? r + i : [re(r), i] : r.push(typeof i == "string" ? re(i) : i);
+    typeof r == "string" ? r = typeof i == "string" ? r + i : [ae(r), i] : r.push(typeof i == "string" ? ae(i) : i);
   }
   for (const i of n) {
     const [o, a] = i;
@@ -1437,17 +1437,17 @@ ${JSON.stringify(o)}
       s(c);
     }
   }
-  return typeof r == "string" ? r : xs(r);
+  return typeof r == "string" ? r : Us(r);
 }
-function xs(e) {
+function Us(e) {
   const t = e.reduce((s, i) => s + i.length, 0), n = new Uint8Array(t);
   let r = 0;
   for (const s of e)
     n.set(s, r), r += s.length;
   return n;
 }
-function Ls(e) {
-  const t = typeof e.data == "string" ? re(e.data) : e.data;
+function Bs(e) {
+  const t = typeof e.data == "string" ? ae(e.data) : e.data;
   return [
     {
       type: "attachment",
@@ -1459,7 +1459,7 @@ function Ls(e) {
     t
   ];
 }
-const $s = {
+const Hs = {
   session: "session",
   sessions: "session",
   attachment: "attachment",
@@ -1479,26 +1479,26 @@ const $s = {
   metric: "metric",
   trace_metric: "metric"
 };
-function Ke(e) {
-  return $s[e];
+function Ze(e) {
+  return Hs[e];
 }
-function Wn(e) {
+function Vn(e) {
   if (!(e != null && e.sdk))
     return;
   const { name: t, version: n } = e.sdk;
   return { name: t, version: n };
 }
-function Fs(e, t, n, r) {
+function Gs(e, t, n, r) {
   var i;
   const s = (i = e.sdkProcessingMetadata) == null ? void 0 : i.dynamicSamplingContext;
   return l(l(l({
     event_id: e.event_id,
     sent_at: (/* @__PURE__ */ new Date()).toISOString()
-  }, t && { sdk: t }), !!n && r && { dsn: ft(r) }), s && {
+  }, t && { sdk: t }), !!n && r && { dsn: pt(r) }), s && {
     trace: s
   });
 }
-function js(e, t) {
+function zs(e, t) {
   var r, s, i, o;
   if (!t)
     return e;
@@ -1511,61 +1511,61 @@ function js(e, t) {
     settings: (i = e.sdk) != null && i.settings || t.settings ? l(l({}, (o = e.sdk) == null ? void 0 : o.settings), t.settings) : void 0
   }), e;
 }
-function Us(e, t, n, r) {
-  const s = Wn(n), i = l(l({
+function Ws(e, t, n, r) {
+  const s = Vn(n), i = l(l({
     sent_at: (/* @__PURE__ */ new Date()).toISOString()
-  }, s && { sdk: s }), !!r && t && { dsn: ft(t) }), o = "aggregates" in e ? [{ type: "sessions" }, e] : [{ type: "session" }, e.toJSON()];
+  }, s && { sdk: s }), !!r && t && { dsn: pt(t) }), o = "aggregates" in e ? [{ type: "sessions" }, e] : [{ type: "session" }, e.toJSON()];
   return J(i, [o]);
 }
-function Bs(e, t, n, r) {
-  const s = Wn(n), i = e.type && e.type !== "replay_event" ? e.type : "event";
-  js(e, n == null ? void 0 : n.sdk);
-  const o = Fs(e, s, r, t);
+function Ys(e, t, n, r) {
+  const s = Vn(n), i = e.type && e.type !== "replay_event" ? e.type : "event";
+  zs(e, n == null ? void 0 : n.sdk);
+  const o = Gs(e, s, r, t);
   return delete e.sdkProcessingMetadata, J(o, [[{ type: i }, e]]);
 }
-function Hs(e, t, n) {
-  if (!Un(e))
+function qs(e, t, n) {
+  if (!Gn(e))
     return [!1];
   let r, s;
   typeof e.tracesSampler == "function" ? (s = e.tracesSampler(_(l({}, t), {
     inheritOrSampleWith: (a) => typeof t.parentSampleRate == "number" ? t.parentSampleRate : typeof t.parentSampled == "boolean" ? Number(t.parentSampled) : a
   })), r = !0) : t.parentSampled !== void 0 ? s = t.parentSampled : typeof e.tracesSampleRate != "undefined" && (s = e.tracesSampleRate, r = !0);
-  const i = Ln(s);
+  const i = jn(s);
   if (i === void 0)
-    return m && p.warn(
+    return g && h.warn(
       `[Tracing] Discarding root span because of invalid sample rate. Sample rate must be a boolean or a number between 0 and 1. Got ${JSON.stringify(
         s
       )} of type ${JSON.stringify(typeof s)}.`
     ), [!1];
   if (!i)
-    return m && p.log(
+    return g && h.log(
       `[Tracing] Discarding transaction because ${typeof e.tracesSampler == "function" ? "tracesSampler returned 0 or false" : "a negative sampling decision was inherited or tracesSampleRate is set to 0"}`
     ), [!1, i, r];
   const o = n < i;
-  return o || m && p.log(
+  return o || g && h.log(
     `[Tracing] Discarding transaction because it's not included in the random sample (sampling rate = ${Number(
       s
     )})`
   ), [o, i, r];
 }
-const Jt = 0, Je = 1, Ve = 2;
-function Ht(e) {
-  return new z((t) => {
+const Qt = 0, Qe = 1, tn = 2;
+function Yt(e) {
+  return new W((t) => {
     t(e);
   });
 }
-function ge(e) {
-  return new z((t, n) => {
+function be(e) {
+  return new W((t, n) => {
     n(e);
   });
 }
-class z {
+class W {
   constructor(t) {
-    this._state = Jt, this._handlers = [], this._runExecutor(t);
+    this._state = Qt, this._handlers = [], this._runExecutor(t);
   }
   /** @inheritdoc */
   then(t, n) {
-    return new z((r, s) => {
+    return new W((r, s) => {
       this._handlers.push([
         !1,
         (i) => {
@@ -1597,7 +1597,7 @@ class z {
   }
   /** @inheritdoc */
   finally(t) {
-    return new z((n, r) => {
+    return new W((n, r) => {
       let s, i;
       return this.then(
         (o) => {
@@ -1617,27 +1617,27 @@ class z {
   }
   /** Excute the resolve/reject handlers. */
   _executeHandlers() {
-    if (this._state === Jt)
+    if (this._state === Qt)
       return;
     const t = this._handlers.slice();
     this._handlers = [], t.forEach((n) => {
-      n[0] || (this._state === Je && n[1](this._value), this._state === Ve && n[2](this._value), n[0] = !0);
+      n[0] || (this._state === Qe && n[1](this._value), this._state === tn && n[2](this._value), n[0] = !0);
     });
   }
   /** Run the executor for the SyncPromise. */
   _runExecutor(t) {
     const n = (i, o) => {
-      if (this._state === Jt) {
-        if (lt(o)) {
+      if (this._state === Qt) {
+        if (dt(o)) {
           o.then(r, s);
           return;
         }
         this._state = i, this._value = o, this._executeHandlers();
       }
     }, r = (i) => {
-      n(Je, i);
+      n(Qe, i);
     }, s = (i) => {
-      n(Ve, i);
+      n(tn, i);
     };
     try {
       t(r, s);
@@ -1646,26 +1646,26 @@ class z {
     }
   }
 }
-function Gs(e, t, n, r = 0) {
+function Vs(e, t, n, r = 0) {
   try {
-    const s = se(t, n, e, r);
-    return lt(s) ? s : Ht(s);
+    const s = ce(t, n, e, r);
+    return dt(s) ? s : Yt(s);
   } catch (s) {
-    return ge(s);
+    return be(s);
   }
 }
-function se(e, t, n, r) {
+function ce(e, t, n, r) {
   const s = n[r];
   if (!e || !s)
     return e;
   const i = s(l({}, e), t);
-  return m && i === null && p.log(`Event processor "${s.id || "?"}" dropped event`), lt(i) ? i.then((o) => se(o, t, n, r + 1)) : se(i, t, n, r + 1);
+  return g && i === null && h.log(`Event processor "${s.id || "?"}" dropped event`), dt(i) ? i.then((o) => ce(o, t, n, r + 1)) : ce(i, t, n, r + 1);
 }
-function zs(e, t) {
+function Ks(e, t) {
   const { fingerprint: n, span: r, breadcrumbs: s, sdkProcessingMetadata: i } = t;
-  Ws(e, t), r && Ks(e, r), Js(e, n), Ys(e, s), qs(e, i);
+  Js(e, t), r && Qs(e, r), ti(e, n), Xs(e, s), Zs(e, i);
 }
-function W(e, t) {
+function Y(e, t) {
   const {
     extra: n,
     tags: r,
@@ -1677,104 +1677,104 @@ function W(e, t) {
     fingerprint: u,
     eventProcessors: d,
     attachments: f,
-    propagationContext: g,
-    transactionName: h,
+    propagationContext: m,
+    transactionName: p,
     span: y
   } = t;
-  yt(e, "extra", n), yt(e, "tags", r), yt(e, "user", s), yt(e, "contexts", i), e.sdkProcessingMetadata = dt(e.sdkProcessingMetadata, a, 2), o && (e.level = o), h && (e.transactionName = h), y && (e.span = y), c.length && (e.breadcrumbs = [...e.breadcrumbs, ...c]), u.length && (e.fingerprint = [...e.fingerprint, ...u]), d.length && (e.eventProcessors = [...e.eventProcessors, ...d]), f.length && (e.attachments = [...e.attachments, ...f]), e.propagationContext = l(l({}, e.propagationContext), g);
+  St(e, "extra", n), St(e, "tags", r), St(e, "user", s), St(e, "contexts", i), e.sdkProcessingMetadata = ft(e.sdkProcessingMetadata, a, 2), o && (e.level = o), p && (e.transactionName = p), y && (e.span = y), c.length && (e.breadcrumbs = [...e.breadcrumbs, ...c]), u.length && (e.fingerprint = [...e.fingerprint, ...u]), d.length && (e.eventProcessors = [...e.eventProcessors, ...d]), f.length && (e.attachments = [...e.attachments, ...f]), e.propagationContext = l(l({}, e.propagationContext), m);
 }
-function yt(e, t, n) {
-  e[t] = dt(e[t], n, 1);
+function St(e, t, n) {
+  e[t] = ft(e[t], n, 1);
 }
-function Ws(e, t) {
+function Js(e, t) {
   const { extra: n, tags: r, user: s, contexts: i, level: o, transactionName: a } = t;
   Object.keys(n).length && (e.extra = l(l({}, n), e.extra)), Object.keys(r).length && (e.tags = l(l({}, r), e.tags)), Object.keys(s).length && (e.user = l(l({}, s), e.user)), Object.keys(i).length && (e.contexts = l(l({}, i), e.contexts)), o && (e.level = o), a && e.type !== "transaction" && (e.transaction = a);
 }
-function Ys(e, t) {
+function Xs(e, t) {
   const n = [...e.breadcrumbs || [], ...t];
   e.breadcrumbs = n.length ? n : void 0;
 }
-function qs(e, t) {
+function Zs(e, t) {
   e.sdkProcessingMetadata = l(l({}, e.sdkProcessingMetadata), t);
 }
-function Ks(e, t) {
+function Qs(e, t) {
   e.contexts = l({
-    trace: Fn(t)
+    trace: Bn(t)
   }, e.contexts), e.sdkProcessingMetadata = l({
-    dynamicSamplingContext: Gn(t)
+    dynamicSamplingContext: Yn(t)
   }, e.sdkProcessingMetadata);
-  const n = jn(t), r = he(n).description;
+  const n = Hn(t), r = ye(n).description;
   r && !e.transaction && e.type === "transaction" && (e.transaction = r);
 }
-function Js(e, t) {
+function ti(e, t) {
   e.fingerprint = e.fingerprint ? Array.isArray(e.fingerprint) ? e.fingerprint : [e.fingerprint] : [], t && (e.fingerprint = e.fingerprint.concat(t)), e.fingerprint.length || delete e.fingerprint;
 }
-let C, Xe, Ze, $;
-function Vs(e) {
-  const t = I._sentryDebugIds, n = I._debugIds;
+let P, en, nn, L;
+function ei(e) {
+  const t = v._sentryDebugIds, n = v._debugIds;
   if (!t && !n)
     return {};
   const r = t ? Object.keys(t) : [], s = n ? Object.keys(n) : [];
-  if ($ && r.length === Xe && s.length === Ze)
-    return $;
-  Xe = r.length, Ze = s.length, $ = {}, C || (C = {});
+  if (L && r.length === en && s.length === nn)
+    return L;
+  en = r.length, nn = s.length, L = {}, P || (P = {});
   const i = (o, a) => {
     for (const c of o) {
-      const u = a[c], d = C == null ? void 0 : C[c];
-      if (d && $ && u)
-        $[d[0]] = u, C && (C[c] = [d[0], u]);
+      const u = a[c], d = P == null ? void 0 : P[c];
+      if (d && L && u)
+        L[d[0]] = u, P && (P[c] = [d[0], u]);
       else if (u) {
         const f = e(c);
-        for (let g = f.length - 1; g >= 0; g--) {
-          const h = f[g], y = h == null ? void 0 : h.filename;
-          if (y && $ && C) {
-            $[y] = u, C[c] = [y, u];
+        for (let m = f.length - 1; m >= 0; m--) {
+          const p = f[m], y = p == null ? void 0 : p.filename;
+          if (y && L && P) {
+            L[y] = u, P[c] = [y, u];
             break;
           }
         }
       }
     }
   };
-  return t && i(r, t), n && i(s, n), $;
+  return t && i(r, t), n && i(s, n), L;
 }
-function Xs(e, t, n, r, s, i) {
+function ni(e, t, n, r, s, i) {
   const { normalizeDepth: o = 3, normalizeMaxBreadth: a = 1e3 } = e, c = _(l({}, t), {
     event_id: t.event_id || n.event_id || R(),
-    timestamp: t.timestamp || O()
-  }), u = n.integrations || e.integrations.map((S) => S.name);
-  Zs(c, e), ei(c, u), s && s.emit("applyFrameMetadata", t), t.type === void 0 && Qs(c, e.stackParser);
-  const d = ri(r, n.captureContext);
-  n.mechanism && vt(c, n.mechanism);
-  const f = s ? s.getEventProcessors() : [], g = pe().getScopeData();
+    timestamp: t.timestamp || w()
+  }), u = n.integrations || e.integrations.map((b) => b.name);
+  ri(c, e), oi(c, u), s && s.emit("applyFrameMetadata", t), t.type === void 0 && si(c, e.stackParser);
+  const d = ci(r, n.captureContext);
+  n.mechanism && kt(c, n.mechanism);
+  const f = s ? s.getEventProcessors() : [], m = _e().getScopeData();
   if (i) {
-    const S = i.getScopeData();
-    W(g, S);
+    const b = i.getScopeData();
+    Y(m, b);
   }
   if (d) {
-    const S = d.getScopeData();
-    W(g, S);
+    const b = d.getScopeData();
+    Y(m, b);
   }
-  const h = [...n.attachments || [], ...g.attachments];
-  h.length && (n.attachments = h), zs(c, g);
+  const p = [...n.attachments || [], ...m.attachments];
+  p.length && (n.attachments = p), Ks(c, m);
   const y = [
     ...f,
     // Run scope event processors _after_ all other processors
-    ...g.eventProcessors
+    ...m.eventProcessors
   ];
-  return Gs(y, c, n).then((S) => (S && ti(S), typeof o == "number" && o > 0 ? ni(S, o, a) : S));
+  return Vs(y, c, n).then((b) => (b && ii(b), typeof o == "number" && o > 0 ? ai(b, o, a) : b));
 }
-function Zs(e, t) {
+function ri(e, t) {
   var a, c;
   const { environment: n, release: r, dist: s, maxValueLength: i } = t;
-  e.environment = e.environment || n || me, !e.release && r && (e.release = r), !e.dist && s && (e.dist = s);
+  e.environment = e.environment || n || Se, !e.release && r && (e.release = r), !e.dist && s && (e.dist = s);
   const o = e.request;
-  o != null && o.url && i && (o.url = Zt(o.url, i)), i && ((c = (a = e.exception) == null ? void 0 : a.values) == null || c.forEach((u) => {
-    u.value && (u.value = Zt(u.value, i));
+  o != null && o.url && i && (o.url = ne(o.url, i)), i && ((c = (a = e.exception) == null ? void 0 : a.values) == null || c.forEach((u) => {
+    u.value && (u.value = ne(u.value, i));
   }));
 }
-function Qs(e, t) {
+function si(e, t) {
   var r, s;
-  const n = Vs(t);
+  const n = ei(t);
   (s = (r = e.exception) == null ? void 0 : r.values) == null || s.forEach((i) => {
     var o, a;
     (a = (o = i.stacktrace) == null ? void 0 : o.frames) == null || a.forEach((c) => {
@@ -1782,7 +1782,7 @@ function Qs(e, t) {
     });
   });
 }
-function ti(e) {
+function ii(e) {
   var r, s;
   const t = {};
   if ((s = (r = e.exception) == null ? void 0 : r.values) == null || s.forEach((i) => {
@@ -1802,10 +1802,10 @@ function ti(e) {
     });
   });
 }
-function ei(e, t) {
+function oi(e, t) {
   t.length > 0 && (e.sdk = e.sdk || {}, e.sdk.integrations = [...e.sdk.integrations || [], ...t]);
 }
-function ni(e, t, n) {
+function ai(e, t, n) {
   var s, i;
   if (!e)
     return null;
@@ -1824,22 +1824,22 @@ function ni(e, t, n) {
     data: D(o.data, t, n)
   }))), (i = e.contexts) != null && i.flags && r.contexts && (r.contexts.flags = D(e.contexts.flags, 3, n)), r;
 }
-function ri(e, t) {
+function ci(e, t) {
   if (!t)
     return e;
-  const n = e ? e.clone() : new P();
+  const n = e ? e.clone() : new C();
   return n.update(t), n;
 }
-function si(e) {
+function ui(e) {
   if (e)
-    return ii(e) ? { captureContext: e } : ai(e) ? {
+    return li(e) ? { captureContext: e } : fi(e) ? {
       captureContext: e
     } : e;
 }
-function ii(e) {
-  return e instanceof P || typeof e == "function";
+function li(e) {
+  return e instanceof C || typeof e == "function";
 }
-const oi = [
+const di = [
   "user",
   "level",
   "extra",
@@ -1848,77 +1848,77 @@ const oi = [
   "fingerprint",
   "propagationContext"
 ];
-function ai(e) {
-  return Object.keys(e).some((t) => oi.includes(t));
+function fi(e) {
+  return Object.keys(e).some((t) => di.includes(t));
 }
-function ie(e, t) {
-  return w().captureException(e, si(t));
+function ue(e, t) {
+  return O().captureException(e, ui(t));
 }
-function Qe(e, t) {
+function rn(e, t) {
   const n = typeof t == "string" ? t : void 0, r = typeof t != "string" ? { captureContext: t } : void 0;
-  return w().captureMessage(e, n, r);
+  return O().captureMessage(e, n, r);
 }
-function ci(e, t) {
-  return w().captureEvent(e, t);
+function pi(e, t) {
+  return O().captureEvent(e, t);
 }
-function ca(e, t) {
+function Sa(e, t) {
   A().setContext(e, t);
 }
-function ua(e) {
+function ba(e) {
   A().setExtras(e);
 }
-function tn(e, t) {
+function sn(e, t) {
   A().setExtra(e, t);
 }
-function la(e) {
+function Ea(e) {
   A().setTags(e);
 }
-function en(e, t) {
+function on(e, t) {
   A().setTag(e, t);
 }
-function da(e) {
+function Ta(e) {
   A().setUser(e);
 }
-function Yn() {
+function Kn() {
   return A().lastEventId();
 }
-function Gt(e) {
+function qt(e) {
   A().addEventProcessor(e);
 }
-const ui = "7";
-function li(e) {
+const hi = "7";
+function mi(e) {
   const t = e.protocol ? `${e.protocol}:` : "", n = e.port ? `:${e.port}` : "";
   return `${t}//${e.host}${n}${e.path ? `/${e.path}` : ""}/api/`;
 }
-function di(e) {
-  return `${li(e)}${e.projectId}/envelope/`;
+function gi(e) {
+  return `${mi(e)}${e.projectId}/envelope/`;
 }
-function fi(e, t) {
+function _i(e, t) {
   const n = {
-    sentry_version: ui
+    sentry_version: hi
   };
   return e.publicKey && (n.sentry_key = e.publicKey), t && (n.sentry_client = `${t.name}/${t.version}`), new URLSearchParams(n).toString();
 }
-function pi(e, t, n) {
-  return t || `${di(e)}?${fi(e, n)}`;
+function yi(e, t, n) {
+  return t || `${gi(e)}?${_i(e, n)}`;
 }
-const nn = [];
-function hi(e, t) {
+const an = [];
+function Si(e, t) {
   const n = {};
   return t.forEach((r) => {
-    r && qn(e, r, n);
+    r && Jn(e, r, n);
   }), n;
 }
-function rn(e, t) {
+function cn(e, t) {
   for (const n of t)
     n != null && n.afterAllSetup && n.afterAllSetup(e);
 }
-function qn(e, t, n) {
+function Jn(e, t, n) {
   if (n[t.name]) {
-    m && p.log(`Integration skipped because it was already installed: ${t.name}`);
+    g && h.log(`Integration skipped because it was already installed: ${t.name}`);
     return;
   }
-  if (n[t.name] = t, !nn.includes(t.name) && typeof t.setupOnce == "function" && (t.setupOnce(), nn.push(t.name)), t.setup && typeof t.setup == "function" && t.setup(e), typeof t.preprocessEvent == "function") {
+  if (n[t.name] = t, !an.includes(t.name) && typeof t.setupOnce == "function" && (t.setupOnce(), an.push(t.name)), t.setup && typeof t.setup == "function" && t.setup(e), typeof t.preprocessEvent == "function") {
     const r = t.preprocessEvent.bind(t);
     e.on("preprocessEvent", (s, i) => r(s, i, e));
   }
@@ -1928,15 +1928,15 @@ function qn(e, t, n) {
     });
     e.addEventProcessor(s);
   }
-  m && p.log(`Integration installed: ${t.name}`);
+  g && h.log(`Integration installed: ${t.name}`);
 }
-function Kn(e, t) {
-  return t ? wn(t, () => {
-    const n = vs(), r = n ? Fn(n) : Mn(t);
-    return [n ? Gn(n) : Hn(e, t), r];
+function Xn(e, t) {
+  return t ? Cn(t, () => {
+    const n = As(), r = n ? Bn(n) : Pn(t);
+    return [n ? Yn(n) : Wn(e, t), r];
   }) : [void 0, void 0];
 }
-const mi = {
+const bi = {
   trace: 1,
   debug: 5,
   info: 9,
@@ -1944,7 +1944,7 @@ const mi = {
   error: 17,
   fatal: 21
 };
-function gi(e) {
+function Ei(e) {
   return [
     {
       type: "log",
@@ -1956,15 +1956,15 @@ function gi(e) {
     }
   ];
 }
-function _i(e, t, n, r) {
+function Ti(e, t, n, r) {
   const s = {};
   return t != null && t.sdk && (s.sdk = {
     name: t.sdk.name,
     version: t.sdk.version
-  }), n && r && (s.dsn = ft(r)), J(s, [gi(e)]);
+  }), n && r && (s.dsn = pt(r)), J(s, [Ei(e)]);
 }
-const yi = 100;
-function Si(e) {
+const Ii = 100;
+function vi(e) {
   var t;
   switch (typeof e) {
     case "number":
@@ -2001,78 +2001,78 @@ function Si(e) {
 function M(e, t, n, r = !0) {
   n && (!e[t] || r) && (e[t] = n);
 }
-function bi(e, t) {
-  const n = _e(), r = Vn(e);
-  r === void 0 ? n.set(e, [t]) : r.length >= yi ? (Jn(e, r), n.set(e, [t])) : n.set(e, [...r, t]);
+function ki(e, t) {
+  const n = Ee(), r = Qn(e);
+  r === void 0 ? n.set(e, [t]) : r.length >= Ii ? (Zn(e, r), n.set(e, [t])) : n.set(e, [...r, t]);
 }
-function Ei(e, t = w(), n = bi) {
-  var Ne, ke, Re;
-  const r = (Ne = t == null ? void 0 : t.getClient()) != null ? Ne : v();
+function Ni(e, t = O(), n = ki) {
+  var Oe, Me, De;
+  const r = (Oe = t == null ? void 0 : t.getClient()) != null ? Oe : k();
   if (!r) {
-    m && p.warn("No client available to capture log.");
+    g && h.warn("No client available to capture log.");
     return;
   }
   const { release: s, environment: i, enableLogs: o = !1, beforeSendLog: a } = r.getOptions();
   if (!o) {
-    m && p.warn("logging option not enabled, log will not be captured.");
+    g && h.warn("logging option not enabled, log will not be captured.");
     return;
   }
-  const [, c] = Kn(r, t), u = l({}, e.attributes), {
-    user: { id: d, email: f, username: g }
-  } = Ti(t);
-  M(u, "user.id", d, !1), M(u, "user.email", f, !1), M(u, "user.name", g, !1), M(u, "sentry.release", s), M(u, "sentry.environment", i);
-  const { name: h, version: y } = (Re = (ke = r.getSdkMetadata()) == null ? void 0 : ke.sdk) != null ? Re : {};
-  M(u, "sentry.sdk.name", h), M(u, "sentry.sdk.version", y);
-  const b = r.getIntegrationByName("Replay"), S = b == null ? void 0 : b.getReplayId(!0);
-  M(u, "sentry.replay_id", S), S && (b == null ? void 0 : b.getRecordingMode()) === "buffer" && M(u, "sentry._internal.replay_is_buffering", !0);
+  const [, c] = Xn(r, t), u = l({}, e.attributes), {
+    user: { id: d, email: f, username: m }
+  } = Ri(t);
+  M(u, "user.id", d, !1), M(u, "user.email", f, !1), M(u, "user.name", m, !1), M(u, "sentry.release", s), M(u, "sentry.environment", i);
+  const { name: p, version: y } = (De = (Me = r.getSdkMetadata()) == null ? void 0 : Me.sdk) != null ? De : {};
+  M(u, "sentry.sdk.name", p), M(u, "sentry.sdk.version", y);
+  const S = r.getIntegrationByName("Replay"), b = S == null ? void 0 : S.getReplayId(!0);
+  M(u, "sentry.replay_id", b), b && (S == null ? void 0 : S.getRecordingMode()) === "buffer" && M(u, "sentry._internal.replay_is_buffering", !0);
   const N = e.message;
-  if (de(N)) {
-    const { __sentry_template_string__: mt, __sentry_template_values__: F = [] } = N;
-    F != null && F.length && (u["sentry.message.template"] = mt), F.forEach((pr, hr) => {
-      u[`sentry.message.parameter.${hr}`] = pr;
+  if (me(N)) {
+    const { __sentry_template_string__: gt, __sentry_template_values__: j = [] } = N;
+    j != null && j.length && (u["sentry.message.template"] = gt), j.forEach((yr, Sr) => {
+      u[`sentry.message.parameter.${Sr}`] = yr;
     });
   }
-  const k = at(t);
-  M(u, "sentry.trace.parent_span_id", k == null ? void 0 : k.spanContext().spanId);
-  const L = _(l({}, e), { attributes: u });
-  r.emit("beforeCaptureLog", L);
-  const X = a ? q(() => a(L)) : L;
-  if (!X) {
-    r.recordDroppedEvent("before_send", "log_item", 1), m && p.warn("beforeSendLog returned null, log will not be captured.");
+  const I = ct(t);
+  M(u, "sentry.trace.parent_span_id", I == null ? void 0 : I.spanContext().spanId);
+  const $ = _(l({}, e), { attributes: u });
+  r.emit("beforeCaptureLog", $);
+  const Z = a ? V(() => a($)) : $;
+  if (!Z) {
+    r.recordDroppedEvent("before_send", "log_item", 1), g && h.warn("beforeSendLog returned null, log will not be captured.");
     return;
   }
-  const { level: pt, message: zt, attributes: ht = {}, severityNumber: Wt } = X, fr = {
-    timestamp: Ut(),
-    level: pt,
-    body: zt,
+  const { level: ht, message: Vt, attributes: mt = {}, severityNumber: Kt } = Z, _r = {
+    timestamp: Gt(),
+    level: ht,
+    body: Vt,
     trace_id: c == null ? void 0 : c.trace_id,
-    severity_number: Wt != null ? Wt : mi[pt],
-    attributes: Object.keys(ht).reduce(
-      (mt, F) => (mt[F] = Si(ht[F]), mt),
+    severity_number: Kt != null ? Kt : bi[ht],
+    attributes: Object.keys(mt).reduce(
+      (gt, j) => (gt[j] = vi(mt[j]), gt),
       {}
     )
   };
-  n(r, fr), r.emit("afterCaptureLog", X);
+  n(r, _r), r.emit("afterCaptureLog", Z);
 }
-function Jn(e, t) {
+function Zn(e, t) {
   var i;
-  const n = (i = t != null ? t : Vn(e)) != null ? i : [];
+  const n = (i = t != null ? t : Qn(e)) != null ? i : [];
   if (n.length === 0)
     return;
-  const r = e.getOptions(), s = _i(n, r._metadata, r.tunnel, e.getDsn());
-  _e().set(e, []), e.emit("flushLogs"), e.sendEnvelope(s);
+  const r = e.getOptions(), s = Ti(n, r._metadata, r.tunnel, e.getDsn());
+  Ee().set(e, []), e.emit("flushLogs"), e.sendEnvelope(s);
 }
-function Vn(e) {
-  return _e().get(e);
+function Qn(e) {
+  return Ee().get(e);
 }
-function Ti(e) {
-  const t = pe().getScopeData();
-  return W(t, A().getScopeData()), W(t, e.getScopeData()), t;
+function Ri(e) {
+  const t = _e().getScopeData();
+  return Y(t, A().getScopeData()), Y(t, e.getScopeData()), t;
 }
-function _e() {
-  return Y("clientToLogBufferMap", () => /* @__PURE__ */ new WeakMap());
+function Ee() {
+  return q("clientToLogBufferMap", () => /* @__PURE__ */ new WeakMap());
 }
-function Ii(e) {
+function wi(e) {
   return [
     {
       type: "trace_metric",
@@ -2084,15 +2084,15 @@ function Ii(e) {
     }
   ];
 }
-function vi(e, t, n, r) {
+function Ai(e, t, n, r) {
   const s = {};
   return t != null && t.sdk && (s.sdk = {
     name: t.sdk.name,
     version: t.sdk.version
-  }), n && r && (s.dsn = ft(r)), J(s, [Ii(e)]);
+  }), n && r && (s.dsn = pt(r)), J(s, [wi(e)]);
 }
-const Ni = 1e3;
-function ki(e) {
+const Oi = 1e3;
+function Mi(e) {
   var t;
   switch (typeof e) {
     case "number":
@@ -2129,30 +2129,30 @@ function ki(e) {
 function x(e, t, n, r = !0) {
   n && (r || !(t in e)) && (e[t] = n);
 }
-function Ri(e, t) {
-  const n = ye(), r = Zn(e);
-  r === void 0 ? n.set(e, [t]) : r.length >= Ni ? (Xn(e, r), n.set(e, [t])) : n.set(e, [...r, t]);
+function Di(e, t) {
+  const n = Te(), r = er(e);
+  r === void 0 ? n.set(e, [t]) : r.length >= Oi ? (tr(e, r), n.set(e, [t])) : n.set(e, [...r, t]);
 }
-function Oi(e, t, n) {
-  var h, y;
+function Ci(e, t, n) {
+  var p, y;
   const { release: r, environment: s } = t.getOptions(), i = l({}, e.attributes), {
     user: { id: o, email: a, username: c }
-  } = Mi(n);
+  } = $i(n);
   x(i, "user.id", o, !1), x(i, "user.email", a, !1), x(i, "user.name", c, !1), x(i, "sentry.release", r), x(i, "sentry.environment", s);
-  const { name: u, version: d } = (y = (h = t.getSdkMetadata()) == null ? void 0 : h.sdk) != null ? y : {};
+  const { name: u, version: d } = (y = (p = t.getSdkMetadata()) == null ? void 0 : p.sdk) != null ? y : {};
   x(i, "sentry.sdk.name", u), x(i, "sentry.sdk.version", d);
-  const f = t.getIntegrationByName("Replay"), g = f == null ? void 0 : f.getReplayId(!0);
-  return x(i, "sentry.replay_id", g), g && (f == null ? void 0 : f.getRecordingMode()) === "buffer" && x(i, "sentry._internal.replay_is_buffering", !0), _(l({}, e), {
+  const f = t.getIntegrationByName("Replay"), m = f == null ? void 0 : f.getReplayId(!0);
+  return x(i, "sentry.replay_id", m), m && (f == null ? void 0 : f.getRecordingMode()) === "buffer" && x(i, "sentry._internal.replay_is_buffering", !0), _(l({}, e), {
     attributes: i
   });
 }
-function Ai(e, t, n) {
+function Pi(e, t, n) {
   const r = {};
   for (const c in e.attributes)
-    e.attributes[c] !== void 0 && (r[c] = ki(e.attributes[c]));
-  const [, s] = Kn(t, n), i = at(n), o = i ? i.spanContext().traceId : s == null ? void 0 : s.trace_id, a = i ? i.spanContext().spanId : void 0;
+    e.attributes[c] !== void 0 && (r[c] = Mi(e.attributes[c]));
+  const [, s] = Xn(t, n), i = ct(n), o = i ? i.spanContext().traceId : s == null ? void 0 : s.trace_id, a = i ? i.spanContext().spanId : void 0;
   return {
-    timestamp: Ut(),
+    timestamp: Gt(),
     trace_id: o != null ? o : "",
     span_id: a,
     name: e.name,
@@ -2162,48 +2162,48 @@ function Ai(e, t, n) {
     attributes: r
   };
 }
-function wi(e, t) {
-  var h, y, b, S;
-  const n = (h = t == null ? void 0 : t.scope) != null ? h : w(), r = (y = t == null ? void 0 : t.captureSerializedMetric) != null ? y : Ri, s = (b = n == null ? void 0 : n.getClient()) != null ? b : v();
+function xi(e, t) {
+  var p, y, S, b;
+  const n = (p = t == null ? void 0 : t.scope) != null ? p : O(), r = (y = t == null ? void 0 : t.captureSerializedMetric) != null ? y : Di, s = (S = n == null ? void 0 : n.getClient()) != null ? S : k();
   if (!s) {
-    m && p.warn("No client available to capture metric.");
+    g && h.warn("No client available to capture metric.");
     return;
   }
   const { _experiments: i, enableMetrics: o, beforeSendMetric: a } = s.getOptions();
-  if (!((S = o != null ? o : i == null ? void 0 : i.enableMetrics) != null ? S : !0)) {
-    m && p.warn("metrics option not enabled, metric will not be captured.");
+  if (!((b = o != null ? o : i == null ? void 0 : i.enableMetrics) != null ? b : !0)) {
+    g && h.warn("metrics option not enabled, metric will not be captured.");
     return;
   }
-  const u = Oi(e, s, n);
+  const u = Ci(e, s, n);
   s.emit("processMetric", u);
   const d = a || (i == null ? void 0 : i.beforeSendMetric), f = d ? d(u) : u;
   if (!f) {
-    m && p.log("`beforeSendMetric` returned `null`, will not send metric.");
+    g && h.log("`beforeSendMetric` returned `null`, will not send metric.");
     return;
   }
-  const g = Ai(f, s, n);
-  m && p.log("[Metric]", g), r(s, g), s.emit("afterCaptureMetric", f);
+  const m = Pi(f, s, n);
+  g && h.log("[Metric]", m), r(s, m), s.emit("afterCaptureMetric", f);
 }
-function Xn(e, t) {
+function tr(e, t) {
   var i;
-  const n = (i = t != null ? t : Zn(e)) != null ? i : [];
+  const n = (i = t != null ? t : er(e)) != null ? i : [];
   if (n.length === 0)
     return;
-  const r = e.getOptions(), s = vi(n, r._metadata, r.tunnel, e.getDsn());
-  ye().set(e, []), e.emit("flushMetrics"), e.sendEnvelope(s);
+  const r = e.getOptions(), s = Ai(n, r._metadata, r.tunnel, e.getDsn());
+  Te().set(e, []), e.emit("flushMetrics"), e.sendEnvelope(s);
 }
-function Zn(e) {
-  return ye().get(e);
+function er(e) {
+  return Te().get(e);
 }
-function Mi(e) {
-  const t = pe().getScopeData();
-  return W(t, A().getScopeData()), W(t, e.getScopeData()), t;
+function $i(e) {
+  const t = _e().getScopeData();
+  return Y(t, A().getScopeData()), Y(t, e.getScopeData()), t;
 }
-function ye() {
-  return Y("clientToMetricBufferMap", () => /* @__PURE__ */ new WeakMap());
+function Te() {
+  return q("clientToMetricBufferMap", () => /* @__PURE__ */ new WeakMap());
 }
-const Se = Symbol.for("SentryBufferFullError");
-function Qn(e = 100) {
+const Ie = Symbol.for("SentryBufferFullError");
+function nr(e = 100) {
   const t = /* @__PURE__ */ new Set();
   function n() {
     return t.size < e;
@@ -2213,7 +2213,7 @@ function Qn(e = 100) {
   }
   function s(o) {
     if (!n())
-      return ge(Se);
+      return be(Ie);
     const a = o();
     return t.add(a), a.then(
       () => r(a),
@@ -2222,7 +2222,7 @@ function Qn(e = 100) {
   }
   function i(o) {
     if (!t.size)
-      return Ht(!0);
+      return Yt(!0);
     const a = Promise.allSettled(Array.from(t)).then(() => !0);
     if (!o)
       return a;
@@ -2237,62 +2237,62 @@ function Qn(e = 100) {
     drain: i
   };
 }
-const Di = 60 * 1e3;
-function Pi(e, t = Date.now()) {
+const Li = 60 * 1e3;
+function Fi(e, t = Date.now()) {
   const n = parseInt(`${e}`, 10);
   if (!isNaN(n))
     return n * 1e3;
   const r = Date.parse(`${e}`);
-  return isNaN(r) ? Di : r - t;
+  return isNaN(r) ? Li : r - t;
 }
-function Ci(e, t) {
+function ji(e, t) {
   return e[t] || e.all || 0;
 }
-function xi(e, t, n = Date.now()) {
-  return Ci(e, t) > n;
+function Ui(e, t, n = Date.now()) {
+  return ji(e, t) > n;
 }
-function Li(e, { statusCode: t, headers: n }, r = Date.now()) {
+function Bi(e, { statusCode: t, headers: n }, r = Date.now()) {
   const s = l({}, e), i = n == null ? void 0 : n["x-sentry-rate-limits"], o = n == null ? void 0 : n["retry-after"];
   if (i)
     for (const a of i.trim().split(",")) {
-      const [c, u, , , d] = a.split(":", 5), f = parseInt(c, 10), g = (isNaN(f) ? 60 : f) * 1e3;
+      const [c, u, , , d] = a.split(":", 5), f = parseInt(c, 10), m = (isNaN(f) ? 60 : f) * 1e3;
       if (!u)
-        s.all = r + g;
+        s.all = r + m;
       else
-        for (const h of u.split(";"))
-          h === "metric_bucket" ? (!d || d.split(";").includes("custom")) && (s[h] = r + g) : s[h] = r + g;
+        for (const p of u.split(";"))
+          p === "metric_bucket" ? (!d || d.split(";").includes("custom")) && (s[p] = r + m) : s[p] = r + m;
     }
-  else o ? s.all = r + Pi(o, r) : t === 429 && (s.all = r + 60 * 1e3);
+  else o ? s.all = r + Fi(o, r) : t === 429 && (s.all = r + 60 * 1e3);
   return s;
 }
-const tr = 64;
-function $i(e, t, n = Qn(
-  e.bufferSize || tr
+const rr = 64;
+function Hi(e, t, n = nr(
+  e.bufferSize || rr
 )) {
   let r = {};
   const s = (o) => n.drain(o);
   function i(o) {
     const a = [];
-    if (qe(o, (f, g) => {
-      const h = Ke(g);
-      xi(r, h) ? e.recordDroppedEvent("ratelimit_backoff", h) : a.push(f);
+    if (Xe(o, (f, m) => {
+      const p = Ze(m);
+      Ui(r, p) ? e.recordDroppedEvent("ratelimit_backoff", p) : a.push(f);
     }), a.length === 0)
       return Promise.resolve({});
     const c = J(o[0], a), u = (f) => {
-      qe(c, (g, h) => {
-        e.recordDroppedEvent(f, Ke(h));
+      Xe(c, (m, p) => {
+        e.recordDroppedEvent(f, Ze(p));
       });
-    }, d = () => t({ body: Cs(c) }).then(
-      (f) => (f.statusCode !== void 0 && (f.statusCode < 200 || f.statusCode >= 300) && m && p.warn(`Sentry responded with status code ${f.statusCode} to sent event.`), r = Li(r, f), f),
+    }, d = () => t({ body: js(c) }).then(
+      (f) => (f.statusCode !== void 0 && (f.statusCode < 200 || f.statusCode >= 300) && g && h.warn(`Sentry responded with status code ${f.statusCode} to sent event.`), r = Bi(r, f), f),
       (f) => {
-        throw u("network_error"), m && p.error("Encountered error running transport request:", f), f;
+        throw u("network_error"), g && h.error("Encountered error running transport request:", f), f;
       }
     );
     return n.add(d).then(
       (f) => f,
       (f) => {
-        if (f === Se)
-          return m && p.error("Skipped sending event because buffer is full."), u("queue_overflow"), Promise.resolve({});
+        if (f === Ie)
+          return g && h.error("Skipped sending event because buffer is full."), u("queue_overflow"), Promise.resolve({});
         throw f;
       }
     );
@@ -2302,17 +2302,17 @@ function $i(e, t, n = Qn(
     flush: s
   };
 }
-function Fi(e, t, n) {
+function Gi(e, t, n) {
   const r = [
     { type: "client_report" },
     {
-      timestamp: O(),
+      timestamp: w(),
       discarded_events: e
     }
   ];
   return J(t ? { dsn: t } : {}, [r]);
 }
-function er(e) {
+function sr(e) {
   const t = [];
   e.message && t.push(e.message);
   try {
@@ -2322,7 +2322,7 @@ function er(e) {
   }
   return t;
 }
-function ji(e) {
+function zi(e) {
   var c, u, d;
   const { trace_id: t, parent_span_id: n, span_id: r, status: s, origin: i, data: o, op: a } = (u = (c = e.contexts) == null ? void 0 : c.trace) != null ? u : {};
   return {
@@ -2336,13 +2336,13 @@ function ji(e) {
     timestamp: e.timestamp,
     trace_id: t != null ? t : "",
     origin: i,
-    profile_id: o == null ? void 0 : o[Dn],
-    exclusive_time: o == null ? void 0 : o[Pn],
+    profile_id: o == null ? void 0 : o[xn],
+    exclusive_time: o == null ? void 0 : o[$n],
     measurements: e.measurements,
     is_segment: !0
   };
 }
-function Ui(e) {
+function Wi(e) {
   return {
     type: "transaction",
     timestamp: e.timestamp,
@@ -2356,44 +2356,44 @@ function Ui(e) {
         op: e.op,
         status: e.status,
         origin: e.origin,
-        data: l(l(l({}, e.data), e.profile_id && { [Dn]: e.profile_id }), e.exclusive_time && { [Pn]: e.exclusive_time })
+        data: l(l(l({}, e.data), e.profile_id && { [xn]: e.profile_id }), e.exclusive_time && { [$n]: e.exclusive_time })
       }
     },
     measurements: e.measurements
   };
 }
-const sn = "Not capturing exception because it's already been captured.", on = "Discarded session because of missing or non-string release", nr = Symbol.for("SentryInternalError"), rr = Symbol.for("SentryDoNotSendEventError"), Bi = 5e3;
-function Tt(e) {
+const un = "Not capturing exception because it's already been captured.", ln = "Discarded session because of missing or non-string release", ir = Symbol.for("SentryInternalError"), or = Symbol.for("SentryDoNotSendEventError"), Yi = 5e3;
+function It(e) {
   return {
     message: e,
-    [nr]: !0
+    [ir]: !0
   };
 }
-function Vt(e) {
+function te(e) {
   return {
     message: e,
-    [rr]: !0
+    [or]: !0
   };
 }
-function an(e) {
-  return !!e && typeof e == "object" && nr in e;
+function dn(e) {
+  return !!e && typeof e == "object" && ir in e;
 }
-function cn(e) {
-  return !!e && typeof e == "object" && rr in e;
+function fn(e) {
+  return !!e && typeof e == "object" && or in e;
 }
-function un(e, t, n, r, s) {
+function pn(e, t, n, r, s) {
   let i = 0, o, a = !1;
   e.on(n, () => {
     i = 0, clearTimeout(o), a = !1;
   }), e.on(t, (c) => {
     i += r(c), i >= 8e5 ? s(e) : a || (a = !0, o = setTimeout(() => {
       s(e);
-    }, Bi));
+    }, Yi));
   }), e.on("flush", () => {
     s(e);
   });
 }
-class Hi {
+class qi {
   /** Options passed to the SDK. */
   /** The client Dsn, if specified in options. Without this Dsn, the SDK will be disabled. */
   /** Array of set up integrations. */
@@ -2407,8 +2407,8 @@ class Hi {
    */
   constructor(t) {
     var r, s, i, o, a, c, u;
-    if (this._options = t, this._integrations = {}, this._numProcessing = 0, this._outcomes = {}, this._hooks = {}, this._eventProcessors = [], this._promiseBuffer = Qn((s = (r = t.transportOptions) == null ? void 0 : r.bufferSize) != null ? s : tr), t.dsn ? this._dsn = _s(t.dsn) : m && p.warn("No DSN provided, client will not send events."), this._dsn) {
-      const d = pi(
+    if (this._options = t, this._integrations = {}, this._numProcessing = 0, this._outcomes = {}, this._hooks = {}, this._eventProcessors = [], this._promiseBuffer = nr((s = (r = t.transportOptions) == null ? void 0 : r.bufferSize) != null ? s : rr), t.dsn ? this._dsn = Ts(t.dsn) : g && h.warn("No DSN provided, client will not send events."), this._dsn) {
+      const d = yi(
         this._dsn,
         t.tunnel,
         t._metadata ? t._metadata.sdk : void 0
@@ -2420,12 +2420,12 @@ class Hi {
         url: d
       }));
     }
-    this._options.enableLogs = (o = this._options.enableLogs) != null ? o : (i = this._options._experiments) == null ? void 0 : i.enableLogs, this._options.enableLogs && un(this, "afterCaptureLog", "flushLogs", Yi, Jn), ((u = (c = this._options.enableMetrics) != null ? c : (a = this._options._experiments) == null ? void 0 : a.enableMetrics) != null ? u : !0) && un(
+    this._options.enableLogs = (o = this._options.enableLogs) != null ? o : (i = this._options._experiments) == null ? void 0 : i.enableLogs, this._options.enableLogs && pn(this, "afterCaptureLog", "flushLogs", Xi, Zn), ((u = (c = this._options.enableMetrics) != null ? c : (a = this._options._experiments) == null ? void 0 : a.enableMetrics) != null ? u : !0) && pn(
       this,
       "afterCaptureMetric",
       "flushMetrics",
-      Wi,
-      Xn
+      Ji,
+      tr
     );
   }
   /**
@@ -2435,8 +2435,8 @@ class Hi {
    */
   captureException(t, n, r) {
     const s = R();
-    if (Le(t))
-      return m && p.log(sn), s;
+    if (Be(t))
+      return g && h.log(un), s;
     const i = l({
       event_id: s
     }, n);
@@ -2453,7 +2453,7 @@ class Hi {
   captureMessage(t, n, r, s) {
     const i = l({
       event_id: R()
-    }, r), o = de(t) ? t : String(t), a = In(t), c = a ? this.eventFromMessage(o, n, i) : this.eventFromException(t, i);
+    }, r), o = me(t) ? t : String(t), a = Rn(t), c = a ? this.eventFromMessage(o, n, i) : this.eventFromException(t, i);
     return this._process(
       () => c.then((u) => this._captureEvent(u, i, s)),
       a ? "unknown" : "error"
@@ -2466,11 +2466,11 @@ class Hi {
    */
   captureEvent(t, n, r) {
     const s = R();
-    if (n != null && n.originalException && Le(n.originalException))
-      return m && p.log(sn), s;
+    if (n != null && n.originalException && Be(n.originalException))
+      return g && h.log(un), s;
     const i = l({
       event_id: s
-    }, n), o = t.sdkProcessingMetadata || {}, a = o.capturedSpanScope, c = o.capturedSpanIsolationScope, u = ln(t.type);
+    }, n), o = t.sdkProcessingMetadata || {}, a = o.capturedSpanScope, c = o.capturedSpanIsolationScope, u = hn(t.type);
     return this._process(
       () => this._captureEvent(t, i, a || r, c),
       u
@@ -2480,7 +2480,7 @@ class Hi {
    * Captures a session.
    */
   captureSession(t) {
-    this.sendSession(t), te(t, { init: !1 });
+    this.sendSession(t), se(t, { init: !1 });
   }
   /**
    * Create a cron monitor check in and send it to Sentry. This method is not available on all clients.
@@ -2527,7 +2527,7 @@ class Hi {
    */
   // @ts-expect-error - PromiseLike is a subset of Promise
   flush(t) {
-    return Z(this, null, function* () {
+    return Q(this, null, function* () {
       const n = this._transport;
       if (!n)
         return !0;
@@ -2546,7 +2546,7 @@ class Hi {
    */
   // @ts-expect-error - PromiseLike is a subset of Promise
   close(t) {
-    return Z(this, null, function* () {
+    return Q(this, null, function* () {
       const n = yield this.flush(t);
       return this.getOptions().enabled = !1, this.emit("close"), n;
     });
@@ -2592,39 +2592,39 @@ class Hi {
    */
   addIntegration(t) {
     const n = this._integrations[t.name];
-    qn(this, t, this._integrations), n || rn(this, [t]);
+    Jn(this, t, this._integrations), n || cn(this, [t]);
   }
   /**
    * Send a fully prepared event to Sentry.
    */
   sendEvent(t, n = {}) {
     this.emit("beforeSendEvent", t, n);
-    let r = Bs(t, this._dsn, this._options._metadata, this._options.tunnel);
+    let r = Ys(t, this._dsn, this._options._metadata, this._options.tunnel);
     for (const s of n.attachments || [])
-      r = Ps(r, Ls(s));
+      r = Fs(r, Bs(s));
     this.sendEnvelope(r).then((s) => this.emit("afterSendEvent", t, s));
   }
   /**
    * Send a session or session aggregrates to Sentry.
    */
   sendSession(t) {
-    const { release: n, environment: r = me } = this._options;
+    const { release: n, environment: r = Se } = this._options;
     if ("aggregates" in t) {
       const i = t.attrs || {};
       if (!i.release && !n) {
-        m && p.warn(on);
+        g && h.warn(ln);
         return;
       }
       i.release = i.release || n, i.environment = i.environment || r, t.attrs = i;
     } else {
       if (!t.release && !n) {
-        m && p.warn(on);
+        g && h.warn(ln);
         return;
       }
       t.release = t.release || n, t.environment = t.environment || r;
     }
     this.emit("beforeSendSession", t);
-    const s = Us(t, this._dsn, this._options._metadata, this._options.tunnel);
+    const s = Ws(t, this._dsn, this._options._metadata, this._options.tunnel);
     this.sendEnvelope(s);
   }
   /**
@@ -2633,7 +2633,7 @@ class Hi {
   recordDroppedEvent(t, n, r = 1) {
     if (this._options.sendClientReports) {
       const s = `${t}:${n}`;
-      m && p.log(`Recording outcome: "${s}"${r > 1 ? ` (${r} times)` : ""}`), this._outcomes[s] = (this._outcomes[s] || 0) + r;
+      g && h.log(`Recording outcome: "${s}"${r > 1 ? ` (${r} times)` : ""}`), this._outcomes[s] = (this._outcomes[s] || 0) + r;
     }
   }
   /* eslint-disable @typescript-eslint/unified-signatures */
@@ -2664,21 +2664,21 @@ class Hi {
    */
   // @ts-expect-error - PromiseLike is a subset of Promise
   sendEnvelope(t) {
-    return Z(this, null, function* () {
+    return Q(this, null, function* () {
       if (this.emit("beforeEnvelope", t), this._isEnabled() && this._transport)
         try {
           return yield this._transport.send(t);
         } catch (n) {
-          return m && p.error("Error while sending envelope:", n), {};
+          return g && h.error("Error while sending envelope:", n), {};
         }
-      return m && p.error("Transport disabled"), {};
+      return g && h.error("Transport disabled"), {};
     });
   }
   /* eslint-enable @typescript-eslint/unified-signatures */
   /** Setup integrations for this client. */
   _setupIntegrations() {
     const { integrations: t } = this._options;
-    this._integrations = hi(this, t), rn(this, t);
+    this._integrations = Si(this, t), cn(this, t);
   }
   /** Updates existing session based on the provided event */
   _updateSessionFromEvent(t, n) {
@@ -2694,7 +2694,7 @@ class Hi {
         }
     }
     const o = t.status === "ok";
-    (o && t.errors === 0 || o && r) && (te(t, _(l({}, r && { status: "crashed" }), {
+    (o && t.errors === 0 || o && r) && (se(t, _(l({}, r && { status: "crashed" }), {
       errors: t.errors || Number(s || r)
     })), this.captureSession(t));
   }
@@ -2709,7 +2709,7 @@ class Hi {
    * `false` otherwise
    */
   _isClientDoneProcessing(t) {
-    return Z(this, null, function* () {
+    return Q(this, null, function* () {
       let n = 0;
       for (; !t || n < t; ) {
         if (yield new Promise((r) => setTimeout(r, 1)), !this._numProcessing)
@@ -2739,13 +2739,13 @@ class Hi {
    */
   _prepareEvent(t, n, r, s) {
     const i = this.getOptions(), o = Object.keys(this._integrations);
-    return !n.integrations && (o != null && o.length) && (n.integrations = o), this.emit("preprocessEvent", t, n), t.type || s.setLastEventId(t.event_id || n.event_id), Xs(i, t, n, r, this, s).then((a) => {
+    return !n.integrations && (o != null && o.length) && (n.integrations = o), this.emit("preprocessEvent", t, n), t.type || s.setLastEventId(t.event_id || n.event_id), ni(i, t, n, r, this, s).then((a) => {
       if (a === null)
         return a;
       this.emit("postprocessEvent", a, n), a.contexts = l({
-        trace: Mn(r)
+        trace: Pn(r)
       }, a.contexts);
-      const c = Hn(this, r);
+      const c = Wn(this, r);
       return a.sdkProcessingMetadata = l({
         dynamicSamplingContext: c
       }, a.sdkProcessingMetadata), a;
@@ -2757,11 +2757,11 @@ class Hi {
    * @param hint
    * @param scope
    */
-  _captureEvent(t, n = {}, r = w(), s = A()) {
-    return m && oe(t) && p.log(`Captured error event \`${er(t)[0] || "<unknown>"}\``), this._processEvent(t, n, r, s).then(
+  _captureEvent(t, n = {}, r = O(), s = A()) {
+    return g && le(t) && h.log(`Captured error event \`${sr(t)[0] || "<unknown>"}\``), this._processEvent(t, n, r, s).then(
       (i) => i.event_id,
       (i) => {
-        m && (cn(i) ? p.log(i.message) : an(i) ? p.warn(i.message) : p.warn(i));
+        g && (fn(i) ? h.log(i.message) : dn(i) ? h.warn(i.message) : h.warn(i));
       }
     );
   }
@@ -2779,45 +2779,45 @@ class Hi {
    * @returns A SyncPromise that resolves with the event or rejects in case event was/will not be send.
    */
   _processEvent(t, n, r, s) {
-    const i = this.getOptions(), { sampleRate: o } = i, a = sr(t), c = oe(t), d = `before send for type \`${t.type || "error"}\``, f = typeof o == "undefined" ? void 0 : Ln(o);
+    const i = this.getOptions(), { sampleRate: o } = i, a = ar(t), c = le(t), d = `before send for type \`${t.type || "error"}\``, f = typeof o == "undefined" ? void 0 : jn(o);
     if (c && typeof f == "number" && Math.random() > f)
-      return this.recordDroppedEvent("sample_rate", "error"), ge(
-        Vt(
+      return this.recordDroppedEvent("sample_rate", "error"), be(
+        te(
           `Discarding event because it's not included in the random sample (sampling rate = ${o})`
         )
       );
-    const g = ln(t.type);
-    return this._prepareEvent(t, n, r, s).then((h) => {
-      if (h === null)
-        throw this.recordDroppedEvent("event_processor", g), Vt("An event processor returned `null`, will not send event.");
+    const m = hn(t.type);
+    return this._prepareEvent(t, n, r, s).then((p) => {
+      if (p === null)
+        throw this.recordDroppedEvent("event_processor", m), te("An event processor returned `null`, will not send event.");
       if (n.data && n.data.__sentry__ === !0)
-        return h;
-      const b = zi(this, i, h, n);
-      return Gi(b, d);
-    }).then((h) => {
-      var S;
-      if (h === null) {
-        if (this.recordDroppedEvent("before_send", g), a) {
-          const k = 1 + (t.spans || []).length;
-          this.recordDroppedEvent("before_send", "span", k);
+        return p;
+      const S = Ki(this, i, p, n);
+      return Vi(S, d);
+    }).then((p) => {
+      var b;
+      if (p === null) {
+        if (this.recordDroppedEvent("before_send", m), a) {
+          const I = 1 + (t.spans || []).length;
+          this.recordDroppedEvent("before_send", "span", I);
         }
-        throw Vt(`${d} returned \`null\`, will not send event.`);
+        throw te(`${d} returned \`null\`, will not send event.`);
       }
       const y = r.getSession() || s.getSession();
-      if (c && y && this._updateSessionFromEvent(y, h), a) {
-        const N = ((S = h.sdkProcessingMetadata) == null ? void 0 : S.spanCountBeforeProcessing) || 0, k = h.spans ? h.spans.length : 0, L = N - k;
-        L > 0 && this.recordDroppedEvent("before_send", "span", L);
+      if (c && y && this._updateSessionFromEvent(y, p), a) {
+        const N = ((b = p.sdkProcessingMetadata) == null ? void 0 : b.spanCountBeforeProcessing) || 0, I = p.spans ? p.spans.length : 0, $ = N - I;
+        $ > 0 && this.recordDroppedEvent("before_send", "span", $);
       }
-      const b = h.transaction_info;
-      if (a && b && h.transaction !== t.transaction) {
+      const S = p.transaction_info;
+      if (a && S && p.transaction !== t.transaction) {
         const N = "custom";
-        h.transaction_info = _(l({}, b), {
+        p.transaction_info = _(l({}, S), {
           source: N
         });
       }
-      return this.sendEvent(h, n), h;
-    }).then(null, (h) => {
-      throw cn(h) || an(h) ? h : (this.captureException(h, {
+      return this.sendEvent(p, n), p;
+    }).then(null, (p) => {
+      throw fn(p) || dn(p) ? p : (this.captureException(p, {
         mechanism: {
           handled: !1,
           type: "internal"
@@ -2825,10 +2825,10 @@ class Hi {
         data: {
           __sentry__: !0
         },
-        originalException: h
-      }), Tt(
+        originalException: p
+      }), It(
         `Event processing pipeline threw an error, original event will not be sent. Details have been sent as a new event.
-Reason: ${h}`
+Reason: ${p}`
       ));
     });
   }
@@ -2838,7 +2838,7 @@ Reason: ${h}`
   _process(t, n) {
     this._numProcessing++, this._promiseBuffer.add(t).then(
       (r) => (this._numProcessing--, r),
-      (r) => (this._numProcessing--, r === Se && this.recordDroppedEvent("queue_overflow", n), r)
+      (r) => (this._numProcessing--, r === Ie && this.recordDroppedEvent("queue_overflow", n), r)
     );
   }
   /**
@@ -2859,73 +2859,73 @@ Reason: ${h}`
    * Sends client reports as an envelope.
    */
   _flushOutcomes() {
-    m && p.log("Flushing outcomes...");
+    g && h.log("Flushing outcomes...");
     const t = this._clearOutcomes();
     if (t.length === 0) {
-      m && p.log("No outcomes to send");
+      g && h.log("No outcomes to send");
       return;
     }
     if (!this._dsn) {
-      m && p.log("No dsn provided, will not send outcomes");
+      g && h.log("No dsn provided, will not send outcomes");
       return;
     }
-    m && p.log("Sending outcomes:", t);
-    const n = Fi(t, this._options.tunnel && ft(this._dsn));
+    g && h.log("Sending outcomes:", t);
+    const n = Gi(t, this._options.tunnel && pt(this._dsn));
     this.sendEnvelope(n);
   }
   /**
    * Creates an {@link Event} from all inputs to `captureException` and non-primitive inputs to `captureMessage`.
    */
 }
-function ln(e) {
+function hn(e) {
   return e === "replay_event" ? "replay" : e || "error";
 }
-function Gi(e, t) {
+function Vi(e, t) {
   const n = `${t} must return \`null\` or a valid event.`;
-  if (lt(e))
+  if (dt(e))
     return e.then(
       (r) => {
-        if (!ot(r) && r !== null)
-          throw Tt(n);
+        if (!at(r) && r !== null)
+          throw It(n);
         return r;
       },
       (r) => {
-        throw Tt(`${t} rejected with ${r}`);
+        throw It(`${t} rejected with ${r}`);
       }
     );
-  if (!ot(e) && e !== null)
-    throw Tt(n);
+  if (!at(e) && e !== null)
+    throw It(n);
   return e;
 }
-function zi(e, t, n, r) {
+function Ki(e, t, n, r) {
   const { beforeSend: s, beforeSendTransaction: i, beforeSendSpan: o, ignoreSpans: a } = t;
   let c = n;
-  if (oe(c) && s)
+  if (le(c) && s)
     return s(c, r);
-  if (sr(c)) {
+  if (ar(c)) {
     if (o || a) {
-      const u = ji(c);
-      if (a != null && a.length && Ye(u, a))
+      const u = zi(c);
+      if (a != null && a.length && Je(u, a))
         return null;
       if (o) {
         const d = o(u);
-        d ? c = dt(n, Ui(d)) : ze();
+        d ? c = ft(n, Wi(d)) : Ve();
       }
       if (c.spans) {
         const d = [], f = c.spans;
-        for (const h of f) {
-          if (a != null && a.length && Ye(h, a)) {
-            Ns(f, h);
+        for (const p of f) {
+          if (a != null && a.length && Je(p, a)) {
+            Os(f, p);
             continue;
           }
           if (o) {
-            const y = o(h);
-            y ? d.push(y) : (ze(), d.push(h));
+            const y = o(p);
+            y ? d.push(y) : (Ve(), d.push(p));
           } else
-            d.push(h);
+            d.push(p);
         }
-        const g = c.spans.length - d.length;
-        g && e.recordDroppedEvent("before_send", "span", g), c.spans = d;
+        const m = c.spans.length - d.length;
+        m && e.recordDroppedEvent("before_send", "span", m), c.spans = d;
       }
     }
     if (i) {
@@ -2940,83 +2940,83 @@ function zi(e, t, n, r) {
   }
   return c;
 }
-function oe(e) {
+function le(e) {
   return e.type === void 0;
 }
-function sr(e) {
+function ar(e) {
   return e.type === "transaction";
 }
-function Wi(e) {
+function Ji(e) {
   let t = 0;
-  return e.name && (t += e.name.length * 2), t += 8, t + ir(e.attributes);
+  return e.name && (t += e.name.length * 2), t += 8, t + cr(e.attributes);
 }
-function Yi(e) {
+function Xi(e) {
   let t = 0;
-  return e.message && (t += e.message.length * 2), t + ir(e.attributes);
+  return e.message && (t += e.message.length * 2), t + cr(e.attributes);
 }
-function ir(e) {
+function cr(e) {
   if (!e)
     return 0;
   let t = 0;
   return Object.values(e).forEach((n) => {
-    Array.isArray(n) ? t += n.length * dn(n[0]) : In(n) ? t += dn(n) : t += 100;
+    Array.isArray(n) ? t += n.length * mn(n[0]) : Rn(n) ? t += mn(n) : t += 100;
   }), t;
 }
-function dn(e) {
+function mn(e) {
   return typeof e == "string" ? e.length * 2 : typeof e == "number" ? 8 : typeof e == "boolean" ? 4 : 0;
 }
-function qi(e, t) {
-  t.debug === !0 && (m ? p.enable() : q(() => {
+function Zi(e, t) {
+  t.debug === !0 && (g ? h.enable() : V(() => {
     console.warn("[Sentry] Cannot initialize SDK with `debug` option using a non-debug bundle.");
-  })), w().update(t.initialScope);
+  })), O().update(t.initialScope);
   const r = new e(t);
-  return Ki(r), r.init(), r;
+  return Qi(r), r.init(), r;
 }
-function Ki(e) {
-  w().setClient(e);
+function Qi(e) {
+  O().setClient(e);
 }
-function Ji(e, ...t) {
+function to(e, ...t) {
   const n = new String(String.raw(e, ...t));
   return n.__sentry_template_string__ = e.join("\0").replace(/%/g, "%%").replace(/\0/g, "%s"), n.__sentry_template_values__ = t, n;
 }
-const Vi = Ji;
-function Xi(e, t, n = [t], r = "npm") {
+const eo = to;
+function no(e, t, n = [t], r = "npm") {
   const s = e._metadata || {};
   s.sdk || (s.sdk = {
     name: `sentry.javascript.${t}`,
     packages: n.map((i) => ({
       name: `${r}:@sentry/${i}`,
-      version: j
+      version: U
     })),
-    version: j
+    version: U
   }), e._metadata = s;
 }
-const Zi = 100;
-function fa(e, t) {
-  const n = v(), r = A();
+const ro = 100;
+function Ia(e, t) {
+  const n = k(), r = A();
   if (!n) return;
-  const { beforeBreadcrumb: s = null, maxBreadcrumbs: i = Zi } = n.getOptions();
+  const { beforeBreadcrumb: s = null, maxBreadcrumbs: i = ro } = n.getOptions();
   if (i <= 0) return;
-  const o = O(), a = l({ timestamp: o }, e), c = s ? q(() => s(a, t)) : a;
+  const o = w(), a = l({ timestamp: o }, e), c = s ? V(() => s(a, t)) : a;
   c !== null && (n.emit && n.emit("beforeAddBreadcrumb", c, t), r.addBreadcrumb(c, i));
 }
-let fn;
-const Qi = "FunctionToString", pn = /* @__PURE__ */ new WeakMap(), to = (() => ({
-  name: Qi,
+let gn;
+const so = "FunctionToString", _n = /* @__PURE__ */ new WeakMap(), io = (() => ({
+  name: so,
   setupOnce() {
-    fn = Function.prototype.toString;
+    gn = Function.prototype.toString;
     try {
       Function.prototype.toString = function(...e) {
-        const t = Nn(this), n = pn.has(v()) && t !== void 0 ? t : this;
-        return fn.apply(n, e);
+        const t = An(this), n = _n.has(k()) && t !== void 0 ? t : this;
+        return gn.apply(n, e);
       };
     } catch (e) {
     }
   },
   setup(e) {
-    pn.set(e, !0);
+    _n.set(e, !0);
   }
-})), eo = to, no = [
+})), oo = io, ao = [
   /^Script error\.?$/,
   /^Javascript error: Script error\.? on line 0$/,
   /^ResizeObserver loop completed with undelivered notifications.$/,
@@ -3037,98 +3037,98 @@ const Qi = "FunctionToString", pn = /* @__PURE__ */ new WeakMap(), to = (() => (
   // unactionable error from CEFSharp, a .NET library that embeds chromium in .NET apps
   /^Java exception was raised during method invocation$/
   // error from Facebook Mobile browser (https://github.com/getsentry/sentry-javascript/issues/15065)
-], ro = "EventFilters", so = (e = {}) => {
+], co = "EventFilters", uo = (e = {}) => {
   let t;
   return {
-    name: ro,
+    name: co,
     setup(n) {
       const r = n.getOptions();
-      t = hn(e, r);
+      t = yn(e, r);
     },
     processEvent(n, r, s) {
       if (!t) {
         const i = s.getOptions();
-        t = hn(e, i);
+        t = yn(e, i);
       }
-      return oo(n, t) ? null : n;
+      return fo(n, t) ? null : n;
     }
   };
-}, io = ((e = {}) => _(l({}, so(e)), {
+}, lo = ((e = {}) => _(l({}, uo(e)), {
   name: "InboundFilters"
 }));
-function hn(e = {}, t = {}) {
+function yn(e = {}, t = {}) {
   return {
     allowUrls: [...e.allowUrls || [], ...t.allowUrls || []],
     denyUrls: [...e.denyUrls || [], ...t.denyUrls || []],
     ignoreErrors: [
       ...e.ignoreErrors || [],
       ...t.ignoreErrors || [],
-      ...e.disableErrorDefaults ? [] : no
+      ...e.disableErrorDefaults ? [] : ao
     ],
     ignoreTransactions: [...e.ignoreTransactions || [], ...t.ignoreTransactions || []]
   };
 }
-function oo(e, t) {
+function fo(e, t) {
   if (e.type) {
-    if (e.type === "transaction" && co(e, t.ignoreTransactions))
-      return m && p.warn(
+    if (e.type === "transaction" && ho(e, t.ignoreTransactions))
+      return g && h.warn(
         `Event dropped due to being matched by \`ignoreTransactions\` option.
-Event: ${U(e)}`
+Event: ${B(e)}`
       ), !0;
   } else {
-    if (ao(e, t.ignoreErrors))
-      return m && p.warn(
+    if (po(e, t.ignoreErrors))
+      return g && h.warn(
         `Event dropped due to being matched by \`ignoreErrors\` option.
-Event: ${U(e)}`
+Event: ${B(e)}`
       ), !0;
-    if (po(e))
-      return m && p.warn(
+    if (yo(e))
+      return g && h.warn(
         `Event dropped due to not having an error message, error type or stacktrace.
-Event: ${U(
+Event: ${B(
           e
         )}`
       ), !0;
-    if (uo(e, t.denyUrls))
-      return m && p.warn(
+    if (mo(e, t.denyUrls))
+      return g && h.warn(
         `Event dropped due to being matched by \`denyUrls\` option.
-Event: ${U(
+Event: ${B(
           e
         )}.
-Url: ${Nt(e)}`
+Url: ${Rt(e)}`
       ), !0;
-    if (!lo(e, t.allowUrls))
-      return m && p.warn(
+    if (!go(e, t.allowUrls))
+      return g && h.warn(
         `Event dropped due to not being matched by \`allowUrls\` option.
-Event: ${U(
+Event: ${B(
           e
         )}.
-Url: ${Nt(e)}`
+Url: ${Rt(e)}`
       ), !0;
   }
   return !1;
 }
-function ao(e, t) {
-  return t != null && t.length ? er(e).some((n) => jt(n, t)) : !1;
+function po(e, t) {
+  return t != null && t.length ? sr(e).some((n) => Ht(n, t)) : !1;
 }
-function co(e, t) {
+function ho(e, t) {
   if (!(t != null && t.length))
     return !1;
   const n = e.transaction;
-  return n ? jt(n, t) : !1;
+  return n ? Ht(n, t) : !1;
 }
-function uo(e, t) {
+function mo(e, t) {
   if (!(t != null && t.length))
     return !1;
-  const n = Nt(e);
-  return n ? jt(n, t) : !1;
+  const n = Rt(e);
+  return n ? Ht(n, t) : !1;
 }
-function lo(e, t) {
+function go(e, t) {
   if (!(t != null && t.length))
     return !0;
-  const n = Nt(e);
-  return n ? jt(n, t) : !0;
+  const n = Rt(e);
+  return n ? Ht(n, t) : !0;
 }
-function fo(e = []) {
+function _o(e = []) {
   for (let t = e.length - 1; t >= 0; t--) {
     const n = e[t];
     if (n && n.filename !== "<anonymous>" && n.filename !== "[native code]")
@@ -3136,19 +3136,19 @@ function fo(e = []) {
   }
   return null;
 }
-function Nt(e) {
+function Rt(e) {
   var t, n, r;
   try {
     const s = [...(n = (t = e.exception) == null ? void 0 : t.values) != null ? n : []].reverse().find((o) => {
       var a, c, u;
       return ((a = o.mechanism) == null ? void 0 : a.parent_id) === void 0 && ((u = (c = o.stacktrace) == null ? void 0 : c.frames) == null ? void 0 : u.length);
     }), i = (r = s == null ? void 0 : s.stacktrace) == null ? void 0 : r.frames;
-    return i ? fo(i) : null;
+    return i ? _o(i) : null;
   } catch (s) {
-    return m && p.error(`Cannot extract url for event ${U(e)}`), null;
+    return g && h.error(`Cannot extract url for event ${B(e)}`), null;
   }
 }
-function po(e) {
+function yo(e) {
   var t, n;
   return (n = (t = e.exception) == null ? void 0 : t.values) != null && n.length ? (
     // No top-level message
@@ -3156,77 +3156,77 @@ function po(e) {
     !e.exception.values.some((r) => r.stacktrace || r.type && r.type !== "Error" || r.value)
   ) : !1;
 }
-function V(e, t, n, r, s) {
-  Ei({ level: e, message: t, attributes: n, severityNumber: s }, r);
-}
-function ho(e, t, { scope: n } = {}) {
-  V("trace", e, t, n);
-}
-function mo(e, t, { scope: n } = {}) {
-  V("debug", e, t, n);
-}
-function go(e, t, { scope: n } = {}) {
-  V("info", e, t, n);
-}
-function _o(e, t, { scope: n } = {}) {
-  V("warn", e, t, n);
-}
-function yo(e, t, { scope: n } = {}) {
-  V("error", e, t, n);
+function X(e, t, n, r, s) {
+  Ni({ level: e, message: t, attributes: n, severityNumber: s }, r);
 }
 function So(e, t, { scope: n } = {}) {
-  V("fatal", e, t, n);
+  X("trace", e, t, n);
 }
-const pa = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+function bo(e, t, { scope: n } = {}) {
+  X("debug", e, t, n);
+}
+function Eo(e, t, { scope: n } = {}) {
+  X("info", e, t, n);
+}
+function To(e, t, { scope: n } = {}) {
+  X("warn", e, t, n);
+}
+function Io(e, t, { scope: n } = {}) {
+  X("error", e, t, n);
+}
+function vo(e, t, { scope: n } = {}) {
+  X("fatal", e, t, n);
+}
+const va = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  debug: mo,
-  error: yo,
-  fatal: So,
-  fmt: Vi,
-  info: go,
-  trace: ho,
-  warn: _o
+  debug: bo,
+  error: Io,
+  fatal: vo,
+  fmt: eo,
+  info: Eo,
+  trace: So,
+  warn: To
 }, Symbol.toStringTag, { value: "Module" }));
-function be(e, t, n, r) {
-  wi(
+function ve(e, t, n, r) {
+  xi(
     { type: e, name: t, value: n, unit: r == null ? void 0 : r.unit, attributes: r == null ? void 0 : r.attributes },
     { scope: r == null ? void 0 : r.scope }
   );
 }
-function bo(e, t = 1, n) {
-  be("counter", e, t, n);
+function ko(e, t = 1, n) {
+  ve("counter", e, t, n);
 }
-function Eo(e, t, n) {
-  be("gauge", e, t, n);
+function No(e, t, n) {
+  ve("gauge", e, t, n);
 }
-function To(e, t, n) {
-  be("distribution", e, t, n);
+function Ro(e, t, n) {
+  ve("distribution", e, t, n);
 }
-const ha = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const ka = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  count: bo,
-  distribution: To,
-  gauge: Eo
+  count: ko,
+  distribution: Ro,
+  gauge: No
 }, Symbol.toStringTag, { value: "Module" }));
-function ma(e) {
-  const t = w();
+function Na(e) {
+  const t = O();
   e(t);
 }
-const E = typeof __SENTRY_DEBUG__ == "undefined" ? !0 : __SENTRY_DEBUG__, mn = "finishReason", gn = ["heartbeatFailed", "idleTimeout", "documentHidden"];
-let or;
-function Io() {
-  return or;
+const E = typeof __SENTRY_DEBUG__ == "undefined" ? !0 : __SENTRY_DEBUG__, Sn = "finishReason", bn = ["heartbeatFailed", "idleTimeout", "documentHidden"];
+let ur;
+function wo() {
+  return ur;
 }
-function kt(e) {
-  or = e;
+function wt(e) {
+  ur = e;
 }
-function et(e) {
+function nt(e) {
   return e / 1e3;
 }
-function vo(e) {
+function Ao(e) {
   return e * 1e3;
 }
-class ar {
+class lr {
   constructor(t = 1e3) {
     this.spans = [], this._maxlen = t;
   }
@@ -3240,7 +3240,7 @@ class ar {
     this.spans.length > this._maxlen ? t.spanRecorder = void 0 : this.spans.push(t);
   }
 }
-class Ee {
+class ke {
   /**
    * You should never call the constructor manually, always use `Sentry.startTransaction()`
    * or call `startChild()` on an existing span.
@@ -3249,10 +3249,10 @@ class Ee {
    * @hidden
    */
   constructor(t) {
-    var n, r, s, i, o, a, c, u, d, f, g, h, y;
-    if (this.name = "", this.traceId = R(), this.spanId = R().substring(16), this.startTimestamp = O(), this.tags = {}, this.data = {}, this.attributes = {}, this.instrumenter = "sentry", !t)
+    var n, r, s, i, o, a, c, u, d, f, m, p, y;
+    if (this.name = "", this.traceId = R(), this.spanId = R().substring(16), this.startTimestamp = w(), this.tags = {}, this.data = {}, this.attributes = {}, this.instrumenter = "sentry", !t)
       return this;
-    this.traceId = (n = t.traceId) != null ? n : this.traceId, this.spanId = (r = t.spanId) != null ? r : this.spanId, this.parentSpanId = (s = t.parentSpanId) != null ? s : this.parentSpanId, "sampled" in t && (this.sampled = t.sampled), this.op = (i = t.op) != null ? i : this.op, this.description = (a = (o = t.description) != null ? o : t.name) != null ? a : this.description, this.name = (u = (c = t.name) != null ? c : t.description) != null ? u : this.name, this.data = t.data ? l({}, t.data) : this.data, this.tags = t.tags ? l({}, t.tags) : this.tags, this.attributes = t.attributes ? l({}, t.attributes) : this.attributes, this.status = (d = t.status) != null ? d : this.status, this.startTimestamp = (f = t.startTimestamp) != null ? f : this.startTimestamp, this.endTimestamp = (g = t.endTimestamp) != null ? g : this.endTimestamp, this.instrumenter = (h = t.instrumenter) != null ? h : this.instrumenter, this.origin = (y = t.origin) != null ? y : this.origin;
+    this.traceId = (n = t.traceId) != null ? n : this.traceId, this.spanId = (r = t.spanId) != null ? r : this.spanId, this.parentSpanId = (s = t.parentSpanId) != null ? s : this.parentSpanId, "sampled" in t && (this.sampled = t.sampled), this.op = (i = t.op) != null ? i : this.op, this.description = (a = (o = t.description) != null ? o : t.name) != null ? a : this.description, this.name = (u = (c = t.name) != null ? c : t.description) != null ? u : this.name, this.data = t.data ? l({}, t.data) : this.data, this.tags = t.tags ? l({}, t.tags) : this.tags, this.attributes = t.attributes ? l({}, t.attributes) : this.attributes, this.status = (d = t.status) != null ? d : this.status, this.startTimestamp = (f = t.startTimestamp) != null ? f : this.startTimestamp, this.endTimestamp = (m = t.endTimestamp) != null ? m : this.endTimestamp, this.instrumenter = (p = t.instrumenter) != null ? p : this.instrumenter, this.origin = (y = t.origin) != null ? y : this.origin;
   }
   /**
    * @inheritDoc
@@ -3266,7 +3266,7 @@ class Ee {
    */
   startChild(t) {
     var r;
-    const n = new Ee(_(l({}, t), {
+    const n = new ke(_(l({}, t), {
       parentSpanId: this.spanId,
       sampled: this.sampled,
       attributes: (r = t == null ? void 0 : t.attributes) != null ? r : {},
@@ -3312,7 +3312,7 @@ class Ee {
    */
   setHttpStatus(t) {
     this.setTag("http.status_code", String(t));
-    const n = ko(t);
+    const n = Mo(t);
     return n !== "unknown_error" && this.setStatus(n), this;
   }
   /**
@@ -3363,13 +3363,13 @@ class Ee {
    * @inheritDoc
    */
   end(t) {
-    this.finish(No(t));
+    this.finish(Oo(t));
   }
   /**
    * @inheritDoc
    */
   finish(t) {
-    this.endTimestamp = typeof t == "number" ? t : O();
+    this.endTimestamp = typeof t == "number" ? t : w();
   }
   /**
    * @inheritDoc
@@ -3382,7 +3382,7 @@ class Ee {
    * @inheritDoc
    */
   toContext() {
-    return bt({
+    return Et({
       data: this.data,
       description: this.description,
       attributes: this.attributes,
@@ -3409,7 +3409,7 @@ class Ee {
    * @inheritDoc
    */
   getTraceContext() {
-    return bt({
+    return Et({
       data: Object.keys(this.data).length > 0 ? this.data : void 0,
       description: this.description,
       op: this.op,
@@ -3425,7 +3425,7 @@ class Ee {
    */
   toJSON() {
     const t = Object.keys(this.data).length > 0 ? this.data : {};
-    return bt({
+    return Et({
       data: t,
       description: this.description,
       op: this.op,
@@ -3456,16 +3456,16 @@ class Ee {
     return this.sampled !== !1 && this.endTimestamp === void 0;
   }
 }
-function No(e) {
+function Oo(e) {
   if (e === void 0)
-    return O();
+    return w();
   if (Array.isArray(e) && e.length === 2) {
     const [t, n] = e;
     return t + n / 1e9;
   }
-  return e instanceof Date ? e.getTime() / 1e3 : typeof e == "number" ? e > 1e12 ? et(e) : e : O();
+  return e instanceof Date ? e.getTime() / 1e3 : typeof e == "number" ? e > 1e12 ? nt(e) : e : w();
 }
-function ko(e) {
+function Mo(e) {
   if (e < 400 && e >= 100)
     return "ok";
   if (e >= 400 && e < 500)
@@ -3498,7 +3498,7 @@ function ko(e) {
     }
   return "unknown_error";
 }
-class cr extends Ee {
+class dr extends ke {
   /**
    * This constructor should never be called manually. Those instrumenting tracing should use
    * `Sentry.startTransaction()`, and internal methods should use `hub.startTransaction()`.
@@ -3538,7 +3538,7 @@ class cr extends Ee {
    * @param maxlen maximum number of spans that can be recorded
    */
   initSpanRecorder(t = 1e3) {
-    this.spanRecorder || (this.spanRecorder = new ar(t)), this.spanRecorder.add(this);
+    this.spanRecorder || (this.spanRecorder = new lr(t)), this.spanRecorder.add(this);
   }
   /**
    * Set observed measurements for this transaction.
@@ -3572,8 +3572,8 @@ class cr extends Ee {
   finish(t) {
     if (this.endTimestamp !== void 0)
       return;
-    if (this.name || (E && p.warn("Transaction has no name, falling back to `<unlabeled transaction>`."), this.name = "<unlabeled transaction>"), super.finish(t), this.sampled !== !0) {
-      E && p.log("[Tracing] Discarding transaction because its trace was not chosen to be sampled.");
+    if (this.name || (E && h.warn("Transaction has no name, falling back to `<unlabeled transaction>`."), this.name = "<unlabeled transaction>"), super.finish(t), this.sampled !== !0) {
+      E && h.log("[Tracing] Discarding transaction because its trace was not chosen to be sampled.");
       return;
     }
     const n = this.spanRecorder ? this.spanRecorder.spans.filter((o) => o !== this && o.endTimestamp) : [], r = n.map((o) => o.toJSON());
@@ -3590,17 +3590,17 @@ class cr extends Ee {
       type: "transaction",
       sdkProcessingMetadata: this.metadata
     };
-    return Object.keys(this._measurements).length > 0 && (E && p.log(
+    return Object.keys(this._measurements).length > 0 && (E && h.log(
       "[Measurements] Adding measurements to transaction",
       JSON.stringify(this._measurements, void 0, 2)
-    ), s.measurements = this._measurements), E && p.log(`[Tracing] Finishing ${this.op} transaction: ${this.name}.`), ci(s);
+    ), s.measurements = this._measurements), E && h.log(`[Tracing] Finishing ${this.op} transaction: ${this.name}.`), pi(s);
   }
   /**
    * @inheritDoc
    */
   toContext() {
     const t = super.toContext();
-    return bt(_(l({}, t), {
+    return Et(_(l({}, t), {
       name: this.name,
       trimEnd: this._trimEnd
     }));
@@ -3613,8 +3613,8 @@ class cr extends Ee {
     return super.updateWithContext(t), this.name = (n = t.name) != null ? n : "", this._trimEnd = t.trimEnd, this;
   }
 }
-const Ro = 1e3, Oo = 5e3;
-class Ao extends ar {
+const Do = 1e3, Co = 5e3;
+class Po extends lr {
   constructor(t, n, r = "", s) {
     super(s), this._pushActivity = t, this._popActivity = n, this.transactionSpanId = r;
   }
@@ -3623,35 +3623,35 @@ class Ao extends ar {
    */
   add(t) {
     t.spanId !== this.transactionSpanId && (t.finish = (n) => {
-      t.endTimestamp = typeof n == "number" ? n : O(), this._popActivity(t.spanId);
+      t.endTimestamp = typeof n == "number" ? n : w(), this._popActivity(t.spanId);
     }, t.endTimestamp === void 0 && this._pushActivity(t.spanId)), super.add(t);
   }
 }
-class wo extends cr {
-  constructor(t, n = Ro, r = !1) {
-    super(t), this._idleTimeout = n, this._onScope = r, this.activities = {}, this._heartbeatCounter = 0, this._finished = !1, this._beforeFinishCallbacks = [], r && (E && p.log(`Setting idle transaction as active. Span ID: ${this.spanId}`), kt(this)), this._initTimeout = setTimeout(() => {
+class xo extends dr {
+  constructor(t, n = Do, r = !1) {
+    super(t), this._idleTimeout = n, this._onScope = r, this.activities = {}, this._heartbeatCounter = 0, this._finished = !1, this._beforeFinishCallbacks = [], r && (E && h.log(`Setting idle transaction as active. Span ID: ${this.spanId}`), wt(this)), this._initTimeout = setTimeout(() => {
       this._finished || this.finish();
     }, this._idleTimeout);
   }
   /** {@inheritDoc} */
-  finish(t = O()) {
+  finish(t = w()) {
     if (this._finished = !0, this.activities = {}, this.spanRecorder) {
-      E && p.log("[Tracing] finishing IdleTransaction", new Date(t * 1e3).toISOString(), this.op);
+      E && h.log("[Tracing] finishing IdleTransaction", new Date(t * 1e3).toISOString(), this.op);
       for (const n of this._beforeFinishCallbacks)
         n(this, t);
       this.spanRecorder.spans = this.spanRecorder.spans.filter((n) => {
         if (n.spanId === this.spanId)
           return !0;
-        n.endTimestamp || (n.endTimestamp = t, n.setStatus("cancelled"), E && p.log("[Tracing] cancelling span since transaction ended early", JSON.stringify(n, void 0, 2)));
+        n.endTimestamp || (n.endTimestamp = t, n.setStatus("cancelled"), E && h.log("[Tracing] cancelling span since transaction ended early", JSON.stringify(n, void 0, 2)));
         const r = n.startTimestamp < t;
-        return r || E && p.log(
+        return r || E && h.log(
           "[Tracing] discarding Span since it happened after Transaction was finished",
           JSON.stringify(n, void 0, 2)
         ), r;
-      }), E && p.log("[Tracing] flushing IdleTransaction");
+      }), E && h.log("[Tracing] flushing IdleTransaction");
     } else
-      E && p.log("[Tracing] No active IdleTransaction");
-    return this._onScope && kt(void 0), super.finish(t);
+      E && h.log("[Tracing] No active IdleTransaction");
+    return this._onScope && wt(void 0), super.finish(t);
   }
   /**
    * Register a callback function that gets excecuted before the transaction finishes.
@@ -3673,7 +3673,7 @@ class wo extends cr {
       }, r = (s) => {
         this._finished || this._popActivity(s);
       };
-      this.spanRecorder = new Ao(n, r, this.spanId, t), E && p.log("Starting heartbeat"), this._pingHeartbeat();
+      this.spanRecorder = new Po(n, r, this.spanId, t), E && h.log("Starting heartbeat"), this._pingHeartbeat();
     }
     this.spanRecorder.add(this);
   }
@@ -3682,17 +3682,17 @@ class wo extends cr {
    * @param spanId The span id that represents the activity
    */
   _pushActivity(t) {
-    this._initTimeout && (clearTimeout(this._initTimeout), this._initTimeout = void 0), E && p.log(`[Tracing] pushActivity: ${t}`), this.activities[t] = !0, E && p.log("[Tracing] new activities count", Object.keys(this.activities).length);
+    this._initTimeout && (clearTimeout(this._initTimeout), this._initTimeout = void 0), E && h.log(`[Tracing] pushActivity: ${t}`), this.activities[t] = !0, E && h.log("[Tracing] new activities count", Object.keys(this.activities).length);
   }
   /**
    * Remove an activity from usage
    * @param spanId The span id that represents the activity
    */
   _popActivity(t) {
-    if (this.activities[t] && (E && p.log(`[Tracing] popActivity ${t}`), delete this.activities[t], E && p.log("[Tracing] new activities count", Object.keys(this.activities).length)), Object.keys(this.activities).length === 0) {
-      const n = this._idleTimeout, r = O() + n / 1e3;
+    if (this.activities[t] && (E && h.log(`[Tracing] popActivity ${t}`), delete this.activities[t], E && h.log("[Tracing] new activities count", Object.keys(this.activities).length)), Object.keys(this.activities).length === 0) {
+      const n = this._idleTimeout, r = w() + n / 1e3;
       setTimeout(() => {
-        this._finished || (this.setTag(mn, gn[1]), this.finish(r));
+        this._finished || (this.setTag(Sn, bn[1]), this.finish(r));
       }, n);
     }
   }
@@ -3704,127 +3704,225 @@ class wo extends cr {
     if (this._finished)
       return;
     const t = Object.keys(this.activities).join("");
-    t === this._prevHeartbeatString ? this._heartbeatCounter += 1 : this._heartbeatCounter = 1, this._prevHeartbeatString = t, this._heartbeatCounter >= 3 ? (E && p.log("[Tracing] Transaction finished because of no change for 3 heart beats"), this.setStatus("deadline_exceeded"), this.setTag(mn, gn[0]), this.finish()) : this._pingHeartbeat();
+    t === this._prevHeartbeatString ? this._heartbeatCounter += 1 : this._heartbeatCounter = 1, this._prevHeartbeatString = t, this._heartbeatCounter >= 3 ? (E && h.log("[Tracing] Transaction finished because of no change for 3 heart beats"), this.setStatus("deadline_exceeded"), this.setTag(Sn, bn[0]), this.finish()) : this._pingHeartbeat();
   }
   /**
    * Pings the heartbeat
    */
   _pingHeartbeat() {
-    E && p.log(`pinging Heartbeat -> current counter: ${this._heartbeatCounter}`), setTimeout(() => {
+    E && h.log(`pinging Heartbeat -> current counter: ${this._heartbeatCounter}`), setTimeout(() => {
       this._beat();
-    }, Oo);
+    }, Co);
   }
 }
-function ur(e, t, n) {
-  const [r, s] = Hs(
+const $o = 3600;
+let F, At;
+function Lo() {
+  return {
+    traceId: Nt(),
+    spanId: zt(),
+    sampleRand: Math.random()
+  };
+}
+function Ne() {
+  return F || (F = Lo()), F;
+}
+function fr(e) {
+  const t = Ne();
+  return F = l(l({}, t), e), F;
+}
+function Fo(e = !1) {
+  const t = F;
+  return F = {
+    traceId: e && t ? t.traceId : Nt(),
+    spanId: zt(),
+    sampleRand: Math.random()
+  }, F;
+}
+function jo() {
+  return At;
+}
+function Uo(e, t, n, r, s, i) {
+  At = {
+    spanContext: {
+      traceId: e,
+      spanId: t,
+      traceFlags: n ? 1 : 0
+    },
+    startTimestamp: r,
+    sampleRate: s,
+    sampleRand: i
+  };
+}
+function Bo() {
+  return At ? Date.now() / 1e3 - At.startTimestamp <= $o : !1;
+}
+function pr(e, t, n) {
+  const [r, s] = qs(
     { tracesSampleRate: t.tracesSampleRate, tracesSampler: t.tracesSampler },
     n,
     Math.random()
   );
-  return e.sampled = r, e.sampled ? (E && p.log(`[Tracing] starting ${e.op} transaction - ${e.name}`), e) : (E && p.log(
+  return e.sampled = r, e.sampled ? (E && h.log(`[Tracing] starting ${e.op} transaction - ${e.name}`), e) : (E && h.log(
     `[Tracing] Discarding transaction because it's not included in the random sample (sampling rate = ${Number(
       s != null ? s : 0
     )})`
   ), e);
 }
-function ga(e, t) {
-  const n = v(), r = n && n.getOptions && n.getOptions() || {}, s = e.name || e.op || "unknown-transaction", i = l({
-    parentSampled: e.parentSampled,
-    transactionContext: _(l({}, e), { name: s }),
-    name: s
+function Ra(e, t, n) {
+  var f, m;
+  const r = k(), s = r && r.getOptions && r.getOptions() || {}, i = (f = n == null ? void 0 : n.traceContinuityMode) != null ? f : "off", o = (m = n == null ? void 0 : n.consistentTraceSampling) != null ? m : !1, a = hr(
+    e,
+    i,
+    o
+  ), c = a.name || a.op || "unknown-transaction", u = l({
+    parentSampled: a.parentSampled,
+    transactionContext: _(l({}, a), { name: c }),
+    name: c
   }, t);
-  let o = new cr(_(l({}, e), { name: s }));
-  if (o = ur(o, r, i), o.sampled) {
-    const a = r._experiments && r._experiments.maxSpans;
-    o.initSpanRecorder(a), kt(o);
+  let d = new dr(_(l({}, a), { name: c }));
+  if (d = pr(d, s, u), d.sampled) {
+    const p = s._experiments && s._experiments.maxSpans;
+    d.initSpanRecorder(p), wt(d);
   }
-  return o;
+  return fr({
+    traceId: d.traceId,
+    spanId: d.spanId,
+    sampled: d.sampled
+  }), d;
 }
-function Mo(e, t, n, r) {
-  const s = v(), i = s && s.getOptions && s.getOptions() || {}, o = e.name || e.op || "unknown-transaction", a = l({
-    parentSampled: e.parentSampled,
-    transactionContext: _(l({}, e), { name: o }),
-    name: o
+function Ho(e, t, n, r, s) {
+  var p, y;
+  const i = k(), o = i && i.getOptions && i.getOptions() || {}, a = (p = s == null ? void 0 : s.traceContinuityMode) != null ? p : "off", c = (y = s == null ? void 0 : s.consistentTraceSampling) != null ? y : !1, u = hr(
+    e,
+    a,
+    c
+  ), d = u.name || u.op || "unknown-transaction", f = l({
+    parentSampled: u.parentSampled,
+    transactionContext: _(l({}, u), { name: d }),
+    name: d
   }, r);
-  let c = new wo(_(l({}, e), { name: o }), t, n);
-  if (c = ur(c, i, a), c.sampled) {
-    const u = i._experiments && i._experiments.maxSpans;
-    c.initSpanRecorder(u), kt(c);
+  let m = new xo(_(l({}, u), { name: d }), t, n);
+  if (m = pr(m, o, f), m.sampled) {
+    const S = o._experiments && o._experiments.maxSpans;
+    m.initSpanRecorder(S), wt(m);
   }
-  return c;
+  return fr({
+    traceId: m.traceId,
+    spanId: m.spanId,
+    sampled: m.sampled
+  }), m.registerBeforeFinishCallback((S) => {
+    var I;
+    const b = (I = o.tracesSampleRate) != null ? I : 1, N = Ne();
+    Uo(
+      S.traceId,
+      S.spanId,
+      S.sampled,
+      S.startTimestamp,
+      b,
+      N.sampleRand
+    ), E && h.log(`[Tracing] Updated previous trace info: traceId=${S.traceId}, spanId=${S.spanId}`);
+  }), m;
 }
-const Do = "sentry.javascript.miniapp", _n = "10.27.0-rc.1", B = "?", Po = /^\s*at (?:(.*?) ?\()?((?:file|https?|blob|chrome-extension|address|native|eval|webpack|<anonymous>|[-a-z]+:|\/).*?)(?::(\d+))?(?::(\d+))?\)?\s*$/i, Co = /^\s*(.*?)(?:\((.*?)\))?(?:^|@)?((?:file|https?|blob|chrome|webpack|resource|moz-extension).*?:\/.*?|\[native code\]|[^@]*(?:bundle|\d+\.js))(?::(\d+))?(?::(\d+))?\s*$/i, xo = /^\s*at (?:((?:\[object object\])?.+) )?\(?((?:file|ms-appx|https?|webpack|blob):.*?):(\d+)(?::(\d+))?\)?\s*$/i, Lo = /(\S+) line (\d+)(?: > eval line \d+)* > eval/i, $o = /\((\S*)(?::(\d+))(?::(\d+))\)/, Fo = /^\s*at (.*?) ?\((\S*):(\d+):(\d+)\)/i;
-function ct(e) {
+function hr(e, t, n) {
+  if (t === "off")
+    return e;
+  const r = Ne(), s = jo(), i = Bo();
+  if (t === "session") {
+    const o = _(l({}, e), {
+      traceId: r.traceId
+      // Each transaction is a root span in session mode, no parent
+    });
+    return n && i && s && (o.parentSampled = s.spanContext.traceFlags === 1), E && h.log(`[Tracing] Session mode: reusing traceId=${r.traceId}`), o;
+  }
+  if (t === "link") {
+    const o = Fo(!1), a = _(l({}, e), {
+      traceId: o.traceId
+    });
+    return n && i && s && (a.parentSampled = s.spanContext.traceFlags === 1), i && s ? (a.metadata = _(l({}, a.metadata), {
+      previousTrace: {
+        traceId: s.spanContext.traceId,
+        spanId: s.spanContext.spanId,
+        sampled: s.spanContext.traceFlags === 1
+      }
+    }), E && h.log(
+      `[Tracing] Link mode: new traceId=${o.traceId}, linked from previous traceId=${s.spanContext.traceId}`
+    )) : E && h.log(`[Tracing] Link mode: new traceId=${o.traceId} (first trace)`), a;
+  }
+  return e;
+}
+const Go = "sentry.javascript.miniapp", En = "10.27.0-rc.1", H = "?", zo = /^\s*at (?:(.*?) ?\()?((?:file|https?|blob|chrome-extension|address|native|eval|webpack|<anonymous>|[-a-z]+:|\/).*?)(?::(\d+))?(?::(\d+))?\)?\s*$/i, Wo = /^\s*(.*?)(?:\((.*?)\))?(?:^|@)?((?:file|https?|blob|chrome|webpack|resource|moz-extension).*?:\/.*?|\[native code\]|[^@]*(?:bundle|\d+\.js))(?::(\d+))?(?::(\d+))?\s*$/i, Yo = /^\s*at (?:((?:\[object object\])?.+) )?\(?((?:file|ms-appx|https?|webpack|blob):.*?):(\d+)(?::(\d+))?\)?\s*$/i, qo = /(\S+) line (\d+)(?: > eval line \d+)* > eval/i, Vo = /\((\S*)(?::(\d+))(?::(\d+))\)/, Ko = /^\s*at (.*?) ?\((\S*):(\d+):(\d+)\)/i;
+function ut(e) {
   let t = null;
   const n = e && e.framesToPop;
   try {
-    if (t = Uo(e), t)
-      return yn(t, n);
+    if (t = Xo(e), t)
+      return Tn(t, n);
   } catch (r) {
   }
   try {
-    if (t = jo(e), t)
-      return yn(t, n);
+    if (t = Jo(e), t)
+      return Tn(t, n);
   } catch (r) {
   }
   return {
-    message: Te(e),
+    message: Re(e),
     name: e && e.name,
     stack: [],
     failed: !0
   };
 }
-function jo(e) {
+function Jo(e) {
   if (!e || !e.stack)
     return null;
   const t = [], n = e.stack.split(`
 `);
   let r, s, i, o;
   for (let a = 0; a < n.length; ++a) {
-    if (i = Po.exec(n[a])) {
+    if (i = zo.exec(n[a])) {
       const c = i[2] && i[2].indexOf("native") === 0;
-      r = i[2] && i[2].indexOf("eval") === 0, r && (s = $o.exec(i[2])) && (i[2] = s[1], i[3] = s[2], i[4] = s[3]), o = {
+      r = i[2] && i[2].indexOf("eval") === 0, r && (s = Vo.exec(i[2])) && (i[2] = s[1], i[3] = s[2], i[4] = s[3]), o = {
         url: i[2],
-        func: i[1] || B,
+        func: i[1] || H,
         args: c ? [i[2]] : [],
         line: i[3] ? +i[3] : null,
         column: i[4] ? +i[4] : null
       };
-    } else if (i = xo.exec(n[a]))
+    } else if (i = Yo.exec(n[a]))
       o = {
         url: i[2],
-        func: i[1] || B,
+        func: i[1] || H,
         args: [],
         line: +i[3],
         column: i[4] ? +i[4] : null
       };
-    else if (i = Co.exec(n[a]))
-      r = i[3] && i[3].indexOf(" > eval") > -1, r && (s = Lo.exec(i[3])) ? (i[1] = i[1] || "eval", i[3] = s[1], i[4] = s[2], i[5] = "") : a === 0 && !i[5] && e.columnNumber !== void 0 && (t[0].column = e.columnNumber + 1), o = {
+    else if (i = Wo.exec(n[a]))
+      r = i[3] && i[3].indexOf(" > eval") > -1, r && (s = qo.exec(i[3])) ? (i[1] = i[1] || "eval", i[3] = s[1], i[4] = s[2], i[5] = "") : a === 0 && !i[5] && e.columnNumber !== void 0 && (t[0].column = e.columnNumber + 1), o = {
         url: i[3],
-        func: i[1] || B,
+        func: i[1] || H,
         args: i[2] ? i[2].split(",") : [],
         line: i[4] ? +i[4] : null,
         column: i[5] ? +i[5] : null
       };
-    else if (i = Fo.exec(n[a]))
+    else if (i = Ko.exec(n[a]))
       o = {
         url: i[2],
-        func: i[1] || B,
+        func: i[1] || H,
         args: [],
         line: i[3] ? +i[3] : null,
         column: i[4] ? +i[4] : null
       };
     else
       continue;
-    !o.func && o.line && (o.func = B), t.push(o);
+    !o.func && o.line && (o.func = H), t.push(o);
   }
   return t.length ? {
-    message: Te(e),
+    message: Re(e),
     name: e.name,
     stack: t
   } : null;
 }
-function Uo(e) {
+function Xo(e) {
   if (!e || !e.stacktrace)
     return null;
   const t = e.stacktrace, n = / line (\d+).*script (?:in )?(\S+)(?:: in function (\S+))?$/i, r = / line (\d+), column (\d+)\s*(?:in (?:<anonymous function: ([^>]+)>|([^\)]+))\((.*)\))? in (.*):\s*$/i, s = t.split(`
@@ -3844,15 +3942,15 @@ function Uo(e) {
       args: o[5] ? o[5].split(",") : [],
       line: +o[1],
       column: +o[2]
-    }), c && (!c.func && c.line && (c.func = B), i.push(c));
+    }), c && (!c.func && c.line && (c.func = H), i.push(c));
   }
   return i.length ? {
-    message: Te(e),
+    message: Re(e),
     name: e.name,
     stack: i
   } : null;
 }
-function yn(e, t) {
+function Tn(e, t) {
   try {
     return _(l({}, e), {
       stack: e.stack.slice(t)
@@ -3861,48 +3959,48 @@ function yn(e, t) {
     return e;
   }
 }
-function Te(e) {
+function Re(e) {
   const t = e && e.message;
   return t ? t.error && typeof t.error.message == "string" ? t.error.message : t : "No error message";
 }
-const Bo = 100;
-function lr(e) {
-  const t = Ie(e.stack), n = {
+const Zo = 100;
+function mr(e) {
+  const t = we(e.stack), n = {
     type: e.name,
     value: e.message
   };
   return t && t.length && (n.stacktrace = { frames: t }), n.type === void 0 && n.value === "" && (n.value = "Unrecoverable error caught"), n;
 }
-function Ho(e, t, n) {
+function Qo(e, t, n) {
   const r = {
     exception: {
       values: [
         {
-          type: fe(e) ? e.constructor.name : n ? "UnhandledRejection" : "Error",
-          value: `Non-Error ${n ? "promise rejection" : "exception"} captured with keys: ${$r(e)}`
+          type: ge(e) ? e.constructor.name : n ? "UnhandledRejection" : "Error",
+          value: `Non-Error ${n ? "promise rejection" : "exception"} captured with keys: ${Hr(e)}`
         }
       ]
     },
     extra: {
-      __serialized__: zn(e)
+      __serialized__: qn(e)
     }
   };
   if (t) {
-    const s = ct(t), i = Ie(s.stack);
+    const s = ut(t), i = we(s.stack);
     r.stacktrace = {
       frames: i
     };
   }
   return r;
 }
-function Sn(e) {
+function In(e) {
   return {
     exception: {
-      values: [lr(e)]
+      values: [mr(e)]
     }
   };
 }
-function Ie(e) {
+function we(e) {
   if (!e || !e.length)
     return [];
   let t = e;
@@ -3915,35 +4013,35 @@ function Ie(e) {
       in_app: !0,
       lineno: s.line === null ? void 0 : s.line
     })
-  ).slice(0, Bo).reverse();
+  ).slice(0, Zo).reverse();
 }
-function Go(e, t, n = {}) {
+function ta(e, t, n = {}) {
   let r;
-  if (Rr(e) && e.error)
-    return e = e.error, r = Sn(ct(e)), r;
-  if (Pe(e) || Or(e)) {
-    const s = e, i = s.name || (Pe(s) ? "DOMError" : "DOMException"), o = s.message ? `${i}: ${s.message}` : i;
-    return r = ae(o, t, n), Qt(r, o), r;
+  if (Dr(e) && e.error)
+    return e = e.error, r = In(ut(e)), r;
+  if (Fe(e) || Cr(e)) {
+    const s = e, i = s.name || (Fe(s) ? "DOMError" : "DOMException"), o = s.message ? `${i}: ${s.message}` : i;
+    return r = de(o, t, n), re(r, o), r;
   }
-  return Tn(e) ? (r = Sn(ct(e)), r) : ot(e) || fe(e) ? (r = Ho(e, t, n.rejection), vt(r, {
+  return Nn(e) ? (r = In(ut(e)), r) : at(e) || ge(e) ? (r = Qo(e, t, n.rejection), kt(r, {
     synthetic: !0
-  }), r) : (r = ae(e, t, n), Qt(r, `${e}`), vt(r, {
+  }), r) : (r = de(e, t, n), re(r, `${e}`), kt(r, {
     synthetic: !0
   }), r);
 }
-function ae(e, t, n = {}) {
+function de(e, t, n = {}) {
   const r = {
     message: e
   };
   if (n.attachStacktrace && t) {
-    const s = ct(t), i = Ie(s.stack);
+    const s = ut(t), i = we(s.stack);
     r.stacktrace = {
       frames: i
     };
   }
   return r;
 }
-const zo = () => {
+const ea = () => {
   let e = {
     // tslint:disable-next-line: no-empty
     request: () => {
@@ -3976,13 +4074,13 @@ const zo = () => {
   else
     throw new Error("sentry-miniapp 暂不支持此平台");
   return e;
-}, Wo = () => {
+}, na = () => {
   let e = "unknown";
   return typeof wx == "object" ? e = "wechat" : typeof my == "object" ? e = "alipay" : typeof tt == "object" ? e = "bytedance" : typeof dd == "object" ? e = "dingtalk" : typeof qq == "object" ? e = "qq" : typeof swan == "object" && (e = "swan"), e;
-}, T = zo(), dr = Wo(), Yo = "application/json";
-function ve(e) {
+}, T = ea(), gr = na(), ra = "application/json";
+function Ae(e) {
   function t(n) {
-    return new z((r, s) => {
+    return new W((r, s) => {
       const i = T.request || T.httpRequest;
       if (typeof i != "function") {
         s(new Error("Miniapp request function is not available"));
@@ -3992,7 +4090,7 @@ function ve(e) {
         url: e.url,
         method: "POST",
         data: n.body,
-        header: { "content-type": Yo },
+        header: { "content-type": ra },
         success(o) {
           var a, c, u, d;
           r({
@@ -4009,20 +4107,20 @@ function ve(e) {
       });
     });
   }
-  return $i(e, t);
+  return Hi(e, t);
 }
-const _a = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const wa = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  makeMiniappTransport: ve
-}, Symbol.toStringTag, { value: "Module" })), qo = () => [];
-class Ko extends Hi {
+  makeMiniappTransport: Ae
+}, Symbol.toStringTag, { value: "Module" })), sa = () => [];
+class ia extends qi {
   /**
    * Creates a new Miniapp SDK instance.
    *
    * @param options Configuration options for this SDK.
    */
   constructor(t = {}) {
-    const n = t.transport || ve, r = t.stackParser || qo, s = t.integrations || t.defaultIntegrations || [], i = _(l({}, t), {
+    const n = t.transport || Ae, r = t.stackParser || sa, s = t.integrations || t.defaultIntegrations || [], i = _(l({}, t), {
       transport: n,
       stackParser: r,
       integrations: s,
@@ -4030,22 +4128,22 @@ class Ko extends Hi {
       // ensure defaults for required fields
       tracesSampleRate: t.tracesSampleRate
     });
-    Xi(i, "miniapp", ["miniapp"]), super(i);
+    no(i, "miniapp", ["miniapp"]), super(i);
   }
   /**
    * @inheritDoc
    */
   _prepareEvent(t, n, r, s) {
     return t.platform = t.platform || "javascript", t.sdk = _(l({}, t.sdk), {
-      name: Do,
+      name: Go,
       packages: [
         ...t.sdk && t.sdk.packages || [],
         {
           name: "npm:@sentry/miniapp",
-          version: _n
+          version: En
         }
       ],
-      version: _n
+      version: En
     }), super._prepareEvent(t, n, r, s);
   }
   /**
@@ -4062,7 +4160,7 @@ class Ko extends Hi {
    */
   // eslint-disable-next-line deprecation/deprecation
   eventFromException(t, n) {
-    const r = n && n.syntheticException ? n.syntheticException : void 0, s = Go(t, r, {
+    const r = n && n.syntheticException ? n.syntheticException : void 0, s = ta(t, r, {
       attachStacktrace: this._options.attachStacktrace
     });
     return n && n.event_id && (s.event_id = n.event_id), Promise.resolve(s);
@@ -4072,40 +4170,40 @@ class Ko extends Hi {
    */
   // eslint-disable-next-line deprecation/deprecation
   eventFromMessage(t, n = "info", r) {
-    const s = r && r.syntheticException ? r.syntheticException : void 0, i = ae(String(t), s, {
+    const s = r && r.syntheticException ? r.syntheticException : void 0, i = de(String(t), s, {
       attachStacktrace: this._options.attachStacktrace
     });
     return i.level = n, r && r.event_id && (i.event_id = r.event_id), Promise.resolve(i);
   }
 }
-function Jo() {
+function oa() {
   setTimeout(() => {
   });
 }
-function H(e, t = {}, n) {
+function G(e, t = {}, n) {
   if (typeof e != "function")
     return e;
   try {
     const s = e.__sentry_wrapped__;
     if (s)
       return s;
-    if (Nn(e))
+    if (An(e))
       return e;
   } catch (s) {
     return e;
   }
   const r = function(...s) {
     try {
-      const i = s.map((o) => H(o, t));
+      const i = s.map((o) => G(o, t));
       return e.handleEvent ? e.handleEvent.apply(this, i) : e.apply(this, i);
     } catch (i) {
-      throw Jo(), wn((o) => {
+      throw oa(), Cn((o) => {
         o.addEventProcessor((a) => {
           const c = l({}, a);
-          return t.mechanism && (Qt(c, void 0), vt(c, t.mechanism)), c.extra = _(l({}, c.extra), {
+          return t.mechanism && (re(c, void 0), kt(c, t.mechanism)), c.extra = _(l({}, c.extra), {
             arguments: D(s, 3)
           }), c;
-        }), ie(i);
+        }), ue(i);
       }), i;
     }
   };
@@ -4114,7 +4212,7 @@ function H(e, t = {}, n) {
       Object.prototype.hasOwnProperty.call(e, s) && (r[s] = e[s]);
   } catch (s) {
   }
-  vn(r, e), Ft(e, "__sentry_wrapped__", r);
+  wn(r, e), Bt(e, "__sentry_wrapped__", r);
   try {
     const s = Object.getOwnPropertyDescriptor(r, "name");
     s != null && s.configurable && Object.defineProperty(r, "name", {
@@ -4126,10 +4224,10 @@ function H(e, t = {}, n) {
   }
   return r;
 }
-const Pt = class Pt {
+const $t = class $t {
   /** JSDoc */
   constructor(t) {
-    this.name = Pt.id, this._onErrorHandlerInstalled = !1, this._onUnhandledRejectionHandlerInstalled = !1, this._onPageNotFoundHandlerInstalled = !1, this._onMemoryWarningHandlerInstalled = !1, this._options = l({
+    this.name = $t.id, this._onErrorHandlerInstalled = !1, this._onUnhandledRejectionHandlerInstalled = !1, this._onPageNotFoundHandlerInstalled = !1, this._onMemoryWarningHandlerInstalled = !1, this._options = l({
       onerror: !0,
       onunhandledrejection: !0,
       onpagenotfound: !0,
@@ -4140,13 +4238,13 @@ const Pt = class Pt {
    * @inheritDoc
    */
   setupOnce() {
-    Error.stackTraceLimit = 50, this._options.onerror && (p.log("Global Handler attached: onError"), this._installGlobalOnErrorHandler()), this._options.onunhandledrejection && (p.log("Global Handler attached: onunhandledrejection"), this._installGlobalOnUnhandledRejectionHandler()), this._options.onpagenotfound && (p.log("Global Handler attached: onPageNotFound"), this._installGlobalOnPageNotFoundHandler()), this._options.onmemorywarning && (p.log("Global Handler attached: onMemoryWarning"), this._installGlobalOnMemoryWarningHandler());
+    Error.stackTraceLimit = 50, this._options.onerror && (h.log("Global Handler attached: onError"), this._installGlobalOnErrorHandler()), this._options.onunhandledrejection && (h.log("Global Handler attached: onunhandledrejection"), this._installGlobalOnUnhandledRejectionHandler()), this._options.onpagenotfound && (h.log("Global Handler attached: onPageNotFound"), this._installGlobalOnPageNotFoundHandler()), this._options.onmemorywarning && (h.log("Global Handler attached: onMemoryWarning"), this._installGlobalOnMemoryWarningHandler());
   }
   /** JSDoc */
   _installGlobalOnErrorHandler() {
     this._onErrorHandlerInstalled || (T.onError && T.onError((t) => {
       const n = typeof t == "string" ? new Error(t) : t;
-      ie(n);
+      ue(n);
     }), this._onErrorHandlerInstalled = !0);
   }
   /** JSDoc */
@@ -4154,7 +4252,7 @@ const Pt = class Pt {
     this._onUnhandledRejectionHandlerInstalled || (T.onUnhandledRejection && T.onUnhandledRejection(
       ({ reason: t, promise: n }) => {
         const r = typeof t == "string" ? new Error(t) : t;
-        ie(r, {
+        ue(r, {
           data: n
         });
       }
@@ -4164,7 +4262,7 @@ const Pt = class Pt {
   _installGlobalOnPageNotFoundHandler() {
     this._onPageNotFoundHandlerInstalled || (T.onPageNotFound && T.onPageNotFound((t) => {
       const n = t.path.split("?")[0];
-      en("pagenotfound", n), tn("message", JSON.stringify(t)), Qe(`页面无法找到: ${n}`);
+      on("pagenotfound", n), sn("message", JSON.stringify(t)), rn(`页面无法找到: ${n}`);
     }), this._onPageNotFoundHandlerInstalled = !0);
   }
   /** JSDoc */
@@ -4184,23 +4282,23 @@ const Pt = class Pt {
         default:
           return;
       }
-      en("memory-warning", String(t)), tn("message", n), Qe("内存不足告警");
+      on("memory-warning", String(t)), sn("message", n), rn("内存不足告警");
     }), this._onMemoryWarningHandlerInstalled = !0);
   }
 };
-Pt.id = "GlobalHandlers";
-let Rt = Pt;
-const Ct = class Ct {
+$t.id = "GlobalHandlers";
+let Ot = $t;
+const Lt = class Lt {
   constructor() {
-    this._ignoreOnError = 0, this.name = Ct.id;
+    this._ignoreOnError = 0, this.name = Lt.id;
   }
   /** JSDoc */
   _wrapTimeFunction(t) {
     return function(...n) {
       const r = n[0];
-      return n[0] = H(r, {
+      return n[0] = G(r, {
         mechanism: {
-          data: { function: St(t) },
+          data: { function: bt(t) },
           handled: !0,
           type: "instrument"
         }
@@ -4211,11 +4309,11 @@ const Ct = class Ct {
   _wrapRAF(t) {
     return function(n) {
       return t(
-        H(n, {
+        G(n, {
           mechanism: {
             data: {
               function: "requestAnimationFrame",
-              handler: St(t)
+              handler: bt(t)
             },
             handled: !0,
             type: "instrument"
@@ -4226,15 +4324,15 @@ const Ct = class Ct {
   }
   /** JSDoc */
   _wrapEventTarget(t) {
-    const n = I, r = n[t] && n[t].prototype;
-    !r || !r.hasOwnProperty || !r.hasOwnProperty("addEventListener") || (Q(r, "addEventListener", function(s) {
+    const n = v, r = n[t] && n[t].prototype;
+    !r || !r.hasOwnProperty || !r.hasOwnProperty("addEventListener") || (et(r, "addEventListener", function(s) {
       return function(i, o, a) {
         try {
-          typeof o.handleEvent == "function" && (o.handleEvent = H(o.handleEvent.bind(o), {
+          typeof o.handleEvent == "function" && (o.handleEvent = G(o.handleEvent.bind(o), {
             mechanism: {
               data: {
                 function: "handleEvent",
-                handler: St(o),
+                handler: bt(o),
                 target: t
               },
               handled: !0,
@@ -4246,11 +4344,11 @@ const Ct = class Ct {
         return s.call(
           this,
           i,
-          H(o, {
+          G(o, {
             mechanism: {
               data: {
                 function: "addEventListener",
-                handler: St(o),
+                handler: bt(o),
                 target: t
               },
               handled: !0,
@@ -4260,7 +4358,7 @@ const Ct = class Ct {
           a
         );
       };
-    }), Q(r, "removeEventListener", function(s) {
+    }), et(r, "removeEventListener", function(s) {
       return function(i, o, a) {
         let c = o;
         try {
@@ -4277,8 +4375,8 @@ const Ct = class Ct {
    */
   setupOnce() {
     this._ignoreOnError = this._ignoreOnError;
-    const t = I;
-    Q(t, "setTimeout", this._wrapTimeFunction.bind(this)), Q(t, "setInterval", this._wrapTimeFunction.bind(this)), Q(t, "requestAnimationFrame", this._wrapRAF.bind(this)), [
+    const t = v;
+    et(t, "setTimeout", this._wrapTimeFunction.bind(this)), et(t, "setInterval", this._wrapTimeFunction.bind(this)), et(t, "requestAnimationFrame", this._wrapRAF.bind(this)), [
       "EventTarget",
       "Window",
       "Node",
@@ -4311,28 +4409,28 @@ const Ct = class Ct {
     ].forEach(this._wrapEventTarget.bind(this));
   }
 };
-Ct.id = "TryCatch";
-let Ot = Ct;
-function St(e) {
+Lt.id = "TryCatch";
+let Mt = Lt;
+function bt(e) {
   try {
     return e && e.name || "<anonymous>";
   } catch (t) {
     return "<anonymous>";
   }
 }
-const Vo = "cause", Xo = 5, nt = class nt {
+const aa = "cause", ca = 5, rt = class rt {
   /**
    * @inheritDoc
    */
   constructor(t = {}) {
-    this.name = nt.id, this._key = t.key || Vo, this._limit = t.limit || Xo;
+    this.name = rt.id, this._key = t.key || aa, this._limit = t.limit || ca;
   }
   /**
    * @inheritDoc
    */
   setupOnce() {
-    Gt((t, n) => {
-      const r = v(), s = r && r.getIntegrationByName(nt.id);
+    qt((t, n) => {
+      const r = k(), s = r && r.getIntegrationByName(rt.id);
       return s ? s._handler(t, n) : t;
     });
   }
@@ -4351,23 +4449,23 @@ const Vo = "cause", Xo = 5, nt = class nt {
   _walkErrorTree(t, n, r = []) {
     if (!(t[n] instanceof Error) || r.length + 1 >= this._limit)
       return r;
-    const s = ct(t[n]), i = lr(s);
+    const s = ut(t[n]), i = mr(s);
     return this._walkErrorTree(t[n], n, [i, ...r]);
   }
 };
-nt.id = "LinkedErrors";
-let At = nt;
-const rt = class rt {
+rt.id = "LinkedErrors";
+let Dt = rt;
+const st = class st {
   constructor() {
-    this.name = rt.id;
+    this.name = st.id;
   }
   /**
    * @inheritDoc
    */
   setupOnce() {
-    Gt((t) => {
-      const n = v();
-      if (n && n.getIntegrationByName(rt.id))
+    qt((t) => {
+      const n = k();
+      if (n && n.getIntegrationByName(st.id))
         try {
           const s = T.getSystemInfoSync(), {
             SDKVersion: i = "0.0.0",
@@ -4380,42 +4478,42 @@ const rt = class rt {
             brand: u,
             language: d,
             model: f,
-            pixelRatio: g,
-            platform: h,
+            pixelRatio: m,
+            platform: p,
             screenHeight: y,
-            screenWidth: b,
+            screenWidth: S,
             // statusBarHeight,
-            system: S,
+            system: b,
             version: N,
             // windowHeight,
             // windowWidth,
-            app: k,
+            app: I,
             // 支付宝小程序
-            appName: L
+            appName: $
             // 字节跳动小程序
             // fontSizeSetting, // 支付宝小程序、 钉钉小程序、微信小程序
-          } = s, [X, pt] = S.split(" "), zt = _(l({}, t.tags), {
+          } = s, [Z, ht] = b.split(" "), Vt = _(l({}, t.tags), {
             SDKVersion: i
-          }), ht = k || L || dr || "app";
+          }), mt = I || $ || gr || "app";
           return _(l({}, t), {
-            tags: zt,
+            tags: Vt,
             contexts: _(l({}, t.contexts), {
               device: {
                 brand: u,
                 battery_level: o || a || c,
                 model: f,
                 language: d,
-                platform: h,
-                screen_dpi: g,
+                platform: p,
+                screen_dpi: m,
                 screen_height: y,
-                screen_width: b
+                screen_width: S
               },
               os: {
-                name: X || S,
-                version: pt || S
+                name: Z || b,
+                version: ht || b
               },
               browser: {
-                name: ht,
+                name: mt,
                 version: N
               }
             })
@@ -4427,14 +4525,14 @@ const rt = class rt {
     });
   }
 };
-rt.id = "System";
-let wt = rt;
-const st = class st {
+st.id = "System";
+let Ct = st;
+const it = class it {
   /**
    * @inheritDoc
    */
   constructor(t) {
-    this.name = st.id, this._options = l({
+    this.name = it.id, this._options = l({
       enable: !0
     }, t);
   }
@@ -4442,9 +4540,9 @@ const st = class st {
    * @inheritDoc
    */
   setupOnce() {
-    Gt((t) => {
-      const n = v();
-      if (n && n.getIntegrationByName(st.id) && this._options.enable)
+    qt((t) => {
+      const n = k();
+      if (n && n.getIntegrationByName(it.id) && this._options.enable)
         try {
           const s = getCurrentPages().map(
             (i) => ({
@@ -4464,34 +4562,34 @@ const st = class st {
     });
   }
 };
-st.id = "Router";
-let Mt = st;
-const it = class it {
+it.id = "Router";
+let Pt = it;
+const ot = class ot {
   constructor() {
-    this.name = it.id;
+    this.name = ot.id;
   }
   /**
    * @inheritDoc
    */
   setupOnce() {
-    Gt((t) => {
-      const n = v();
-      return n && n.getIntegrationByName(it.id) && dr === "wechat" && T.getLaunchOptionsSync && T.getLaunchOptionsSync().scene === 1129 ? null : t;
+    qt((t) => {
+      const n = k();
+      return n && n.getIntegrationByName(ot.id) && gr === "wechat" && T.getLaunchOptionsSync && T.getLaunchOptionsSync().scene === 1129 ? null : t;
     });
   }
 };
-it.id = "IgnoreMpcrawlerErrors";
-let Dt = it;
-const ya = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+ot.id = "IgnoreMpcrawlerErrors";
+let xt = ot;
+const Aa = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  GlobalHandlers: Rt,
-  IgnoreMpcrawlerErrors: Dt,
-  LinkedErrors: At,
-  Router: Mt,
-  System: wt,
-  TryCatch: Ot
-}, Symbol.toStringTag, { value: "Module" })), Zo = 1e12;
-class Qo {
+  GlobalHandlers: Ot,
+  IgnoreMpcrawlerErrors: xt,
+  LinkedErrors: Dt,
+  Router: Pt,
+  System: Ct,
+  TryCatch: Mt
+}, Symbol.toStringTag, { value: "Module" })), ua = 1e12;
+class la {
   constructor(t = !1) {
     this._reportAllChanges = t, this._measurements = {};
   }
@@ -4514,9 +4612,9 @@ class Qo {
   }
   _getTimeOrigin(t, n) {
     if (typeof t.timeOrigin == "number")
-      return et(t.timeOrigin);
+      return nt(t.timeOrigin);
     const r = typeof t.now == "function" ? t.now() : void 0;
-    return typeof r == "number" ? et(Date.now() - r) : n.startTimestamp;
+    return typeof r == "number" ? nt(Date.now() - r) : n.startTimestamp;
   }
   _handleEntry(t, n) {
     if (t.endTimestamp !== void 0) {
@@ -4524,7 +4622,7 @@ class Qo {
       return;
     }
     const r = this._toTimestamp(n.startTime, t.startTimestamp), s = this._toTimestamp(n.startTime + n.duration, t.startTimestamp);
-    ta(t, {
+    da(t, {
       op: this._mapOp(n),
       description: this._getDescription(n),
       startTimestamp: r,
@@ -4569,34 +4667,34 @@ class Qo {
   }
   _toTimestamp(t, n) {
     var s;
-    return t > Zo ? et(t) : ((s = this._timeOrigin) != null ? s : n) + et(t);
+    return t > ua ? nt(t) : ((s = this._timeOrigin) != null ? s : n) + nt(t);
   }
   _stopObserver(t) {
     var n;
     (n = this._observer) == null || n.disconnect(), this._observer = void 0, t && !t.endTimestamp && t.finish();
   }
 }
-function ta(e, r) {
-  var s = r, { startTimestamp: t } = s, n = Yt(s, ["startTimestamp"]);
+function da(e, r) {
+  var s = r, { startTimestamp: t } = s, n = Jt(s, ["startTimestamp"]);
   return t && e.startTimestamp > t && (e.startTimestamp = t), e.startChild(l({
     startTimestamp: t
   }, n));
 }
-function ea(e, t = !0, n = !0) {
-  const r = I, s = T.onAppRoute || r.wx && r.wx.onAppRoute;
+function fa(e, t = !0, n = !0) {
+  const r = v, s = T.onAppRoute || r.wx && r.wx.onAppRoute;
   if (typeof s != "function")
     return;
   let i = !1, o;
   const a = (u, d) => {
     (d && t || !d && n) && (o && typeof o.finish == "function" && o.finish(), o = e(u));
   }, c = (u, d = !1) => {
-    const f = (u == null ? void 0 : u.path) || (u == null ? void 0 : u.route) || (u == null ? void 0 : u.url) || "", g = typeof f == "string" && f.length > 0 ? f : "unknown-route";
+    const f = (u == null ? void 0 : u.path) || (u == null ? void 0 : u.route) || (u == null ? void 0 : u.url) || "", m = typeof f == "string" && f.length > 0 ? f : "unknown-route";
     a(
       {
-        name: g,
+        name: m,
         op: "navigation",
         description: (u == null ? void 0 : u.openType) || (u == null ? void 0 : u.event) || void 0,
-        metadata: { requestPath: g }
+        metadata: { requestPath: m }
       },
       d
     );
@@ -4610,19 +4708,22 @@ function ea(e, t = !0, n = !0) {
     i = !0, c(u, d);
   });
 }
-const na = {
+const pa = {
   traceRequest: !0
-}, ra = 600, sa = l({
+}, ha = 600, ma = l({
   idleTimeout: 5e3,
   startTransactionOnLocationChange: !0,
   startTransactionOnPageLoad: !0,
-  maxTransactionDuration: ra,
-  routingInstrumentation: ea
-}, na), xt = class xt {
+  maxTransactionDuration: ha,
+  routingInstrumentation: fa,
+  // Default to 'link' mode for better trace continuity while maintaining separate traces
+  traceContinuityMode: "link",
+  consistentTraceSampling: !1
+}, pa), Ft = class Ft {
   constructor(t) {
-    this.name = xt.id, this._configuredIdleTimeout = t == null ? void 0 : t.idleTimeout, this.options = l(l({}, sa), t);
+    this.name = Ft.id, this._configuredIdleTimeout = t == null ? void 0 : t.idleTimeout, this.options = l(l({}, ma), t);
     const { _metricOptions: n } = this.options;
-    this._metrics = new Qo(n && n._reportAllChanges);
+    this._metrics = new la(n && n._reportAllChanges);
   }
   setupOnce() {
     var s;
@@ -4638,97 +4739,117 @@ const na = {
       r,
       n
     ), (s = T.onAppHide) == null || s.call(T, () => {
-      const i = Io();
+      const i = wo();
       i == null || i.finish();
     });
   }
   /** Create routing idle transaction. */
   _createRouteTransaction(t) {
-    var c;
-    const { beforeNavigate: n, idleTimeout: r, maxTransactionDuration: s } = this.options, i = _(l({}, t), {
+    var f;
+    const {
+      beforeNavigate: n,
+      idleTimeout: r,
+      maxTransactionDuration: s,
+      traceContinuityMode: i,
+      consistentTraceSampling: o
+    } = this.options, a = _(l({}, t), {
       trimEnd: !0
-    }), o = typeof n == "function" ? n(i) : i;
-    if (o === void 0)
+    }), c = typeof n == "function" ? n(a) : a;
+    if (c === void 0)
       return;
-    const a = Mo(o, r, !0, {});
-    return a.registerBeforeFinishCallback((u, d) => {
-      ia(vo(s), u, d);
-    }), a.setTag("idleTimeout", (c = this._configuredIdleTimeout) != null ? c : r), this._metrics.addPerformanceEntries(a), a;
+    const u = {
+      traceContinuityMode: i != null ? i : "link",
+      consistentTraceSampling: o != null ? o : !1
+    };
+    E && h.log(
+      `[MiniAppTracing] Creating route transaction with traceContinuityMode=${u.traceContinuityMode}`
+    );
+    const d = Ho(
+      c,
+      r,
+      !0,
+      {},
+      u
+    );
+    return d.registerBeforeFinishCallback((m, p) => {
+      ga(Ao(s), m, p);
+    }), d.setTag("idleTimeout", (f = this._configuredIdleTimeout) != null ? f : r), d.setTag("traceContinuityMode", i != null ? i : "link"), this._metrics.addPerformanceEntries(d), d;
   }
 };
-xt.id = "MiniAppTracing";
-let ce = xt;
-function ia(e, t, n) {
+Ft.id = "MiniAppTracing";
+let fe = Ft;
+function ga(e, t, n) {
   const r = n - t.startTimestamp;
   n && (r > e || r < 0) && (t.setStatus("deadline_exceeded"), t.setTag("maxTransactionDurationExceeded", "true"));
 }
-const oa = [
-  io(),
-  eo(),
-  new Ot(),
-  new Rt(),
-  new At(),
-  new wt(),
+const _a = [
+  lo(),
+  oo(),
   new Mt(),
+  new Ot(),
   new Dt(),
-  new ce()
+  new Ct(),
+  new Pt(),
+  new xt(),
+  new fe()
 ];
-function Sa(e = {}) {
-  e.defaultIntegrations === void 0 && (e.defaultIntegrations = oa), e.normalizeDepth = e.normalizeDepth || 5;
+function Oa(e = {}) {
+  e.defaultIntegrations === void 0 && (e.defaultIntegrations = _a), e.normalizeDepth = e.normalizeDepth || 5;
   const t = l({
     integrations: e.integrations || e.defaultIntegrations || [],
     stackParser: e.stackParser || (() => []),
-    transport: e.transport || ve
+    transport: e.transport || Ae
   }, e);
-  qi(Ko, t);
+  Zi(ia, t);
 }
-function ba(e = {}) {
-  e.eventId || (e.eventId = Yn());
-  const t = v();
+function Ma(e = {}) {
+  e.eventId || (e.eventId = Kn());
+  const t = k();
   t && t.showReportDialog(e);
 }
-function Ea() {
-  return Yn();
+function Da() {
+  return Kn();
 }
-function Ta(e) {
-  const t = v();
-  return t ? t.flush(e) : Ht(!1);
+function Ca(e) {
+  const t = k();
+  return t ? t.flush(e) : Yt(!1);
 }
-function Ia(e) {
-  const t = v();
-  return t ? t.close(e) : Ht(!1);
+function Pa(e) {
+  const t = k();
+  return t ? t.close(e) : Yt(!1);
 }
-function va(e) {
-  return H(e)();
+function xa(e) {
+  return G(e)();
 }
 export {
-  ya as Integrations,
-  Ko as MiniappClient,
-  Do as SDK_NAME,
-  _n as SDK_VERSION,
-  _a as Transports,
-  fa as addBreadcrumb,
-  Gt as addEventProcessor,
-  ci as captureEvent,
-  ie as captureException,
-  Qe as captureMessage,
-  Ia as close,
-  ma as configureScope,
-  oa as defaultIntegrations,
-  Ta as flush,
-  w as getCurrentScope,
-  Sa as init,
-  Ea as lastEventId,
-  pa as logger,
-  ha as metrics,
-  ca as setContext,
-  tn as setExtra,
-  ua as setExtras,
-  en as setTag,
-  la as setTags,
-  da as setUser,
-  ba as showReportDialog,
-  ga as startTransaction,
-  wn as withScope,
-  va as wrap
+  Aa as Integrations,
+  fe as MiniAppTracing,
+  ia as MiniappClient,
+  Go as SDK_NAME,
+  En as SDK_VERSION,
+  wa as Transports,
+  Ia as addBreadcrumb,
+  qt as addEventProcessor,
+  pi as captureEvent,
+  ue as captureException,
+  rn as captureMessage,
+  Pa as close,
+  Na as configureScope,
+  _a as defaultIntegrations,
+  Ca as flush,
+  O as getCurrentScope,
+  Oa as init,
+  Da as lastEventId,
+  va as logger,
+  ka as metrics,
+  Sa as setContext,
+  sn as setExtra,
+  ba as setExtras,
+  on as setTag,
+  Ea as setTags,
+  Ta as setUser,
+  Ma as showReportDialog,
+  Ra as startTransaction,
+  Cn as withScope,
+  xa as wrap
 };

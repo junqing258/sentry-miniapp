@@ -28,6 +28,19 @@ import * as Sentry from "@/sentry-miniapp/index.js";
 // init options: https://github.com/getsentry/sentry-javascript/blob/master/packages/types/src/options.ts
 Sentry.init({
   dsn: "__DSN__",
+  integrations: [
+    new Sentry.MiniAppTracing({
+      // 三种模式：
+      // 'session' - 整个会话使用同一个 traceId（所有导航共享一个 trace）
+      // 'link'    - 每次导航新 traceId，但通过 span link 关联前一个 trace（推荐）
+      // 'off'     - 每次导航独立 trace
+      traceContinuityMode: 'session', // 或 'link'
+      
+      // 是否继承前一个 trace 的采样决定（保证会话内采样一致性）
+      consistentTraceSampling: true,
+    }),
+  ],
+  tracesSampleRate: 1.0,
   // ...
 });
 

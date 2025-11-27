@@ -1,6 +1,6 @@
 
-import { Integration } from '@sentry/core';
-import { addTracingExtensions, startIdleTransaction } from '../hubextensions';
+import { Integration, debug } from '@sentry/core';
+import { addTracingExtensions, startIdleTransaction, type StartTransactionOptions } from '../hubextensions';
 import { MetricsInstrumentation } from './metrics';
 import { instrumentRoutingWithDefaults } from './router';
 import {
@@ -10,13 +10,14 @@ import {
 } from './request';
 import { sdk } from '../../crossPlatform';
 import { getActiveTransaction, secToMs } from '../utils';
-import type { TransactionContext } from '../types';
+import type { TransactionContext, TraceContinuityOptions } from '../types';
 import { IdleTransaction } from '../idletransaction';
+import { IS_DEBUG_BUILD } from '../flags';
 
 const DEFAULT_MAX_TRANSACTION_DURATION_SECONDS = 600;
 
 
-export interface MiniAppTracingOptions extends RequestInstrumentationOptions {
+export interface MiniAppTracingOptions extends RequestInstrumentationOptions, TraceContinuityOptions {
   idleTimeout: number;
   startTransactionOnLocationChange: boolean;
   startTransactionOnPageLoad: boolean;
@@ -36,6 +37,9 @@ const DEFAULT_MINIAPP_TRACING_OPTIONS: MiniAppTracingOptions = {
   startTransactionOnPageLoad: true,
   maxTransactionDuration: DEFAULT_MAX_TRANSACTION_DURATION_SECONDS,
   routingInstrumentation: instrumentRoutingWithDefaults,
+  // Default to 'link' mode for better trace continuity while maintaining separate traces
+  traceContinuityMode: 'link',
+  consistentTraceSampling: false,
   ...defaultRequestInstrumentationOptions,
 };
 
@@ -93,7 +97,13 @@ export class MiniAppTracing implements Integration {
 
   /** Create routing idle transaction. */
   private _createRouteTransaction(context: TransactionContext): IdleTransaction | undefined {
-    const { beforeNavigate, idleTimeout, maxTransactionDuration } = this.options;
+    const { 
+      beforeNavigate, 
+      idleTimeout, 
+      maxTransactionDuration,
+      traceContinuityMode,
+      consistentTraceSampling,
+    } = this.options;
 
     const expandedContext: TransactionContext = {
       ...context,
@@ -105,13 +115,30 @@ export class MiniAppTracing implements Integration {
       return undefined;
     }
 
-    const idleTransaction = startIdleTransaction(modifiedContext, idleTimeout, true, {});
+    // Build trace options for continuity
+    const traceOptions: StartTransactionOptions = {
+      traceContinuityMode: traceContinuityMode ?? 'link',
+      consistentTraceSampling: consistentTraceSampling ?? false,
+    };
+
+    IS_DEBUG_BUILD && debug.log(
+      `[MiniAppTracing] Creating route transaction with traceContinuityMode=${traceOptions.traceContinuityMode}`,
+    );
+
+    const idleTransaction = startIdleTransaction(
+      modifiedContext, 
+      idleTimeout, 
+      true, 
+      {},
+      traceOptions,
+    );
 
     idleTransaction.registerBeforeFinishCallback((transaction, endTimestamp) => {
       adjustTransactionDuration(secToMs(maxTransactionDuration), transaction, endTimestamp);
     });
 
     idleTransaction.setTag('idleTimeout', this._configuredIdleTimeout ?? idleTimeout);
+    idleTransaction.setTag('traceContinuityMode', traceContinuityMode ?? 'link');
     this._metrics.addPerformanceEntries(idleTransaction);
 
     return idleTransaction;
