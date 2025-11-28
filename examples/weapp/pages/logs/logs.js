@@ -1,5 +1,5 @@
 //logs.js
-import * as Sentry from "../../vender/sentry-miniapp";
+import * as Sentry from "../../libs/sentry/index";
 const util = require("../../utils/util.js");
 
 Page({

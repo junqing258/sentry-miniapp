@@ -50,7 +50,7 @@ var F = (t, e, n) => new Promise((r, s) => {
 };
 var ge = (t, e, n) => (e = t[pn("asyncIterator")]) ? e.call(t) : (t = t[pn("iterator")](), e = {}, n = (r, s) => (s = t[r]) && (e[r] = (i) => new Promise((o, a, c) => (i = s.call(t, i), c = i.done, Promise.resolve(i.value).then((u) => o({ value: u, done: c }), a)))), n("next"), n("return"), e);
 const Rr = (
-  // eslint-disable-next-line no-undef
+  // eslint-disable-next-line no-undef 
   typeof globalThis != "undefined" && globalThis || // eslint-disable-next-line no-undef
   typeof self != "undefined" && self || // eslint-disable-next-line no-undef
   typeof window != "undefined" && window || // eslint-disable-next-line no-undef
@@ -6139,7 +6139,7 @@ const Lf = () => {
   else if (typeof swan == "object")
     t = swan;
   else
-    throw new Error("sentry-miniapp 暂不支持此平台");
+    throw new Error("sentry-miniprogram 暂不支持此平台");
   return t;
 }, Ff = () => {
   let t = "unknown";
@@ -6220,7 +6220,7 @@ class Bf extends Nc {
    * @param options Set individual options for the dialog
    */
   showReportDialog(e = {}) {
-    console.log("sentry-miniapp 暂未实现该方法", e);
+    console.log("sentry-miniprogram 暂未实现该方法", e);
   }
   /**
    * @inheritDoc
@@ -6580,7 +6580,7 @@ const Xt = class Xt {
             })
           });
         } catch (s) {
-          console.warn(`sentry-miniapp get system info fail: ${s}`);
+          console.warn(`sentry-miniprogram get system info fail: ${s}`);
         }
       return e;
     });
@@ -6617,7 +6617,7 @@ const Zt = class Zt {
             })
           });
         } catch (s) {
-          console.warn(`sentry-miniapp get router info fail: ${s}`);
+          console.warn(`sentry-miniprogram get router info fail: ${s}`);
         }
       return e;
     });

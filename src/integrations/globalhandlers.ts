@@ -81,7 +81,6 @@ export class GlobalHandlers implements Integration {
     if (!!sdk.onError) {
       // https://developers.weixin.qq.com/miniprogram/dev/api/base/app/app-event/wx.onError.html
       sdk.onError((err: string | object) => {
-        // console.info("sentry-miniapp", error);
         const error = typeof err === 'string' ? new Error(err) : err
         captureException(error);
       });

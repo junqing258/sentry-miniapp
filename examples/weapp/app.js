@@ -1,4 +1,4 @@
-import * as Sentry from "./vender/sentry-miniapp";
+import * as Sentry from "./libs/sentry/index";
 
 // 初始化 Sentry
 Sentry.init({

@@ -4,7 +4,7 @@
  * append + toString which are all we rely on for auth query encoding.
  */
 const GLOBAL_OBJ =
-  // eslint-disable-next-line no-undef
+  // eslint-disable-next-line no-undef 
   (typeof globalThis !== 'undefined' && globalThis) ||
   // eslint-disable-next-line no-undef
   (typeof self !== 'undefined' && self) ||
@@ -65,11 +65,11 @@ class MiniappURLSearchParams {
       .join('&');
   }
 }
-
 // Only patch when missing to avoid clobbering native implementations.
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 if (!GLOBAL_OBJ.URLSearchParams) {
+  
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   GLOBAL_OBJ.URLSearchParams = MiniappURLSearchParams;
