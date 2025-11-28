@@ -1,8 +1,8 @@
 # Sentry 小程序 SDK
 
-[![npm version](https://img.shields.io/npm/v/sentry-miniapp.svg)](https://www.npmjs.com/package/sentry-miniapp)
-[![npm downloads](https://img.shields.io/npm/dm/sentry-miniapp.svg)](https://www.npmjs.com/package/sentry-miniapp)
-[![license](https://img.shields.io/npm/l/sentry-miniapp.svg)](https://github.com/junqing258/sentry-miniapp/blob/master/LICENSE)
+[![npm version](https://img.shields.io/npm/v/@damenluo/sentry-miniapp.svg)](https://www.npmjs.com/package/@damenluo/sentry-miniapp)
+[![npm downloads](https://img.shields.io/npm/dm/@damenluo/sentry-miniapp.svg)](https://www.npmjs.com/package/@damenluo/sentry-miniapp)
+[![license](https://img.shields.io/npm/l/@damenluo/sentry-miniapp.svg)](https://github.com/junqing258/sentry-miniapp/blob/master/LICENSE)
 [![Sentry](https://img.shields.io/badge/sentry-10.27.0-blueviolet)](https://github.com/getsentry/sentry-javascript)
 
 > 用于小程序/小游戏平台的 Sentry SDK，支持错误监控、性能追踪 (Tracing)、日志记录 (Logger) 和指标收集 (Metrics)。
