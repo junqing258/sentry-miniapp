@@ -110,7 +110,7 @@ export class MiniappClient extends Client<MiniappOptions> {
    */
   public showReportDialog(options: ReportDialogOptions = {}): void {
     // doesn't work without a document (React Native)
-    console.log('sentry-miniprogram 暂未实现该方法', options);
+    console.log('sentry-miniapp 暂未实现该方法', options);
   }
 
   /**

@@ -1,7 +1,8 @@
 import {
   functionToStringIntegration,
   getClient,
-  inboundFiltersIntegration,
+  // inboundFiltersIntegration,
+  eventFiltersIntegration,
   initAndBind,
   lastEventId as coreLastEventId,
 } from '@sentry/core';
@@ -22,7 +23,7 @@ import {
 
 
 export const defaultIntegrations = [
-  inboundFiltersIntegration(),
+  eventFiltersIntegration(),
   functionToStringIntegration(),
   new TryCatch(),
   new GlobalHandlers(),

@@ -1,8 +1,8 @@
 # Sentry 小程序 SDK
 
-[![npm version](https://img.shields.io/npm/v/sentry-miniprogram.svg)](https://www.npmjs.com/package/sentry-miniprogram)
-[![npm downloads](https://img.shields.io/npm/dm/sentry-miniprogram.svg)](https://www.npmjs.com/package/sentry-miniprogram)
-[![license](https://img.shields.io/npm/l/sentry-miniprogram.svg)](https://github.com/junqing258/sentry-miniapp/blob/master/LICENSE)
+[![npm version](https://img.shields.io/npm/v/sentry-miniapp.svg)](https://www.npmjs.com/package/sentry-miniapp)
+[![npm downloads](https://img.shields.io/npm/dm/sentry-miniapp.svg)](https://www.npmjs.com/package/sentry-miniapp)
+[![license](https://img.shields.io/npm/l/sentry-miniapp.svg)](https://github.com/junqing258/sentry-miniapp/blob/master/LICENSE)
 [![Sentry](https://img.shields.io/badge/sentry-10.27.0-blueviolet)](https://github.com/getsentry/sentry-javascript)
 
 > 用于小程序/小游戏平台的 Sentry SDK，支持错误监控、性能追踪 (Tracing)、日志记录 (Logger) 和指标收集 (Metrics)。
@@ -36,7 +36,7 @@
 ### 方式一：NPM 安装
 
 ```bash
-npm install @damenluo/sentry-miniprogram
+npm install @damenluo/sentry-miniapp
 ```
 
 ### 方式二：复制 dist 产物
@@ -48,7 +48,7 @@ npm install @damenluo/sentry-miniprogram
 在 `app.js` 或入口文件中初始化：
 
 ```ts
-import * as Sentry from '@damenluo/sentry-miniprogram';
+import * as Sentry from '@damenluo/sentry-miniapp';
 // 或复制方式：import * as Sentry from '@/vendor/sentry-miniapp/index.js';
 
 Sentry.init({

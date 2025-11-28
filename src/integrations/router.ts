@@ -55,7 +55,7 @@ export class Router implements Integration {
               },
             };
           } catch (e) {
-            console.warn(`sentry-miniprogram get router info fail: ${e}`);
+            console.warn(`sentry-miniapp get router info fail: ${e}`);
           }
         }
       }

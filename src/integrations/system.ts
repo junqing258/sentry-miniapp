@@ -78,7 +78,7 @@ export class System implements Integration {
             }
           };
         } catch (e) {
-          console.warn(`sentry-miniprogram get system info fail: ${e}`);
+          console.warn(`sentry-miniapp get system info fail: ${e}`);
         }
       }
 
