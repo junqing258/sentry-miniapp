@@ -1,55 +1,252 @@
-
-import { Measurements } from '@sentry/types';
-import type { SpanContext } from '../types';
-import { Span } from '../span';
-import { Transaction } from '../transaction';
-import { msToSec } from '../utils';
+import {
+  type Span,
+  type SentrySpan,
+  type Measurements,
+  type SpanAttributes,
+  type StartSpanOptions,
+  startInactiveSpan,
+  spanToJSON,
+  setMeasurement,
+  withActiveSpan,
+  SEMANTIC_ATTRIBUTE_SENTRY_ORIGIN,
+} from '@sentry/core';
 import { sdk } from '../../crossPlatform';
 
 // https://developers.weixin.qq.com/miniprogram/dev/api/base/performance/PerformanceEntry.html
-type PerformanceEntry = {
+interface PerformanceEntry {
   duration: number;
   entryType: string;
   moduleName?: string;
   name: string;
   startTime: number;
   path?: string;
-};
+  // Additional fields from different miniapp platforms
+  referrerPath?: string;
+  packageName?: string;
+  packageSize?: number;
+  initiatorType?: string;
+  transferSize?: number;
+  viewLayerReadyTime?: number;
+  firstRenderTime?: number;
+}
 
-type PerformanceObserver = {
+interface PerformanceObserver {
   disconnect: () => void;
   observe: (options: { entryTypes: string[] }) => void;
-};
+}
 
-type MiniProgramPerformance = {
+interface MiniProgramPerformance {
   createObserver?: (callback: (entryList: { getEntries: () => PerformanceEntry[] }) => void) => PerformanceObserver;
+  getEntries?: () => PerformanceEntry[];
+  getEntriesByType?: (type: string) => PerformanceEntry[];
   timeOrigin?: number;
   now?: () => number;
-};
+}
 
-const EPOCH_TIME_THRESHOLD = 1e12;
+/** Options for adding performance entries */
+export interface AddPerformanceEntriesOptions {
+  /**
+   * Resource spans with matching entry types will not be emitted.
+   * Default: []
+   */
+  ignoreResourceSpans?: string[];
 
-/** Class tracking metrics  */
+  /**
+   * Performance entry names matching strings in the array will not be emitted.
+   * Default: []
+   */
+  ignorePerformanceEntryNames?: Array<string | RegExp>;
+}
+
+const MAX_INT_AS_BYTES = 2147483647;
+
+/**
+ * Checks if a given value is a valid measurement value.
+ */
+function isMeasurementValue(value: unknown): value is number {
+  return typeof value === 'number' && isFinite(value);
+}
+
+/**
+ * Converts from milliseconds to seconds.
+ */
+function msToSec(time: number): number {
+  return time / 1000;
+}
+
+/**
+ * Helper function to start and end a child span.
+ * This function will make sure that the transaction will use the start timestamp
+ * of the created child span if it is earlier than the transaction's actual start timestamp.
+ */
+function startAndEndSpan(
+  parentSpan: Span,
+  startTimeInSeconds: number,
+  endTimeInSeconds: number,
+  spanOptions: StartSpanOptions,
+): Span | undefined {
+  const parentStartTime = spanToJSON(parentSpan).start_timestamp;
+  if (parentStartTime && parentStartTime > startTimeInSeconds) {
+    // We can only do this for SentrySpans...
+    if (typeof (parentSpan as Partial<SentrySpan>).updateStartTime === 'function') {
+      (parentSpan as SentrySpan).updateStartTime(startTimeInSeconds);
+    }
+  }
+
+  return withActiveSpan(parentSpan, () => {
+    const span = startInactiveSpan({
+      startTime: startTimeInSeconds,
+      ...spanOptions,
+    });
+
+    if (span) {
+      span.end(endTimeInSeconds);
+    }
+
+    return span;
+  });
+}
+
+/**
+ * Check if a string matches some pattern in an array.
+ */
+function stringMatchesSomePattern(value: string, patterns: Array<string | RegExp>): boolean {
+  return patterns.some(pattern => {
+    if (typeof pattern === 'string') {
+      return value === pattern;
+    }
+    return pattern.test(value);
+  });
+}
+
+/** Class tracking metrics for MiniApp performance */
 export class MetricsInstrumentation {
   private _measurements: Measurements = {};
   private _observer?: PerformanceObserver;
   private _timeOrigin?: number;
+  private _performanceCursor: number = 0;
 
   public constructor(private _reportAllChanges: boolean = false) {}
 
-  public addPerformanceEntries(transaction: Transaction): void {
+  /**
+   * Add performance entries from the miniapp performance API.
+   * Called when the idle span is being ended.
+   * Following the pattern from @sentry-internal/browser-utils.
+   */
+  public addPerformanceEntries(span: Span, options: AddPerformanceEntriesOptions = {}): void {
     const performance = this._getPerformance();
     if (!performance) {
       return;
     }
 
-    this._timeOrigin = this._getTimeOrigin(performance, transaction);
+    const origin = this._getMiniProgramTimeOrigin(performance);
+    if (!origin) {
+      return;
+    }
 
-    // performance.createObserver
+    const timeOrigin = msToSec(origin);
+    const { op, start_timestamp: transactionStartTime } = spanToJSON(span);
+
+    // Get all performance entries (similar to browser's getEntries())
+    const performanceEntries = performance.getEntries?.() || [];
+
+    // Process entries starting from cursor to avoid duplicates
+    performanceEntries.slice(this._performanceCursor).forEach(entry => {
+      const startTime = msToSec(entry.startTime);
+      // Chrome sometimes emits negative duration, clamp to 0
+      const duration = msToSec(Math.max(0, entry.duration));
+
+      // Skip entries that started before the transaction
+      if (op === 'navigation' && transactionStartTime && timeOrigin + startTime < transactionStartTime) {
+        return;
+      }
+
+      // Check if entry should be ignored
+      if (this._shouldIgnoreEntry(entry, options)) {
+        return;
+      }
+
+      switch (entry.entryType) {
+        case 'navigation': {
+          this._addNavigationSpans(span, entry, timeOrigin);
+          break;
+        }
+        case 'render': {
+          this._addRenderSpan(span, entry, startTime, duration, timeOrigin);
+          break;
+        }
+        case 'script': {
+          this._addScriptSpan(span, entry, startTime, duration, timeOrigin);
+          break;
+        }
+        case 'loadPackage': {
+          this._addPackageSpan(span, entry, startTime, duration, timeOrigin);
+          break;
+        }
+        case 'resource': {
+          this._addResourceSpan(span, entry, startTime, duration, timeOrigin, options.ignoreResourceSpans);
+          break;
+        }
+        // Ignore other entry types
+      }
+    });
+
+    // Update cursor to avoid processing same entries again
+    this._performanceCursor = Math.max(performanceEntries.length - 1, 0);
+
+    // Track system info (similar to browser's _trackNavigator)
+    this._trackSystemInfo(span);
+
+    // Measurements are only available for pageload/navigation transactions
+    if (op === 'pageload' || op === 'navigation') {
+      // Set timeOrigin attribute
+      span.setAttribute('performance.timeOrigin', timeOrigin);
+
+      // Apply collected measurements
+      Object.entries(this._measurements).forEach(([measurementName, measurement]) => {
+        setMeasurement(measurementName, measurement.value, measurement.unit);
+      });
+    }
+
+    // Reset measurements for next span
+    this._measurements = {};
+  }
+
+  /**
+   * Legacy method for backward compatibility.
+   * @deprecated Use addPerformanceEntries instead.
+   */
+  public addPerformanceEntriesFromSpan(span: Span): void {
+    this.addPerformanceEntries(span);
+    this._stopObserver();
+  }
+
+  /**
+   * Start observing performance entries and create child spans.
+   * Should be called when a new route span starts.
+   */
+  public startObserving(parentSpan: Span, options: AddPerformanceEntriesOptions = {}): void {
+    const performance = this._getPerformance();
+    if (!performance) {
+      return;
+    }
+
+    const spanJson = spanToJSON(parentSpan);
+    this._timeOrigin = this._getTimeOrigin(performance, spanJson.start_timestamp);
+    this._measurements = {};
+    this._performanceCursor = 0;
 
     this._observer = performance.createObserver?.((entryList: { getEntries: () => PerformanceEntry[] }) => {
       const list = entryList?.getEntries?.() || [];
-      list.forEach(entry => this._handleEntry(transaction, entry));
+      const parentSpanJson = spanToJSON(parentSpan);
+
+      // Don't process if parent span is already finished
+      if (parentSpanJson.timestamp !== undefined) {
+        this._stopObserver();
+        return;
+      }
+
+      list.forEach(entry => this._handleEntry(parentSpan, entry, parentSpanJson.start_timestamp, options));
     });
 
     if (!this._observer) {
@@ -67,95 +264,309 @@ export class MetricsInstrumentation {
     }
 
     const performance = sdk.getPerformance();
-    if (!performance || typeof performance.createObserver !== 'function') {
+    if (!performance) {
       return undefined;
     }
 
     return performance as unknown as MiniProgramPerformance;
   }
 
-  private _getTimeOrigin(performance: MiniProgramPerformance, transaction: Transaction): number | undefined {
+  private _getMiniProgramTimeOrigin(performance: MiniProgramPerformance): number | undefined {
     if (typeof performance.timeOrigin === 'number') {
-      return msToSec(performance.timeOrigin);
+      return performance.timeOrigin;
     }
 
     const perfNow = typeof performance.now === 'function' ? performance.now() : undefined;
     if (typeof perfNow === 'number') {
-      return msToSec(Date.now() - perfNow);
+      return Date.now() - perfNow;
     }
 
-    return transaction.startTimestamp;
+    return undefined;
   }
 
-  private _handleEntry(transaction: Transaction, entry: PerformanceEntry): void {
-    if (transaction.endTimestamp !== undefined) {
-      this._stopObserver();
+  private _getTimeOrigin(performance: MiniProgramPerformance, spanStartTimestamp: number): number {
+    const origin = this._getMiniProgramTimeOrigin(performance);
+    return origin ? msToSec(origin) : spanStartTimestamp;
+  }
+
+  private _shouldIgnoreEntry(entry: PerformanceEntry, options: AddPerformanceEntriesOptions): boolean {
+    const { ignorePerformanceEntryNames = [] } = options;
+
+    if (ignorePerformanceEntryNames.length > 0 && entry.name) {
+      return stringMatchesSomePattern(entry.name, ignorePerformanceEntryNames);
+    }
+
+    return false;
+  }
+
+  private _handleEntry(
+    parentSpan: Span,
+    entry: PerformanceEntry,
+    spanStartTimestamp: number,
+    options: AddPerformanceEntriesOptions = {},
+  ): void {
+    const timeOrigin = this._timeOrigin ?? spanStartTimestamp;
+    const startTime = msToSec(entry.startTime);
+    const duration = msToSec(Math.max(0, entry.duration));
+
+    // Check if entry should be ignored
+    if (this._shouldIgnoreEntry(entry, options)) {
       return;
     }
 
-    const startTimestamp = this._toTimestamp(entry.startTime, transaction.startTimestamp);
-    const endTimestamp = this._toTimestamp(entry.startTime + entry.duration, transaction.startTimestamp);
-
-    _startChild(transaction, {
-      op: this._mapOp(entry),
-      description: this._getDescription(entry),
-      startTimestamp,
-      endTimestamp,
-      data: this._buildSpanData(entry),
-    });
-
-    this._recordMeasurements(entry, transaction, startTimestamp);
-    transaction.setTag('sentry_reportAllChanges', this._reportAllChanges);
-
-    if (Object.keys(this._measurements).length > 0) {
-      transaction.setMeasurements(this._measurements);
-    }
-
-    /* if (entry.name === 'largestContentfulPaint' && !this._reportAllChanges) {
-      this._stopObserver(transaction);
-    } */
-  }
-
-  private _mapOp(entry: PerformanceEntry): string {
     switch (entry.entryType) {
       case 'navigation':
-        return 'navigation';
+        this._addNavigationSpans(parentSpan, entry, timeOrigin);
+        break;
       case 'render':
-        return 'ui.render';
+        this._addRenderSpan(parentSpan, entry, startTime, duration, timeOrigin);
+        break;
       case 'script':
-        return 'script';
+        this._addScriptSpan(parentSpan, entry, startTime, duration, timeOrigin);
+        break;
       case 'loadPackage':
-        return 'resource.package';
+        this._addPackageSpan(parentSpan, entry, startTime, duration, timeOrigin);
+        break;
       case 'resource':
-        return 'resource';
-      default:
-        return entry.entryType || 'custom';
+        this._addResourceSpan(parentSpan, entry, startTime, duration, timeOrigin, options.ignoreResourceSpans);
+        break;
+    }
+
+    // Record measurements
+    this._recordMeasurements(entry, spanStartTimestamp, timeOrigin + startTime);
+  }
+
+  /**
+   * Add navigation related spans (similar to browser's _addNavigationSpans).
+   */
+  private _addNavigationSpans(span: Span, entry: PerformanceEntry, timeOrigin: number): void {
+    const startTimestamp = timeOrigin + msToSec(entry.startTime);
+    const endTimestamp = startTimestamp + msToSec(Math.max(0, entry.duration));
+
+    const attributes: SpanAttributes = {
+      [SEMANTIC_ATTRIBUTE_SENTRY_ORIGIN]: 'auto.ui.miniapp.metrics',
+      'performance.entry_type': entry.entryType,
+    };
+
+    if (entry.path) {
+      attributes['navigation.path'] = entry.path;
+    }
+    if (entry.referrerPath) {
+      attributes['navigation.referrer_path'] = entry.referrerPath;
+    }
+    if (isMeasurementValue(entry.viewLayerReadyTime)) {
+      attributes['navigation.view_layer_ready_time'] = entry.viewLayerReadyTime;
+    }
+
+    startAndEndSpan(span, startTimestamp, endTimestamp, {
+      name: entry.path || entry.name || 'navigation',
+      op: 'browser.navigation',
+      attributes,
+    });
+
+    // Record navigation duration as measurement
+    if (isMeasurementValue(entry.duration) && !this._measurements['navigation.duration']) {
+      this._measurements['navigation.duration'] = { value: entry.duration, unit: 'millisecond' };
+    }
+
+    // Record view layer ready time if available
+    if (isMeasurementValue(entry.viewLayerReadyTime)) {
+      this._measurements['navigation.view_layer_ready'] = { value: entry.viewLayerReadyTime, unit: 'millisecond' };
     }
   }
 
-  private _getDescription(entry: PerformanceEntry): string | undefined {
-    return entry.path || entry.moduleName || entry.name;
+  /**
+   * Add render spans for UI rendering performance.
+   */
+  private _addRenderSpan(
+    span: Span,
+    entry: PerformanceEntry,
+    startTime: number,
+    duration: number,
+    timeOrigin: number,
+  ): void {
+    const startTimestamp = timeOrigin + startTime;
+    const endTimestamp = startTimestamp + duration;
+
+    const attributes: SpanAttributes = {
+      [SEMANTIC_ATTRIBUTE_SENTRY_ORIGIN]: 'auto.ui.miniapp.metrics',
+      'performance.entry_type': entry.entryType,
+    };
+
+    if (entry.path) {
+      attributes['ui.component_path'] = entry.path;
+    }
+    if (isMeasurementValue(entry.viewLayerReadyTime)) {
+      attributes['ui.view_layer_ready_time'] = entry.viewLayerReadyTime;
+    }
+    if (isMeasurementValue(entry.firstRenderTime)) {
+      attributes['ui.first_render_time'] = entry.firstRenderTime;
+    }
+
+    startAndEndSpan(span, startTimestamp, endTimestamp, {
+      name: entry.path || entry.name || 'render',
+      op: 'ui.render',
+      attributes,
+    });
+
+    // Record first render time as measurement
+    if (isMeasurementValue(entry.firstRenderTime)) {
+      this._measurements['ui.first_render'] = { value: entry.firstRenderTime, unit: 'millisecond' };
+    }
   }
 
-  private _buildSpanData(entry: PerformanceEntry): Record<string, unknown> {
-    const data: Record<string, unknown> = { entryType: entry.entryType };
+  /**
+   * Add script execution spans.
+   */
+  private _addScriptSpan(
+    span: Span,
+    entry: PerformanceEntry,
+    startTime: number,
+    duration: number,
+    timeOrigin: number,
+  ): void {
+    const startTimestamp = timeOrigin + startTime;
+    const endTimestamp = startTimestamp + duration;
+
+    const attributes: SpanAttributes = {
+      [SEMANTIC_ATTRIBUTE_SENTRY_ORIGIN]: 'auto.resource.miniapp.metrics',
+      'performance.entry_type': entry.entryType,
+    };
+
     if (entry.moduleName) {
-      data.moduleName = entry.moduleName;
+      attributes['code.filepath'] = entry.moduleName;
+    }
+
+    startAndEndSpan(span, startTimestamp, endTimestamp, {
+      name: entry.moduleName || entry.name || 'script',
+      op: 'script',
+      attributes,
+    });
+  }
+
+  /**
+   * Add package loading spans.
+   */
+  private _addPackageSpan(
+    span: Span,
+    entry: PerformanceEntry,
+    startTime: number,
+    duration: number,
+    timeOrigin: number,
+  ): void {
+    const startTimestamp = timeOrigin + startTime;
+    const endTimestamp = startTimestamp + duration;
+
+    const attributes: SpanAttributes = {
+      [SEMANTIC_ATTRIBUTE_SENTRY_ORIGIN]: 'auto.resource.miniapp.metrics',
+      'performance.entry_type': entry.entryType,
+    };
+
+    if (entry.packageName) {
+      attributes['resource.package_name'] = entry.packageName;
+    }
+    if (isMeasurementValue(entry.packageSize) && entry.packageSize < MAX_INT_AS_BYTES) {
+      attributes['resource.package_size'] = entry.packageSize;
+    }
+
+    startAndEndSpan(span, startTimestamp, endTimestamp, {
+      name: entry.packageName || entry.name || 'loadPackage',
+      op: 'resource.package',
+      attributes,
+    });
+  }
+
+  /**
+   * Add resource loading spans (similar to browser's _addResourceSpans).
+   */
+  private _addResourceSpan(
+    span: Span,
+    entry: PerformanceEntry,
+    startTime: number,
+    duration: number,
+    timeOrigin: number,
+    ignoredResourceSpanOps?: string[],
+  ): void {
+    // Skip fetch/xhr as they are already instrumented
+    if (entry.initiatorType === 'xmlhttprequest' || entry.initiatorType === 'fetch') {
+      return;
+    }
+
+    const op = entry.initiatorType ? `resource.${entry.initiatorType}` : 'resource.other';
+    if (ignoredResourceSpanOps?.includes(op)) {
+      return;
+    }
+
+    const startTimestamp = timeOrigin + startTime;
+    const endTimestamp = startTimestamp + duration;
+
+    const attributes: SpanAttributes = {
+      [SEMANTIC_ATTRIBUTE_SENTRY_ORIGIN]: 'auto.resource.miniapp.metrics',
+      'performance.entry_type': entry.entryType,
+    };
+
+    if (entry.initiatorType) {
+      attributes['resource.initiator_type'] = entry.initiatorType;
+    }
+    if (isMeasurementValue(entry.transferSize) && entry.transferSize < MAX_INT_AS_BYTES) {
+      attributes['http.response_transfer_size'] = entry.transferSize;
     }
     if (entry.path) {
-      data.path = entry.path;
+      attributes['resource.path'] = entry.path;
     }
-    if (typeof entry.duration === 'number') {
-      data.duration = entry.duration;
-    }
-    return data;
+
+    startAndEndSpan(span, startTimestamp, endTimestamp, {
+      name: entry.path || entry.name || 'resource',
+      op,
+      attributes,
+    });
   }
 
-  private _recordMeasurements(entry: PerformanceEntry, transaction: Transaction, startTimestamp: number): void {
+  /**
+   * Track system information (similar to browser's _trackNavigator).
+   */
+  private _trackSystemInfo(span: Span): void {
+    if (!sdk.getSystemInfoSync) {
+      return;
+    }
+
+    try {
+      const systemInfo = sdk.getSystemInfoSync();
+      if (!systemInfo) {
+        return;
+      }
+
+      // Track network type if available
+      if (systemInfo.networkType) {
+        span.setAttribute('network.type', systemInfo.networkType);
+      }
+
+      // Track device info
+      if (systemInfo.platform) {
+        span.setAttribute('device.platform', systemInfo.platform);
+      }
+      if (systemInfo.model) {
+        span.setAttribute('device.model', systemInfo.model);
+      }
+      if (systemInfo.system) {
+        span.setAttribute('os.version', systemInfo.system);
+      }
+
+      // Track device memory if available (similar to browser)
+      if (isMeasurementValue(systemInfo.benchmarkLevel)) {
+        span.setAttribute('device.benchmark_level', String(systemInfo.benchmarkLevel));
+      }
+    } catch {
+      // Silently ignore errors when accessing system info
+    }
+  }
+
+  private _recordMeasurements(entry: PerformanceEntry, spanStartTimestamp: number, entryStartTimestamp: number): void {
     const normalizedName = (entry.name || '').toLowerCase();
     const durationMs = entry.duration;
-    const relativeStartMs = Math.max((startTimestamp - transaction.startTimestamp) * 1000, 0);
+    const relativeStartMs = Math.max((entryStartTimestamp - spanStartTimestamp) * 1000, 0);
 
+    // Web vitals style measurements
     if (normalizedName === 'first-paint' || normalizedName === 'firstpaint') {
       this._measurements['fp'] = { value: relativeStartMs, unit: 'millisecond' };
     } else if (normalizedName === 'first-contentful-paint' || normalizedName === 'firstcontentfulpaint') {
@@ -168,18 +579,21 @@ export class MetricsInstrumentation {
       this._measurements['lcp'] = { value: relativeStartMs, unit: 'millisecond' };
     } else if (
       (normalizedName === 'first-input-delay' || normalizedName === 'firstinputdelay' || normalizedName === 'fid') &&
-      typeof durationMs === 'number'
+      isMeasurementValue(durationMs)
     ) {
       this._measurements['fid'] = { value: durationMs, unit: 'millisecond' };
-    } else if (
-      entry.entryType === 'navigation' &&
-      typeof durationMs === 'number' &&
-      !this._measurements['navigation']
-    ) {
-      this._measurements['navigation'] = { value: durationMs, unit: 'millisecond' };
     }
 
-    if (this._reportAllChanges && typeof durationMs === 'number') {
+    // MiniApp specific measurements
+    if (isMeasurementValue(entry.viewLayerReadyTime) && !this._measurements['view_layer_ready']) {
+      this._measurements['view_layer_ready'] = { value: entry.viewLayerReadyTime, unit: 'millisecond' };
+    }
+    if (isMeasurementValue(entry.firstRenderTime) && !this._measurements['first_render']) {
+      this._measurements['first_render'] = { value: entry.firstRenderTime, unit: 'millisecond' };
+    }
+
+    // Report all changes mode
+    if (this._reportAllChanges && isMeasurementValue(durationMs)) {
       const key = this._measurementKey(entry);
       if (key && !this._measurements[key]) {
         this._measurements[key] = { value: durationMs, unit: 'millisecond' };
@@ -195,32 +609,8 @@ export class MetricsInstrumentation {
     return base.replace(/\s+/g, '_').toLowerCase();
   }
 
-  private _toTimestamp(startTimeMs: number, transactionStart: number): number {
-    if (startTimeMs > EPOCH_TIME_THRESHOLD) {
-      return msToSec(startTimeMs);
-    }
-
-    const origin = this._timeOrigin ?? transactionStart;
-    return origin + msToSec(startTimeMs);
-  }
-
-  private _stopObserver(transaction?: Transaction): void {
+  private _stopObserver(): void {
     this._observer?.disconnect();
     this._observer = undefined;
-
-    if (transaction && !transaction.endTimestamp) {
-      transaction.finish();
-    }
   }
-}
-
-function _startChild(transaction: Transaction, { startTimestamp, ...ctx }: SpanContext): Span {
-  if (startTimestamp && transaction.startTimestamp > startTimestamp) {
-    transaction.startTimestamp = startTimestamp;
-  }
-
-  return transaction.startChild({
-    startTimestamp,
-    ...ctx,
-  });
 }

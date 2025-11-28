@@ -1,6 +1,6 @@
 import {
   applySdkMetadata,
-  BaseClient,
+  Client,
   Scope,
   type DsnLike,
   type Event,
@@ -12,7 +12,7 @@ import {
 
 import { MiniappOptions } from './backend';
 import { SDK_NAME, SDK_VERSION } from "./version";
-import { eventFromString, eventFromUnknownInput } from './eventbuilder';
+import { eventFromException, eventFromMessage } from './eventbuilder';
 import { makeMiniappTransport } from './transports';
 
 const noopStackParser: StackParser = () => [];
@@ -50,7 +50,7 @@ export interface ReportDialogOptions {
  * @see MiniappOptions for documentation on configuration options.
  * @see SentryClient for usage documentation.
  */
-export class MiniappClient extends BaseClient<MiniappOptions> {
+export class MiniappClient extends Client<MiniappOptions> {
   /**
    * Creates a new Miniapp SDK instance.
    *
@@ -79,7 +79,12 @@ export class MiniappClient extends BaseClient<MiniappOptions> {
   /**
    * @inheritDoc
    */
-  protected _prepareEvent(event: Event, hint: EventHint, scope?: Scope, isolationScope?: Scope): PromiseLike<Event | null> {
+  protected _prepareEvent(
+    event: Event,
+    hint: EventHint,
+    currentScope: Scope,
+    isolationScope: Scope,
+  ): PromiseLike<Event | null> {
     event.platform = event.platform || "javascript";
     event.sdk = {
       ...event.sdk,
@@ -94,7 +99,7 @@ export class MiniappClient extends BaseClient<MiniappOptions> {
       version: SDK_VERSION
     };
 
-    return super._prepareEvent(event, hint, scope, isolationScope);
+    return super._prepareEvent(event, hint, currentScope, isolationScope);
   }
 
   /**
@@ -113,14 +118,7 @@ export class MiniappClient extends BaseClient<MiniappOptions> {
    */
   // eslint-disable-next-line deprecation/deprecation
   public eventFromException(exception: unknown, hint?: EventHint): PromiseLike<Event> {
-    const syntheticException = hint && hint.syntheticException ? hint.syntheticException : undefined;
-    const event = eventFromUnknownInput(exception, syntheticException, {
-      attachStacktrace: this._options.attachStacktrace,
-    });
-    if (hint && hint.event_id) {
-      event.event_id = hint.event_id;
-    }
-    return Promise.resolve(event);
+    return eventFromException(exception, hint, this._options.attachStacktrace);
   }
 
   /**
@@ -132,14 +130,6 @@ export class MiniappClient extends BaseClient<MiniappOptions> {
     level: SeverityLevel = 'info',
     hint?: EventHint,
   ): PromiseLike<Event> {
-    const syntheticException = hint && hint.syntheticException ? hint.syntheticException : undefined;
-    const event = eventFromString(String(message), syntheticException, {
-      attachStacktrace: this._options.attachStacktrace,
-    });
-    event.level = level;
-    if (hint && hint.event_id) {
-      event.event_id = hint.event_id;
-    }
-    return Promise.resolve(event);
+    return eventFromMessage(message, level, hint, this._options.attachStacktrace);
   }
 }

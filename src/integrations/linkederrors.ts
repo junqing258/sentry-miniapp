@@ -1,8 +1,6 @@
-import { addEventProcessor, getCurrentHub } from '@sentry/core';
-import { Event, EventHint, Exception, ExtendedError, Integration } from '@sentry/types';
+import { addEventProcessor, getClient, Event, EventHint, Exception, ExtendedError, Integration } from '@sentry/core';
 
-import { exceptionFromStacktrace } from '../parsers';
-import { computeStackTrace } from '../tracekit';
+import { exceptionFromError } from '../eventbuilder';
 
 const DEFAULT_KEY = 'cause';
 const DEFAULT_LIMIT = 5;
@@ -40,7 +38,8 @@ export class LinkedErrors implements Integration {
    */
   public setupOnce(): void {
     addEventProcessor((event: Event, hint?: EventHint) => {
-      const self = getCurrentHub().getIntegration(LinkedErrors);
+      const client = getClient();
+      const self = client && client.getIntegrationByName<LinkedErrors>(LinkedErrors.id);
       if (self) {
         return self._handler(event, hint);
       }
@@ -67,8 +66,7 @@ export class LinkedErrors implements Integration {
     if (!(error[key] instanceof Error) || stack.length + 1 >= this._limit) {
       return stack;
     }
-    const stacktrace = computeStackTrace(error[key]);
-    const exception = exceptionFromStacktrace(stacktrace);
+    const exception = exceptionFromError(error[key]);
     return this._walkErrorTree(error[key], key, [exception, ...stack]);
   }
 }

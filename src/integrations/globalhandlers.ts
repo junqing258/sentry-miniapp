@@ -1,6 +1,4 @@
-import { getCurrentHub } from "@sentry/core";
-import { Integration } from "@sentry/types";
-import { logger } from "@sentry/utils";
+import { captureException, captureMessage, debug, setExtra, setTag, Integration } from "@sentry/core";
 
 import { sdk } from "../crossPlatform";
 
@@ -54,22 +52,22 @@ export class GlobalHandlers implements Integration {
     Error.stackTraceLimit = 50;
 
     if (this._options.onerror) {
-      logger.log("Global Handler attached: onError");
+      debug.log("Global Handler attached: onError");
       this._installGlobalOnErrorHandler();
     }
 
     if (this._options.onunhandledrejection) {
-      logger.log("Global Handler attached: onunhandledrejection");
+      debug.log("Global Handler attached: onunhandledrejection");
       this._installGlobalOnUnhandledRejectionHandler();
     }
 
     if (this._options.onpagenotfound) {
-      logger.log("Global Handler attached: onPageNotFound");
+      debug.log("Global Handler attached: onPageNotFound");
       this._installGlobalOnPageNotFoundHandler();
     }
 
     if (this._options.onmemorywarning) {
-      logger.log("Global Handler attached: onMemoryWarning");
+      debug.log("Global Handler attached: onMemoryWarning");
       this._installGlobalOnMemoryWarningHandler();
     }
   }
@@ -81,13 +79,11 @@ export class GlobalHandlers implements Integration {
     }
 
     if (!!sdk.onError) {
-      const currentHub = getCurrentHub();
-
       // https://developers.weixin.qq.com/miniprogram/dev/api/base/app/app-event/wx.onError.html
       sdk.onError((err: string | object) => {
         // console.info("sentry-miniapp", error);
         const error = typeof err === 'string' ? new Error(err) : err
-        currentHub.captureException(error);
+        captureException(error);
       });
     }
 
@@ -101,7 +97,6 @@ export class GlobalHandlers implements Integration {
     }
 
     if (!!sdk.onUnhandledRejection) {
-      const currentHub = getCurrentHub();
       /** JSDoc */
       interface OnUnhandledRejectionRes {
         reason: string | object;
@@ -114,7 +109,7 @@ export class GlobalHandlers implements Integration {
           // console.log(reason, typeof reason, promise)
           // 为什么官方文档上说 reason 是 string 类型，但是实际返回的确实 object 类型
           const error = typeof reason === 'string' ? new Error(reason) : reason
-          currentHub.captureException(error, {
+          captureException(error, {
             data: promise,
           });
         }
@@ -131,14 +126,12 @@ export class GlobalHandlers implements Integration {
     }
 
     if (!!sdk.onPageNotFound) {
-      const currentHub = getCurrentHub();
-
       sdk.onPageNotFound((res: { path: string }) => {
         const url = res.path.split("?")[0];
 
-        currentHub.setTag("pagenotfound", url);
-        currentHub.setExtra("message", JSON.stringify(res));
-        currentHub.captureMessage(`页面无法找到: ${url}`);
+        setTag("pagenotfound", url);
+        setExtra("message", JSON.stringify(res));
+        captureMessage(`页面无法找到: ${url}`);
       });
     }
 
@@ -152,8 +145,6 @@ export class GlobalHandlers implements Integration {
     }
 
     if (!!sdk.onMemoryWarning) {
-      const currentHub = getCurrentHub();
-
       sdk.onMemoryWarning(({ level = -1 }: { level: number }) => {
         let levelMessage = "没有获取到告警级别信息";
 
@@ -171,9 +162,9 @@ export class GlobalHandlers implements Integration {
             return;
         }
 
-        currentHub.setTag("memory-warning", String(level));
-        currentHub.setExtra("message", levelMessage);
-        currentHub.captureMessage(`内存不足告警`);
+        setTag("memory-warning", String(level));
+        setExtra("message", levelMessage);
+        captureMessage(`内存不足告警`);
       });
     }
 

@@ -1,22 +1,10 @@
 # Sentry 小程序 SDK
 
-![npm version](https://img.shields.io/npm/v/sentry-miniapp)
-![npm download](https://img.shields.io/npm/dm/sentry-miniapp)
-![github forks](https://img.shields.io/github/forks/lizhiyao/sentry-miniapp?style=social)
-![github stars](https://img.shields.io/github/stars/lizhiyao/sentry-miniapp?style=social)
-![github watchers](https://img.shields.io/github/watchers/lizhiyao/sentry-miniapp?style=social)
-![github license](https://img.shields.io/github/license/lizhiyao/sentry-miniapp)
-
 用于小程序平台的 Sentry SDK
-
 
 
 ## 功能特点
 
-- [x] 基于 [sentry-javascript 最新的基础模块](https://www.yuque.com/lizhiyao/dxy/zevhf1#0GMCN) 封装
-- [x] 遵守[官方统一的 API 设计文档](https://www.yuque.com/lizhiyao/dxy/gc3b9r#vQdTs)，使用方式和官方保持一致
-- [x] 使用 [TypeScript](https://www.typescriptlang.org/) 进行编写
-- [x] 包含 Sentry SDK（如：[@sentry/browser](https://github.com/getsentry/sentry-javascript/tree/master/packages/browser)）的所有基础功能
 - [x] 支持 `ES6`、`CommonJS` 两种模块系统（支持小程序原生开发方式、使用小程序框架开发方式两种开发模式下使用）
 - [x] 默认监听并上报小程序的 onError、onUnhandledRejection、onPageNotFound、onMemoryWarning 事件返回的信息（各事件支持程度与对应各小程序官方保持一致）
 - [x] 默认上报运行小程序的设备、操作系统、应用版本信息
@@ -40,6 +28,19 @@ import * as Sentry from "@/sentry-miniapp/index.js";
 // init options: https://github.com/getsentry/sentry-javascript/blob/master/packages/types/src/options.ts
 Sentry.init({
   dsn: "__DSN__",
+  integrations: [
+    new Sentry.MiniAppTracing({
+      // 三种模式：
+      // 'session' - 整个会话使用同一个 traceId（所有导航共享一个 trace）
+      // 'link'    - 每次导航新 traceId，但通过 span link 关联前一个 trace（推荐）
+      // 'off'     - 每次导航独立 trace
+      traceContinuityMode: 'session', // 或 'link'
+      
+      // 是否继承前一个 trace 的采样决定（保证会话内采样一致性）
+      consistentTraceSampling: true,
+    }),
+  ],
+  tracesSampleRate: 1.0,
   // ...
 });
 
@@ -74,7 +75,9 @@ Sentry.captureEvent({
 
 项目基于[sentry-miniapp](https://github.com/lizhiyao/sentry-miniapp) 基础上优化，主要做了如下工作:
 
-1. **fix:**  微信小程序异常信息栈的解析
-2. **chore:** 升级 sentry 核心依赖至 8.55.0
-3. **feat:** 增加小程序Transaction性能指标
-4. **chore:** 用 Vite 优化打包
+- **fix:**  微信小程序异常信息栈的解析
+- **chore:** 升级 sentry 核心依赖至 10.27.0
+- **feat:** 增加小程序trace支持
+- **feat:** 增加logger支持
+- **feat:** 增加metrics支持
+- **chore:** 用 Vite 优化打包

@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 import {
   Primitive,
   Span as SpanInterface,
@@ -8,8 +7,8 @@ import {
   SpanStatus,
   SpanTimeInput,
   TraceFlag,
-} from '@sentry/types';
-import { dateTimestampInSeconds, dropUndefinedKeys, uuid4 } from '@sentry/utils';
+} from '@sentry/core';
+import { dateTimestampInSeconds, dropUndefinedKeys, uuid4, type SpanJSON } from '@sentry/core';
 import type { SpanContext, SpanStatusType } from './types';
 import type { Transaction } from './transaction';
 import { msToSec } from './utils';
@@ -106,8 +105,7 @@ export class Span implements SpanInterface {
   /**
    * @inheritDoc
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public data: { [key: string]: any } = {};
+  public data: SpanAttributes = {};
 
   /**
    * Attributes for the span (new Sentry/OpenTelemetry style).
@@ -210,7 +208,7 @@ export class Span implements SpanInterface {
    * @inheritDoc
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
-  public setData(key: string, value: any): this {
+  public setData(key: string, value: SpanAttributeValue | undefined): this {
     this.data = { ...this.data, [key]: value };
     return this;
   }
@@ -406,22 +404,11 @@ export class Span implements SpanInterface {
   /**
    * @inheritDoc
    */
-  public toJSON(): {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    data?: { [key: string]: any };
-    description?: string;
-    op?: string;
-    parent_span_id?: string;
-    span_id: string;
-    start_timestamp: number;
-    status?: string;
-    tags?: { [key: string]: Primitive };
-    attributes?: SpanAttributes;
-    timestamp?: number;
-    trace_id: string;
-  } {
+  public toJSON(): SpanJSON {
+    const data: SpanAttributes = Object.keys(this.data).length > 0 ? this.data : {};
+
     return dropUndefinedKeys({
-      data: Object.keys(this.data).length > 0 ? this.data : undefined,
+      data,
       description: this.description,
       op: this.op,
       parent_span_id: this.parentSpanId,
@@ -429,10 +416,10 @@ export class Span implements SpanInterface {
       start_timestamp: this.startTimestamp,
       status: typeof this.status === 'number' ? String(this.status) : this.status,
       tags: Object.keys(this.tags).length > 0 ? this.tags : undefined,
-      attributes: Object.keys(this.attributes).length > 0 ? this.attributes : undefined,
       timestamp: this.endTimestamp,
       trace_id: this.traceId,
-    });
+      origin: this.origin,
+    }) as SpanJSON;
   }
 
   /**

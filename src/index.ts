@@ -3,7 +3,6 @@ import './polyfills/urlsearchparams';
 export type {
   Breadcrumb,
   BreadcrumbHint,
-  Request,
   SdkInfo,
   Event,
   EventHint,
@@ -13,9 +12,9 @@ export type {
   Thread,
   User,
   Integration,
-} from '@sentry/types';
+  SeverityLevel,
+} from '@sentry/core';
 
-export type { SeverityLevel } from '@sentry/types';
 
 export {
   addEventProcessor,
@@ -23,7 +22,6 @@ export {
   captureException,
   captureEvent,
   captureMessage,
-  getCurrentHub,
   getCurrentScope,
   setContext,
   setExtra,
@@ -32,11 +30,45 @@ export {
   setTags,
   setUser,
   withScope,
+  metrics,
 } from '@sentry/core';
 
-export type { Hub, Scope } from '@sentry/core';
-export { configureScope } from './scope';
-export { startTransaction } from './tracing/hubextensions';
+export {
+  registerSpanErrorInstrumentation,
+  getActiveSpan,
+  getRootSpan,
+  startSpan,
+  startInactiveSpan,
+  startSpanManual,
+  withActiveSpan,
+  startNewTrace,
+  getSpanDescendants,
+  setMeasurement,
+  getSpanStatusFromHttpCode,
+  setHttpStatus,
+  makeMultiplexedTransport,
+  moduleMetadataIntegration,
+  supabaseIntegration,
+  instrumentSupabaseClient,
+  zodErrorsIntegration,
+  thirdPartyErrorFilterIntegration,
+  featureFlagsIntegration,
+  instrumentAnthropicAiClient,
+  instrumentOpenAiClient,
+  instrumentGoogleGenAIClient,
+  logger,
+} from '@sentry/core';
+
+export {
+  captureConsoleIntegration,
+  extraErrorDataIntegration,
+  rewriteFramesIntegration,
+  consoleLoggingIntegration,
+  createConsolaReporter,
+} from '@sentry/core';
+
+
+export type { Scope } from '@sentry/core';
 
 export { SDK_NAME, SDK_VERSION } from "./version";
 export {
@@ -50,6 +82,19 @@ export {
 } from "./sdk";
 export type { MiniappOptions } from "./backend";
 export { MiniappClient, type ReportDialogOptions } from "./client";
+
+// New function-based tracing integration (recommended)
+export {
+  miniappTracingIntegration,
+  startMiniAppTracingNavigationSpan,
+  getActiveMiniAppSpan,
+  instrumentMiniAppRouter,
+  getActiveMiniAppRootSpan,
+  type MiniAppTracingIntegrationOptions,
+  type MiniAppRoute,
+  type MiniAppRouterInstrumentationOptions,
+} from "./tracing";
+
 
 import * as Integrations from "./integrations/index";
 import * as Transports from "./transports/index";

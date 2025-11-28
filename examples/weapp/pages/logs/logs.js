@@ -1,17 +1,19 @@
 //logs.js
+import * as Sentry from "../../vender/sentry-miniapp";
 const util = require("../../utils/util.js");
 
 Page({
   data: {
     logs: []
   },
-  onLoad: function() {
+  onLoad: function () {
+    const logs = (wx.getStorageSync("logs") || []).map(log => {
+      return util.formatTime(new Date(log));
+    })
     this.setData({
-      logs: (wx.getStorageSync("logs") || []).map(log => {
-        return util.formatTime(new Date(log));
-      })
+      logs
     });
 
-    throw new Error("this is a getCurrentPages test.");
+    Sentry.captureMessage("this is a getCurrentPages test.");
   }
 });

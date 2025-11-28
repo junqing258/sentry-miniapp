@@ -1,6 +1,16 @@
-import { captureException, getCurrentHub, withScope } from '@sentry/core';
-import { Event as SentryEvent, Mechanism, Scope, WrappedFunction } from '@sentry/types';
-import { addExceptionMechanism, addExceptionTypeValue, htmlTreeAsString, normalize } from '@sentry/utils';
+import type { Mechanism, WrappedFunction } from '@sentry/core';
+import {
+  addBreadcrumb,
+  addExceptionMechanism,
+  addExceptionTypeValue,
+  addNonEnumerableProperty,
+  captureException,
+  getOriginalFunction,
+  htmlTreeAsString,
+  markFunctionWrapped,
+  normalize,
+  withScope,
+} from '@sentry/core';
 
 const debounceDuration: number = 1000;
 let keypressTimeout: number | undefined;
@@ -37,7 +47,6 @@ export function wrap(
   fn: WrappedFunction,
   options: {
     mechanism?: Mechanism;
-    capture?: boolean;
   } = {},
   before?: WrappedFunction,
 ): any {
@@ -47,53 +56,37 @@ export function wrap(
   }
 
   try {
-    // We don't wanna wrap it twice
-    if (fn.__sentry__) {
-      return fn;
+    // If we're dealing with a function that was previously wrapped, return the original wrapper.
+    const wrapper = (fn as WrappedFunction).__sentry_wrapped__;
+    if (wrapper) {
+      return wrapper as WrappedFunction;
     }
 
-    // If this has already been wrapped in the past, return that wrapped function
-    if (fn.__sentry_wrapped__) {
-      return fn.__sentry_wrapped__;
+    if (getOriginalFunction(fn)) {
+      return fn;
     }
-  } catch (e) {
-    // Just accessing custom props in some Selenium environments
-    // can cause a "Permission denied" exception (see raven-js#495).
-    // Bail on wrapping and return the function as-is (defers to window.onerror).
+  } catch (_oO) {
     return fn;
   }
 
-  const sentryWrapped: WrappedFunction = function (this: any): void {
-    // tslint:disable-next-line:strict-type-predicates
+  const sentryWrapped: WrappedFunction = function (this: any, ...args: any[]): any {
     if (before && typeof before === 'function') {
-      before.apply(this, arguments);
+      before.apply(this, args);
     }
 
-    const args = Array.prototype.slice.call(arguments);
-
-    // tslint:disable:no-unsafe-any
     try {
       const wrappedArguments = args.map((arg: any) => wrap(arg, options));
 
-      if (fn.handleEvent) {
-        // Attempt to invoke user-land function
-        // NOTE: If you are a Sentry user, and you are seeing this stack frame, it
-        //       means the sentry.javascript SDK caught an error invoking your application code. This
-        //       is expected behavior and NOT indicative of a bug with sentry.javascript.
-        return fn.handleEvent.apply(this, wrappedArguments);
+      if ((fn as { handleEvent?: unknown }).handleEvent) {
+        return (fn as any).handleEvent.apply(this, wrappedArguments);
       }
 
-      // Attempt to invoke user-land function
-      // NOTE: If you are a Sentry user, and you are seeing this stack frame, it
-      //       means the sentry.javascript SDK caught an error invoking your application code. This
-      //       is expected behavior and NOT indicative of a bug with sentry.javascript.
       return fn.apply(this, wrappedArguments);
-      // tslint:enable:no-unsafe-any
     } catch (ex) {
       ignoreNextOnError();
 
-      withScope((scope: Scope) => {
-        scope.addEventProcessor((event: SentryEvent) => {
+      withScope(scope => {
+        scope.addEventProcessor(event => {
           const processedEvent = { ...event };
 
           if (options.mechanism) {
@@ -122,39 +115,21 @@ export function wrap(
     // tslint:disable-next-line: no-for-in
     for (const property in fn) {
       if (Object.prototype.hasOwnProperty.call(fn, property)) {
-        sentryWrapped[property] = fn[property];
+        (sentryWrapped as any)[property] = (fn as any)[property];
       }
     }
   } catch (_oO) { } // tslint:disable-line:no-empty
 
-  fn.prototype = fn.prototype || {};
-  sentryWrapped.prototype = fn.prototype;
-
-  Object.defineProperty(fn, '__sentry_wrapped__', {
-    enumerable: false,
-    value: sentryWrapped,
-  });
-
-  // Signal that this function has been wrapped/filled already
-  // for both debugging and to prevent it to being wrapped/filled twice
-  Object.defineProperties(sentryWrapped, {
-    __sentry__: {
-      enumerable: false,
-      value: true,
-    },
-    __sentry_original__: {
-      enumerable: false,
-      value: fn,
-    },
-  });
+  markFunctionWrapped(sentryWrapped, fn);
+  addNonEnumerableProperty(fn, '__sentry_wrapped__', sentryWrapped);
 
   // Restore original function name (not all browsers allow that)
   try {
     const descriptor = Object.getOwnPropertyDescriptor(sentryWrapped, 'name') as PropertyDescriptor;
-    if (descriptor.configurable) {
+    if (descriptor?.configurable) {
       Object.defineProperty(sentryWrapped, 'name', {
         get(): string {
-          return fn.name;
+          return (fn as WrappedFunction).name;
         },
       });
     }
@@ -203,16 +178,10 @@ export function breadcrumbEventHandler(eventName: string, debounce: boolean = fa
         return;
       }
 
-      getCurrentHub().addBreadcrumb(
-        {
-          category: `ui.${eventName}`, // e.g. ui.click, ui.input
-          message: target,
-        },
-        {
-          event,
-          name: eventName,
-        },
-      );
+      addBreadcrumb({
+        category: `ui.${eventName}`, // e.g. ui.click, ui.input
+        message: target,
+      });
     };
 
     if (debounceTimer) {

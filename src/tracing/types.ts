@@ -6,7 +6,7 @@ import type {
   SpanAttributes,
   SpanOrigin,
   WorkerLocation,
-} from '@sentry/types';
+} from '@sentry/core';
 
 /** Lightweight span status type used throughout the custom tracing layer. */
 export type SpanStatusType =
@@ -81,3 +81,38 @@ export type CustomSamplingContext = Record<string, unknown>;
 
 export type MeasurementsMap = Measurements;
 export type MeasurementUnitType = MeasurementUnit;
+
+/**
+ * Trace continuity mode for maintaining trace relationships across navigations.
+ * 
+ * - `'session'`: Keep the same traceId for the entire session. All navigations share one trace.
+ * - `'link'`: Each navigation gets a new traceId, but links to the previous trace (recommended).
+ * - `'off'`: Each navigation starts a completely independent trace (legacy behavior).
+ */
+export type TraceContinuityMode = 'session' | 'link' | 'off';
+
+/**
+ * Options for trace continuity behavior.
+ */
+export interface TraceContinuityOptions {
+  /**
+   * How to handle trace continuity across navigations.
+   * 
+   * - `'session'`: Keep the same traceId for the entire session (all navigations share one trace).
+   * - `'link'`: Each navigation gets a new traceId but links to previous trace via span links.
+   * - `'off'`: Each navigation starts an independent trace (legacy behavior).
+   * 
+   * @default 'link'
+   */
+  traceContinuityMode?: TraceContinuityMode;
+
+  /**
+   * If true, subsequent traces will inherit the sampling decision from the initial trace.
+   * This ensures consistent sampling across all traces in a session.
+   * 
+   * Only effective when `traceContinuityMode` is not `'off'`.
+   * 
+   * @default false
+   */
+  consistentTraceSampling?: boolean;
+}

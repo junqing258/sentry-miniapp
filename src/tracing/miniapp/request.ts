@@ -1,4 +1,4 @@
-import { getCurrentHub } from '@sentry/core';
+import { getClient } from '@sentry/core';
 import { sdk } from '../../crossPlatform';
 import { getActiveTransaction, msToSec } from '../utils';
 
@@ -40,7 +40,7 @@ export function instrumentOutgoingRequests(_options?: Partial<RequestInstrumenta
       }
 
       // Skip Sentry intake requests
-      const client = getCurrentHub().getClient();
+      const client = getClient();
       const dsnHost = client && (client as any).getDsn && (client as any).getDsn()?.host;
       if (dsnHost && typeof url === 'string' && url.indexOf(dsnHost) !== -1) {
         return original.call(sdk, options);
