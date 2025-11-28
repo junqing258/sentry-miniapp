@@ -36,7 +36,7 @@
 ### 方式一：NPM 安装
 
 ```bash
-npm install sentry-miniprogram
+npm install @loufang17/sentry-miniprogram
 ```
 
 ### 方式二：复制 dist 产物
@@ -48,7 +48,7 @@ npm install sentry-miniprogram
 在 `app.js` 或入口文件中初始化：
 
 ```ts
-import * as Sentry from 'sentry-miniprogram';
+import * as Sentry from '@loufang17/sentry-miniprogram';
 // 或复制方式：import * as Sentry from '@/vendor/sentry-miniapp/index.js';
 
 Sentry.init({

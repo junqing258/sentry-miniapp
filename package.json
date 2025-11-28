@@ -1,5 +1,5 @@
 {
-  "name": "sentry-miniprogram",
+  "name": "@loufang17/sentry-miniprogram",
   "version": "10.27.0-rc.1",
   "description": "用于小程序/小游戏平台的 Sentry SDK",
   "repository": {
@@ -12,6 +12,10 @@
   },
   "license": "BSD-3-Clause",
   "author": "junqing258",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
   "miniprogram": "dist",
   "type": "module",
   "exports": {
