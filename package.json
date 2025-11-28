@@ -1,5 +1,5 @@
 {
-  "name": "@loufang17/sentry-miniprogram",
+  "name": "@damenluo/sentry-miniprogram",
   "version": "10.27.0-rc.1",
   "description": "用于小程序/小游戏平台的 Sentry SDK",
   "repository": {

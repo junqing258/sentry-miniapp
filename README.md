@@ -36,19 +36,19 @@
 ### 方式一：NPM 安装
 
 ```bash
-npm install @loufang17/sentry-miniprogram
+npm install @damenluo/sentry-miniprogram
 ```
 
 ### 方式二：复制 dist 产物
 
-将 `dist` 目录拷贝到项目中（如 `/vendor/sentry-miniapp/`）。
+将 `dist` 目录拷贝到项目中（如 `/libs/sentry/`）。
 
 ## 🚀 快速开始
 
 在 `app.js` 或入口文件中初始化：
 
 ```ts
-import * as Sentry from '@loufang17/sentry-miniprogram';
+import * as Sentry from '@damenluo/sentry-miniprogram';
 // 或复制方式：import * as Sentry from '@/vendor/sentry-miniapp/index.js';
 
 Sentry.init({
