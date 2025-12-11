@@ -1,0 +1,4 @@
+
+<view>
+  <view>{{title}}</view> <view>{{array[0].user}}</view>
+</view>

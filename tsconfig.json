@@ -29,8 +29,7 @@
   },
   "compileOnSave": false,
   "include": [
-    "*.ts",
-    "**/*.ts",
+    "src/*.ts"
   ],
   "exclude": [
     "dist/**/*",

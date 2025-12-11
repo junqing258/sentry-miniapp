@@ -1,4 +1,4 @@
-import * as Sentry from "./libs/sentry/index";
+import * as Sentry from "./vendor/sentry/index";
 
 // 初始化 Sentry
 Sentry.init({
@@ -18,6 +18,7 @@ Sentry.init({
     }),
     Sentry.consoleLoggingIntegration({ levels: ["log", "warn", "error"] }),
   ],
+  debugger: true,
   enableLogs: true,
   tracesSampleRate: 1.0, //  Capture 100% of the transactions
   // Set 'tracePropagationTargets' to control for which URLs distributed tracing should be enabled
@@ -93,7 +94,7 @@ App({
 
     // Sentry.captureException(new Error("test"));
     // Sentry.captureException(new Error({ errMsg: "test" }));
-    Sentry.captureException(new Error(JSON.stringify({ errMsg: "test" })));
+    // Sentry.captureException(new Error(JSON.stringify({ errMsg: "test" })));
 
     // 测试 异常是否可以上报
     // throw new Error("lalalalalala");

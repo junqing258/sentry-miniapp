@@ -15,10 +15,10 @@
 |------|:--------:|:-------:|:------:|:-------:|
 | 微信小程序 | ✅ | ✅ | ✅ | ✅ |
 | 微信小游戏 | ✅ | ✅ | ✅ | ✅ |
-| 支付宝小程序 | ✅ | ✅ | ✅ | ✅ |
-| 字节跳动小程序 | ✅ | ✅ | ✅ | ✅ |
-| 钉钉小程序 | ✅ | ✅ | ✅ | ✅ |
-| 百度小程序 | ✅ | ✅ | ✅ | ✅ |
+| 支付宝小程序 | ✅ | 🚫 | ✅ | ✅ |
+| 字节跳动小程序 |   |   |   |   |
+| 钉钉小程序 |   |   |   |  |
+| 百度小程序 |   |   |   |   |
 
 ### 核心功能
 
@@ -185,7 +185,7 @@ Sentry.logger.error('Payment failed', { orderId: '98765' });
 
 ```ts
 // 计数器
-Sentry.metrics.increment('button_clicks', 1, { tags: { button: 'checkout' } });
+Sentry.metrics.count('button_clicks', 1, { tags: { button: 'checkout' } });
 
 // 分布
 Sentry.metrics.distribution('api_latency', 150, { unit: 'millisecond' });
@@ -193,8 +193,6 @@ Sentry.metrics.distribution('api_latency', 150, { unit: 'millisecond' });
 // 计量
 Sentry.metrics.gauge('active_users', 42);
 
-// 集合
-Sentry.metrics.set('unique_users', 'user_123');
 ```
 
 ## 🔧 高级用法

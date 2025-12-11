@@ -1,6 +1,6 @@
 {
   "name": "@damenluo/sentry-miniapp",
-  "version": "10.27.0-rc.1",
+  "version": "10.27.0-rc.2",
   "description": "用于小程序/小游戏平台的 Sentry SDK",
   "repository": {
     "type": "git",
@@ -21,19 +21,19 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
+      "import": "./dist/index.js",
       "require": "./dist/index.cjs",
-      "default": "./dist/index.mjs"
+      "default": "./dist/index.js"
     },
     "./package.json": "./package.json"
   },
   "main": "./dist/index.cjs",
-  "module": "./dist/index.mjs",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "sideEffects": [
     "./src/polyfills/*.ts",
     "./dist/index.js",
-    "./dist/index.mjs",
+    "./dist/index.js",
     "./dist/index.cjs"
   ],
   "files": [
@@ -44,7 +44,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "vite build --minify terser",
-    "dev:weapp": "vite build --mode dev --watch --outDir examples/weapp/libs/sentry",
+    "dev:weapp": "vite build --mode dev --watch --outDir examples/weapp/vendor/sentry",
+    "dev:alipay": "vite build --mode dev --watch --outDir examples/alipay/vendor/sentry",
     "prepack": "vite build",
     "lint": "tsc --noEmit",
     "version": "node ./scripts/versionbump.js src/version.ts"

@@ -22,6 +22,7 @@ export default defineConfig((args) => {
         formats: args.mode === "dev" ? ["es"] : ["es", "cjs"],
         fileName: (format) => `index.${format === "es" ? "js" : "cjs"}`,
       },
+      sourcemap: true,
       outDir: "dist",
       emptyOutDir: true,
       rollupOptions: {

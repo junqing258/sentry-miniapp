@@ -1,3 +1,5 @@
+
+// getGlobalObject().globalThis = getGlobalObject();
 import './polyfills/urlsearchparams';
 
 export type {

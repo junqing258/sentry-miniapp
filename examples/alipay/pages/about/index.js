@@ -1,7 +1,6 @@
 Page({
   onLoad(query) {
     // 页面加载
-    console.info(`Page onLoad with query: ${JSON.stringify(query)}`);
   },
   onReady() {
     // 页面加载完成
@@ -23,13 +22,5 @@ Page({
   },
   onReachBottom() {
     // 页面被拉到底部
-  },
-  onShareAppMessage() {
-    // 返回自定义分享信息
-    return {
-      title: 'My App',
-      desc: 'My App description',
-      path: 'pages/index/index',
-    };
-  },
+  }
 });
