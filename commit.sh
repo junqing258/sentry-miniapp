@@ -12,6 +12,19 @@ if git diff --cached --quiet; then
   exit 1
 fi
 
+diff_excludes=(
+  ':(exclude)dist'
+  ':(exclude,glob)dist/**'
+  ':(exclude)pnpm-lock.yaml'
+)
+
+if git diff --cached --quiet -- . "${diff_excludes[@]}"; then
+  echo "已暂存的改动仅包含 dist、pnpm-lock.yaml（生成提交信息时会忽略），请手动输入提交信息。"
+  read -r -p "提交信息: " manual_message
+  git commit -m "$manual_message"
+  exit 0
+fi
+
 tmp_output="$(mktemp)"
 cleanup() {
   rm -f "$tmp_output"
@@ -21,7 +34,7 @@ trap cleanup EXIT
 (
   printf '为下面的阶段性差异编写一个Conventional Commits git提交消息。只输出提交消息，不输出代码栏或注释。用简体中文输出。\n\n'
   printf 'Diff:\n```diff\n'
-  git diff --cached
+  git diff --cached -- . "${diff_excludes[@]}"
   printf '```\n'
 ) | codex exec -c 'mcp_servers={}' --output-last-message "$tmp_output" - >/dev/null
 
