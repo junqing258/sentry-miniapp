@@ -12,7 +12,7 @@ import {
 } from '@sentry/core';
 import type { Span, SpanAttributes, StartSpanOptions, TransactionSource } from '@sentry/core';
 import { sdk } from '../../crossPlatform';
-import { IS_DEBUG_BUILD } from '../flags';
+import { IS_DEBUG_BUILD } from '../../flags';
 
 /**
  * 
@@ -193,26 +193,24 @@ export function instrumentMiniAppRouter(
   const { instrumentPageLoad = true, instrumentNavigation = true, endSpanOnRouteComplete = true } = options;
 
   const globalObj = GLOBAL_OBJ as { wx?: any; my?: any; getCurrentPages?: () => any[] };
-  const miniappGlobal = globalObj.wx || globalObj.my;
+  /* const miniappGlobal = getGlobalObject();
 
   if (!miniappGlobal) {
-    IS_DEBUG_BUILD && debug.warn('[MiniAppTracing] No miniapp global object found');
+    debug.warn('[MiniAppTracing] No miniapp global object found');
     return;
-  }
-
+  } */
   // Try to get route event listeners from sdk or global
   // New APIs (基础库 3.5.5+)
-  const onBeforeAppRoute = (sdk as any).onBeforeAppRoute || miniappGlobal.onBeforeAppRoute;
-  const onAppRoute = (sdk as any).onAppRoute || miniappGlobal.onAppRoute;
-  const onAppRouteDone = (sdk as any).onAppRouteDone || miniappGlobal.onAppRouteDone;
-  const onBeforePageLoad = (sdk as any).onBeforePageLoad || miniappGlobal.onBeforePageLoad;
-  const onAfterPageLoad = (sdk as any).onAfterPageLoad || miniappGlobal.onAfterPageLoad;
+  const onBeforeAppRoute = (sdk as any).onBeforeAppRoute;
+  const onAppRoute = (sdk as any).onAppRoute;
+  const onAppRouteDone = (sdk as any).onAppRouteDone;
+  const onBeforePageLoad = (sdk as any).onBeforePageLoad;
+  const onAfterPageLoad = (sdk as any).onAfterPageLoad;
 
   // Check if new route event APIs are available
   const hasNewRouteEventAPI = typeof onBeforeAppRoute === 'function';
-
   if (!hasNewRouteEventAPI && typeof onAppRoute !== 'function') {
-    IS_DEBUG_BUILD && debug.warn('[MiniAppTracing] No route event API available');
+    debug.warn('[MiniAppTracing] No route event API available');
     return;
   }
 

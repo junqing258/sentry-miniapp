@@ -1,45 +1,71 @@
 {
-  "name": "sentry-miniapp",
-  "version": "10.27.0-rc.1",
+  "name": "@damenluo/sentry-miniapp",
+  "version": "10.27.0-rc.2",
   "description": "用于小程序/小游戏平台的 Sentry SDK",
-  "repository": "git://github.com/junqing258/sentry-miniapp.git",
-  "homepage": "https://github.com/junqing258/sentry-miniapp",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/junqing258/sentry-miniapp.git"
+  },
+  "homepage": "https://github.com/junqing258/sentry-miniapp#readme",
+  "bugs": {
+    "url": "https://github.com/junqing258/sentry-miniapp/issues"
+  },
+  "license": "BSD-3-Clause",
+  "author": "junqing258",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
   "miniprogram": "dist",
   "type": "module",
   "exports": {
     ".": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs"
-    }
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
   },
   "main": "./dist/index.cjs",
-  "module": "./dist/index.mjs",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "sideEffects": [
+    "./src/polyfills/*.ts",
+    "./dist/index.js",
+    "./dist/index.js",
+    "./dist/index.cjs"
+  ],
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "LICENSE"
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "vite build --minify terser",
-    "dev:weapp": "vite build --watch --outDir examples/weapp/vender",
+    "dev:weapp": "vite build --mode dev --watch --outDir examples/weapp/vendor/sentry",
+    "dev:alipay": "vite build --mode dev --watch --outDir examples/alipay/vendor/sentry",
     "prepack": "vite build",
     "lint": "tsc --noEmit",
     "version": "node ./scripts/versionbump.js src/version.ts"
   },
   "keywords": [
     "sentry",
-    "weapp",
+    "miniprogram",
     "miniapp",
-    "Sentry SDK",
-    "Sentry 小程序 SDK",
-    "小程序 Sentry SDK",
-    "异常监控",
-    "异常上报",
-    "小程序异常监控",
-    "微信小程序",
-    "支付宝小程序",
-    "钉钉小程序",
-    "字节跳动小程序"
+    "weapp",
+    "wechat",
+    "alipay",
+    "bytedance",
+    "baidu",
+    "dingtalk",
+    "taro",
+    "error-tracking",
+    "monitoring",
+    "tracing",
+    "performance",
+    "apm"
   ],
   "engines": {
     "node": ">=16"

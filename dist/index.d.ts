@@ -1,6 +1,5 @@
 import { addBreadcrumb } from '@sentry/core';
 import { addEventProcessor } from '@sentry/core';
-import { BaseTransportOptions } from '@sentry/core';
 import { Breadcrumb } from '@sentry/core';
 import { BreadcrumbHint } from '@sentry/core';
 import { captureConsoleIntegration } from '@sentry/core';
@@ -17,23 +16,35 @@ import { EventHint } from '@sentry/core';
 import { Exception } from '@sentry/core';
 import { extraErrorDataIntegration } from '@sentry/core';
 import { featureFlagsIntegration } from '@sentry/core';
+import { getActiveMiniAppRootSpan } from './tracing';
+import { getActiveMiniAppSpan } from './tracing';
 import { getActiveSpan } from '@sentry/core';
 import { getCurrentScope } from '@sentry/core';
 import { getRootSpan } from '@sentry/core';
 import { getSpanDescendants } from '@sentry/core';
 import { getSpanStatusFromHttpCode } from '@sentry/core';
+import { GlobalHandlers } from './integrations/index';
+import { IgnoreMpcrawlerErrors } from './integrations/index';
 import { instrumentAnthropicAiClient } from '@sentry/core';
 import { instrumentGoogleGenAIClient } from '@sentry/core';
+import { instrumentMiniAppRouter } from './tracing';
 import { instrumentOpenAiClient } from '@sentry/core';
 import { instrumentSupabaseClient } from '@sentry/core';
 import { Integration } from '@sentry/core';
+import * as Integrations from './integrations/index';
+import { LinkedErrors } from './integrations/index';
 import { logger } from '@sentry/core';
 import { makeMultiplexedTransport } from '@sentry/core';
 import { metrics } from '@sentry/core';
+import { MiniAppRoute } from './tracing';
+import { MiniAppRouterInstrumentationOptions } from './tracing';
+import { miniappTracingIntegration } from './tracing';
+import { MiniAppTracingIntegrationOptions } from './tracing';
 import { moduleMetadataIntegration } from '@sentry/core';
 import { ParameterizedString } from '@sentry/core';
 import { registerSpanErrorInstrumentation } from '@sentry/core';
 import { rewriteFramesIntegration } from '@sentry/core';
+import { Router } from './integrations/index';
 import { Scope } from '@sentry/core';
 import { SdkInfo } from '@sentry/core';
 import { setContext } from '@sentry/core';
@@ -45,18 +56,19 @@ import { setTag } from '@sentry/core';
 import { setTags } from '@sentry/core';
 import { setUser } from '@sentry/core';
 import { SeverityLevel } from '@sentry/core';
-import { Span } from '@sentry/core';
 import { StackFrame } from '@sentry/core';
 import { Stacktrace } from '@sentry/core';
 import { startInactiveSpan } from '@sentry/core';
+import { startMiniAppTracingNavigationSpan } from './tracing';
 import { startNewTrace } from '@sentry/core';
 import { startSpan } from '@sentry/core';
 import { startSpanManual } from '@sentry/core';
-import { StartSpanOptions } from '@sentry/core';
 import { supabaseIntegration } from '@sentry/core';
+import { System } from './integrations/index';
 import { thirdPartyErrorFilterIntegration } from '@sentry/core';
 import { Thread } from '@sentry/core';
-import { Transport } from '@sentry/core';
+import * as Transports from './transports/index';
+import { TryCatch } from './integrations/index';
 import { User } from '@sentry/core';
 import { withActiveSpan } from '@sentry/core';
 import { withScope } from '@sentry/core';
@@ -65,20 +77,6 @@ import { zodErrorsIntegration } from '@sentry/core';
 export { addBreadcrumb }
 
 export { addEventProcessor }
-
-/** Options for adding performance entries */
-declare interface AddPerformanceEntriesOptions {
-    /**
-     * Resource spans with matching entry types will not be emitted.
-     * Default: []
-     */
-    ignoreResourceSpans?: string[];
-    /**
-     * Performance entry names matching strings in the array will not be emitted.
-     * Default: []
-     */
-    ignorePerformanceEntryNames?: Array<string | RegExp>;
-}
 
 export { Breadcrumb }
 
@@ -126,15 +124,9 @@ export { featureFlagsIntegration }
  */
 export declare function flush(timeout?: number): PromiseLike<boolean>;
 
-/**
- * Get the currently active root span for miniapp.
- */
-export declare function getActiveMiniAppRootSpan(): Span | undefined;
+export { getActiveMiniAppRootSpan }
 
-/**
- * Get the currently active idle span for the miniapp.
- */
-export declare function getActiveMiniAppSpan(): Span | undefined;
+export { getActiveMiniAppSpan }
 
 export { getActiveSpan }
 
@@ -145,70 +137,6 @@ export { getRootSpan }
 export { getSpanDescendants }
 
 export { getSpanStatusFromHttpCode }
-
-/** Global handlers */
-declare class GlobalHandlers implements Integration {
-    /**
-     * @inheritDoc
-     */
-    static id: string;
-    /**
-     * @inheritDoc
-     */
-    name: string;
-    /** JSDoc */
-    private readonly _options;
-    /** JSDoc */
-    private _onErrorHandlerInstalled;
-    /** JSDoc */
-    private _onUnhandledRejectionHandlerInstalled;
-    /** JSDoc */
-    private _onPageNotFoundHandlerInstalled;
-    /** JSDoc */
-    private _onMemoryWarningHandlerInstalled;
-    /** JSDoc */
-    constructor(options?: GlobalHandlersIntegrations);
-    /**
-     * @inheritDoc
-     */
-    setupOnce(): void;
-    /** JSDoc */
-    private _installGlobalOnErrorHandler;
-    /** JSDoc */
-    private _installGlobalOnUnhandledRejectionHandler;
-    /** JSDoc */
-    private _installGlobalOnPageNotFoundHandler;
-    /** JSDoc */
-    private _installGlobalOnMemoryWarningHandler;
-}
-
-/** JSDoc */
-declare interface GlobalHandlersIntegrations {
-    onerror: boolean;
-    onunhandledrejection: boolean;
-    onpagenotfound: boolean;
-    onmemorywarning: boolean;
-}
-
-/**
- * IgnoreMpcrawlerErrors
- *
- * https://developers.weixin.qq.com/miniprogram/dev/reference/configuration/sitemap.html
- */
-declare class IgnoreMpcrawlerErrors implements Integration {
-    /**
-     * @inheritDoc
-     */
-    static id: string;
-    /**
-     * @inheritDoc
-     */
-    name: string;
-    /**
-     * @inheritDoc
-     */
-    setupOnce(): void;
-}
 
 /**
  * The Sentry Miniapp SDK Client.
@@ -270,20 +198,7 @@ export { instrumentAnthropicAiClient }
 
 export { instrumentGoogleGenAIClient }
 
-/**
- * Instrument miniapp router to create navigation spans.
- *
- * This function sets up listeners for miniapp route events:
- * - wx.onBeforeAppRoute - Route start (use for accurate timing start)
- * - wx.onAppRoute / wx.onAppRouteDone - Route change events
- * - wx.onBeforePageLoad / wx.onAfterPageLoad - Page lifecycle events
- *
- * Uses routeEventId to correlate route events for accurate timing.
- *
- * Similar to Vue's `instrumentVueRouter`, this separates the routing logic
- * from the tracing integration.
- */
-export declare function instrumentMiniAppRouter(options: MiniAppRouterInstrumentationOptions, startNavigationSpan: (context: StartSpanOptions) => void): void;
+export { instrumentMiniAppRouter }
 
 export { instrumentOpenAiClient }
 
@@ -291,16 +206,6 @@ export { instrumentSupabaseClient }
 
 export { Integration }
 
-declare namespace Integrations {
-    export {
-        GlobalHandlers,
-        TryCatch,
-        LinkedErrors,
-        System,
-        Router,
-        IgnoreMpcrawlerErrors
-    }
-}
 export { Integrations }
 
 /**
@@ -310,110 +215,11 @@ export { Integrations }
  */
 export declare function lastEventId(): string | undefined;
 
-/** Adds SDK info to an event. */
-declare class LinkedErrors implements Integration {
-    /**
-     * @inheritDoc
-     */
-    static id: string;
-    /**
-     * @inheritDoc
-     */
-    readonly name: string;
-    /**
-     * @inheritDoc
-     */
-    private readonly _key;
-    /**
-     * @inheritDoc
-     */
-    private readonly _limit;
-    /**
-     * @inheritDoc
-     */
-    constructor(options?: {
-        key?: string;
-        limit?: number;
-    });
-    /**
-     * @inheritDoc
-     */
-    setupOnce(): void;
-    /**
-     * @inheritDoc
-     */
-    private _handler;
-    /**
-     * @inheritDoc
-     */
-    private _walkErrorTree;
-}
-
 export { logger }
-
-declare function makeMiniappTransport(options: BaseTransportOptions): Transport;
 
 export { makeMultiplexedTransport }
 
 export { metrics }
-
-/** Class tracking metrics for MiniApp performance */
-declare class MetricsInstrumentation {
-    private _reportAllChanges;
-    private _measurements;
-    private _observer?;
-    private _timeOrigin?;
-    private _performanceCursor;
-    constructor(_reportAllChanges?: boolean);
-    /**
-     * Add performance entries from the miniapp performance API.
-     * Called when the idle span is being ended.
-     * Following the pattern from @sentry-internal/browser-utils.
-     */
-    addPerformanceEntries(span: Span, options?: AddPerformanceEntriesOptions): void;
-    /**
-     * Legacy method for backward compatibility.
-     * @deprecated Use addPerformanceEntries instead.
-     */
-    addPerformanceEntriesFromSpan(span: Span): void;
-    /**
-     * Start observing performance entries and create child spans.
-     * Should be called when a new route span starts.
-     */
-    startObserving(parentSpan: Span, options?: AddPerformanceEntriesOptions): void;
-    private _getPerformance;
-    private _getMiniProgramTimeOrigin;
-    private _getTimeOrigin;
-    private _shouldIgnoreEntry;
-    private _handleEntry;
-    /**
-     * Add navigation related spans (similar to browser's _addNavigationSpans).
-     */
-    private _addNavigationSpans;
-    /**
-     * Add render spans for UI rendering performance.
-     */
-    private _addRenderSpan;
-    /**
-     * Add script execution spans.
-     */
-    private _addScriptSpan;
-    /**
-     * Add package loading spans.
-     */
-    private _addPackageSpan;
-    /**
-     * Add resource loading spans (similar to browser's _addResourceSpans).
-     */
-    private _addResourceSpan;
-    /**
-     * Track system information (similar to browser's _trackNavigator).
-     */
-    private _trackSystemInfo;
-    private _recordMeasurements;
-    private _measurementKey;
-    private _stopObserver;
-}
 
 /**
  * The Sentry Miniapp SDK Client.
@@ -456,134 +262,13 @@ export declare interface MiniappOptions extends ClientOptions {
     defaultIntegrations?: Integration[];
 }
 
-/**
- *
- * 小程序路由事件
- * https://developers.weixin.qq.com/miniprogram/dev/framework/app-service/route-event-listener.html
- */
-/**
- * Miniapp route information from route events
- */
-export declare interface MiniAppRoute {
-    /** Page path */
-    path: string;
-    /** Route path with query string */
-    query?: string;
-    /** Page scene value */
-    scene?: number;
-    /** Open type: appLaunch, navigateTo, navigateBack, redirectTo, reLaunch, switchTab, etc. */
-    openType?: string;
-    /** Whether it's a tab bar page */
-    isTabBar?: boolean;
-    /** Page webview id */
-    webviewId?: number;
-    /** Route event ID for correlating route events (from wx.onBeforeAppRoute etc.) */
-    routeEventId?: string;
-    /** Timestamp from route event */
-    timeStamp?: number;
-}
+export { MiniAppRoute }
 
-/**
- * Options for miniapp router instrumentation
- */
-export declare interface MiniAppRouterInstrumentationOptions {
-    /**
-     * What to use for route labels.
-     * - 'path': Use the page path directly (e.g., 'pages/index/index')
-     *
-     * @default 'path'
-     */
-    routeLabel?: 'path';
-    /**
-     * If a span should be created on page load.
-     * @default true
-     */
-    instrumentPageLoad?: boolean;
-    /**
-     * If a span should be created on navigation (route change).
-     * @default true
-     */
-    instrumentNavigation?: boolean;
-    /**
-     * Whether to end the span when route completes (onAppRoute).
-     * - true: End span when page onShow completes (onBeforeAppRoute -> onAppRoute)
-     * - false: Use idle span behavior, wait for page to become idle (includes subsequent requests)
-     *
-     * @default true
-     */
-    endSpanOnRouteComplete?: boolean;
-}
+export { MiniAppRouterInstrumentationOptions }
 
-/**
- * A custom tracing integration for miniapp applications.
- *
- * This follows the pattern of Vue's browserTracingIntegration, separating
- * router instrumentation from the main integration logic.
- *
- * @example
- * ```ts
- * import { miniappTracingIntegration } from '@sentry/miniapp';
- *
- * Sentry.init({
- *   integrations: [
- *     miniappTracingIntegration({
- *       traceContinuityMode: 'link',
- *       beforeStartSpan: (options) => ({
- *         ...options,
- *         name: `Custom: ${options.name}`,
- *       }),
- *     }),
- *   ],
- * });
- * ```
- */
-export declare function miniappTracingIntegration(options?: MiniAppTracingIntegrationOptions): Integration;
+export { miniappTracingIntegration }
 
-/**
- * Options for MiniApp Tracing integration
- */
-export declare interface MiniAppTracingIntegrationOptions extends Partial<RequestInstrumentationOptions>, TraceContinuityOptions, MiniAppRouterInstrumentationOptions {
-    /**
-     * The time to wait in ms until the idle span will be finished.
-     * @default 1000
-     */
-    idleTimeout?: number;
-    /**
-     * The max time an idle span may run.
-     * @default 30000
-     */
-    finalTimeout?: number;
-    /**
-     * The max time a child span may run.
-     * @default 15000
-     */
-    childSpanTimeout?: number;
-    /**
-     * @deprecated Use _metricOptions instead
-     */
-    maxTransactionDuration?: number;
-    /**
-     * Metric collection options.
-     */
-    _metricOptions?: Partial<{
-        _reportAllChanges: boolean;
-    }>;
-    /**
-     * Resource spans with matching entry types will not be emitted.
-     * Default: []
-     */
-    ignoreResourceSpans?: string[];
-    /**
-     * Performance entry names matching strings in the array will not be emitted.
-     * Default: []
-     */
-    ignorePerformanceEntryNames?: Array<string | RegExp>;
-    /**
-     * A callback which is called before a span for a pageload or navigation is started.
-     * It receives the options passed to `startSpan`, and expects to return an updated options object.
-     */
-    beforeStartSpan?: (options: StartSpanOptions) => StartSpanOptions;
-}
+export { MiniAppTracingIntegrationOptions }
 
 export { moduleMetadataIntegration }
 
@@ -616,39 +301,7 @@ export declare interface ReportDialogOptions {
     onLoad?(): void;
 }
 
-declare interface RequestInstrumentationOptions {
-    traceRequest: boolean;
-    shouldCreateSpanForRequest?(url: string): boolean;
-}
-
 export { rewriteFramesIntegration }
-
-/** UserAgent */
-declare class Router implements Integration {
-    /**
-     * @inheritDoc
-     */
-    static id: string;
-    /**
-     * @inheritDoc
-     */
-    name: string;
-    /** JSDoc */
-    private readonly _options;
-    /**
-     * @inheritDoc
-     */
-    constructor(options?: RouterIntegrations);
-    /**
-     * @inheritDoc
-     */
-    setupOnce(): void;
-}
-
-/** JSDoc */
-declare interface RouterIntegrations {
-    enable?: boolean;
-}
 
 export { Scope }
 
@@ -684,32 +337,13 @@ export { SeverityLevel }
  */
 export declare function showReportDialog(options?: ReportDialogOptions): void;
 
-declare interface SpanCreationContext {
-    idleTimeout: number;
-    finalTimeout: number;
-    childSpanTimeout: number;
-    traceContinuityMode: TraceContinuityMode;
-    consistentTraceSampling: boolean;
-    beforeStartSpan?: (options: StartSpanOptions) => StartSpanOptions;
-    metricsInstrumentation?: MetricsInstrumentation;
-    performanceEntriesOptions?: AddPerformanceEntriesOptions;
-    latestRoute: {
-        name?: string;
-        source?: string;
-    };
-}
-
 export { StackFrame }
 
 export { Stacktrace }
 
 export { startInactiveSpan }
 
-/**
- * Start a navigation span for miniapp tracing.
- * This is the core function that creates idle spans for pageload/navigation.
- */
-export declare function startMiniAppTracingNavigationSpan(client: Client, startSpanOptions: StartSpanOptions, context: SpanCreationContext): Span | undefined;
+export { startMiniAppTracingNavigationSpan }
 
 export { startNewTrace }
 
@@ -719,91 +353,11 @@ export { startSpanManual }
 
 export { supabaseIntegration }
 
-/** UserAgent */
-declare class System implements Integration {
-    /**
-     * @inheritDoc
-     */
-    static id: string;
-    /**
-     * @inheritDoc
-     */
-    name: string;
-    /**
-     * @inheritDoc
-     */
-    setupOnce(): void;
-}
-
 export { thirdPartyErrorFilterIntegration }
 
 export { Thread }
 
-/**
- * Trace continuity mode for maintaining trace relationships across navigations.
- *
- * - `'session'`: Keep the same traceId for the entire session. All navigations share one trace.
- * - `'link'`: Each navigation gets a new traceId, but links to the previous trace (recommended).
- * - `'off'`: Each navigation starts a completely independent trace (legacy behavior).
- */
-declare type TraceContinuityMode = 'session' | 'link' | 'off';
-
-/**
- * Options for trace continuity behavior.
- */
-declare interface TraceContinuityOptions {
-    /**
-     * How to handle trace continuity across navigations.
-     *
-     * - `'session'`: Keep the same traceId for the entire session (all navigations share one trace).
-     * - `'link'`: Each navigation gets a new traceId but links to previous trace via span links.
-     * - `'off'`: Each navigation starts an independent trace (legacy behavior).
-     *
-     * @default 'link'
-     */
-    traceContinuityMode?: TraceContinuityMode;
-    /**
-     * If true, subsequent traces will inherit the sampling decision from the initial trace.
-     * This ensures consistent sampling across all traces in a session.
-     *
-     * Only effective when `traceContinuityMode` is not `'off'`.
-     *
-     * @default false
-     */
-    consistentTraceSampling?: boolean;
-}
-
-declare namespace Transports {
-    export {
-        makeMiniappTransport
-    }
-}
 export { Transports }
-
-/** Wrap timer functions and event targets to catch errors and provide better meta data */
-declare class TryCatch implements Integration {
-    /** JSDoc */
-    private _ignoreOnError;
-    /**
-     * @inheritDoc
-     */
-    static id: string;
-    /**
-     * @inheritDoc
-     */
-    name: string;
-    /** JSDoc */
-    private _wrapTimeFunction;
-    /** JSDoc */
-    private _wrapRAF;
-    /** JSDoc */
-    private _wrapEventTarget;
-    /**
-     * Wrap timer functions and event targets to catch errors
-     * and provide better metadata.
-     */
-    setupOnce(): void;
-}
 
 export { User }
 

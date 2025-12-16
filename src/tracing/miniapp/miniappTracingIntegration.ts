@@ -20,7 +20,7 @@ import { MetricsInstrumentation, type AddPerformanceEntriesOptions } from './met
 import { defaultRequestInstrumentationOptions, RequestInstrumentationOptions } from './request';
 import { instrumentMiniAppRouter, type MiniAppRouterInstrumentationOptions } from './router';
 import { sdk } from '../../crossPlatform';
-import { IS_DEBUG_BUILD } from '../flags';
+import { IS_DEBUG_BUILD } from '../../flags';
 import type { TraceContinuityOptions, TraceContinuityMode } from '../types';
 import {
   getPropagationContext,

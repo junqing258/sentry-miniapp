@@ -1,18 +1,10 @@
+import { getGlobalObject } from './globalObject';
 /**
  * Minimal URLSearchParams ponyfill for miniapp runtimes which don't provide it.
  * Supports constructor with string, array tuples, or record objects and implements
  * append + toString which are all we rely on for auth query encoding.
  */
-const GLOBAL_OBJ =
-  // eslint-disable-next-line no-undef
-  (typeof globalThis !== 'undefined' && globalThis) ||
-  // eslint-disable-next-line no-undef
-  (typeof self !== 'undefined' && self) ||
-  // eslint-disable-next-line no-undef
-  (typeof window !== 'undefined' && window) ||
-  // eslint-disable-next-line no-undef
-  (typeof global !== 'undefined' && global) ||
-  {};
+const GLOBAL_OBJ = getGlobalObject();
 
 type InitType =
   | string
@@ -65,11 +57,11 @@ class MiniappURLSearchParams {
       .join('&');
   }
 }
-
 // Only patch when missing to avoid clobbering native implementations.
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 if (!GLOBAL_OBJ.URLSearchParams) {
+  
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   GLOBAL_OBJ.URLSearchParams = MiniappURLSearchParams;

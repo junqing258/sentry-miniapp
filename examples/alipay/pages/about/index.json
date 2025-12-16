@@ -1,0 +1,11 @@
+{
+  "navigationBarTextStyle": "black",
+  "backgroundColor": "#edf0f5",
+  "disableScroll": false,
+  "backgroundTextStyle": "light",
+  "onReachBottomDistance": 146,
+  "defaultTitle": "",
+  "titleBarColor": "#00C868",
+  "pullRefresh": true,
+  "usingComponents": {}
+}
