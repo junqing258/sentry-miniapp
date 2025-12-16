@@ -1,0 +1,12 @@
+<view class="container">
+  <view class="title">logs 页面</view>
+  <view class="desc">用于验证 `miniappTracingIntegration` 的导航追踪</view>
+
+  <view class="section">
+    <button class="btn" type="primary" onTap="back">返回</button>
+    <button class="btn" onTap="testMessage">captureMessage</button>
+    <button class="btn" onTap="testSpan">手动 span</button>
+    <button class="btn" onTap="testError">测试错误（同步抛出）</button>
+  </view>
+</view>
+

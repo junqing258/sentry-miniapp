@@ -1,0 +1,14 @@
+<view class="container">
+  <view class="title">sentry-miniapp 支付宝小程序示例</view>
+  <view class="desc">先在 `examples/alipay/app.js` 里配置 DSN</view>
+
+  <view class="section">
+    <button class="btn" type="primary" onTap="testError">测试错误（同步抛出）</button>
+    <button class="btn" onTap="testCapture">捕获错误（captureException）</button>
+    <button class="btn" onTap="testAsyncError">异步错误（setTimeout）</button>
+    <button class="btn" onTap="testUnhandledRejection">未处理 Promise rejection</button>
+    <button class="btn" onTap="testCustomEvent">自定义事件（metrics/message）</button>
+    <button class="btn" onTap="testRequest">请求示例（可配 trace）</button>
+    <button class="btn" onTap="toLogsPage">跳转 logs 页面（验证导航追踪）</button>
+  </view>
+</view>
