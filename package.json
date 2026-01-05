@@ -1,6 +1,6 @@
 {
   "name": "@damenluo/sentry-miniapp",
-  "version": "10.27.0-rc.2",
+  "version": "10.27.0-rc.3",
   "description": "用于小程序/小游戏平台的 Sentry SDK",
   "repository": {
     "type": "git",
