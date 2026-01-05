@@ -11,14 +11,14 @@
 
 ### 平台支持
 
-| 平台 | 错误监控 | Tracing | Logger | Metrics |
-|------|:--------:|:-------:|:------:|:-------:|
-| 微信小程序 | ✅ | ✅ | ✅ | ✅ |
-| 微信小游戏 | ✅ | 🚫 | ✅ | ✅ |
-| 支付宝小程序 | ✅ | 🚫 | ✅ | ✅ |
-| 字节跳动小程序 |   |   |   |   |
-| 钉钉小程序 |   |   |   |  |
-| 百度小程序 |   |   |   |   |
+| 平台           | 错误监控 | Tracing | Logger | Metrics |
+| -------------- | :------: | :-----: | :----: | :-----: |
+| 微信小程序     |    ✅    |   ✅    |   ✅   |   ✅    |ß
+| 微信小游戏     |    ✅    |   🚫    |   ✅   |   ✅    |
+| 支付宝小程序   |    ✅    |   ✅    |   ✅   |   ✅    |
+| 字节跳动小程序 |          |         |        |         |
+| 钉钉小程序     |          |         |        |         |
+| 百度小程序     |          |         |        |         |
 
 ### 核心功能
 
@@ -48,35 +48,35 @@ npm install @damenluo/sentry-miniapp
 在 `app.js` 或入口文件中初始化：
 
 ```ts
-import * as Sentry from '@damenluo/sentry-miniapp';
+import * as Sentry from "@damenluo/sentry-miniapp";
 // 或复制方式：import * as Sentry from '@/vendor/sentry-miniapp/index.js';
 
 Sentry.init({
-  dsn: 'YOUR_SENTRY_DSN',
+  dsn: "YOUR_SENTRY_DSN",
   tracesSampleRate: 1.0,
   integrations: [
     Sentry.miniappTracingIntegration({
-      traceContinuityMode: 'link',
+      traceContinuityMode: "link",
     }),
   ],
 });
 
 // 设置用户信息
-Sentry.setUser({ id: '12345' });
-Sentry.setTag('environment', 'production');
+Sentry.setUser({ id: "12345" });
+Sentry.setTag("environment", "production");
 ```
 
 ## ⚙️ 配置选项
 
 ### 基础配置
 
-| 选项 | 类型 | 默认值 | 说明 |
-|------|------|--------|------|
-| `dsn` | `string` | - | Sentry DSN（必填） |
-| `tracesSampleRate` | `number` | `0` | 性能追踪采样率 (0-1) |
-| `debug` | `boolean` | `false` | 是否开启调试模式 |
-| `environment` | `string` | `'production'` | 环境标识 |
-| `release` | `string` | - | 版本标识 |
+| 选项               | 类型      | 默认值         | 说明                 |
+| ------------------ | --------- | -------------- | -------------------- |
+| `dsn`              | `string`  | -              | Sentry DSN（必填）   |
+| `tracesSampleRate` | `number`  | `0`            | 性能追踪采样率 (0-1) |
+| `debug`            | `boolean` | `false`        | 是否开启调试模式     |
+| `environment`      | `string`  | `'production'` | 环境标识             |
+| `release`          | `string`  | -              | 版本标识             |
 
 ### Tracing 配置
 
@@ -88,7 +88,7 @@ Sentry.miniappTracingIntegration({
   // 'session' - 整个会话共享同一个 traceId
   // 'link'    - 每次导航新 traceId，通过 span link 关联（推荐）
   // 'off'     - 每次导航完全独立
-  traceContinuityMode: 'link',
+  traceContinuityMode: "link",
 
   // 继承前一个 trace 的采样决定
   consistentTraceSampling: false,
@@ -122,15 +122,15 @@ Sentry.miniappTracingIntegration({
 
 ```ts
 // 捕获异常
-Sentry.captureException(new Error('Something went wrong'));
+Sentry.captureException(new Error("Something went wrong"));
 
 // 捕获消息
-Sentry.captureMessage('User clicked button');
+Sentry.captureMessage("User clicked button");
 
 // 捕获自定义事件
 Sentry.captureEvent({
-  message: 'Custom event',
-  level: 'info',
+  message: "Custom event",
+  level: "info",
 });
 ```
 
@@ -138,24 +138,24 @@ Sentry.captureEvent({
 
 ```ts
 // 设置用户
-Sentry.setUser({ id: '12345', email: 'user@example.com' });
+Sentry.setUser({ id: "12345", email: "user@example.com" });
 
 // 设置标签
-Sentry.setTag('page', 'home');
-Sentry.setTags({ feature: 'checkout', version: '1.0.0' });
+Sentry.setTag("page", "home");
+Sentry.setTags({ feature: "checkout", version: "1.0.0" });
 
 // 设置额外数据
-Sentry.setExtra('order_id', '98765');
-Sentry.setContext('device', { battery: 0.8 });
+Sentry.setExtra("order_id", "98765");
+Sentry.setContext("device", { battery: 0.8 });
 ```
 
 ### 面包屑
 
 ```ts
 Sentry.addBreadcrumb({
-  category: 'ui',
-  message: 'User clicked checkout button',
-  level: 'info',
+  category: "ui",
+  message: "User clicked checkout button",
+  level: "info",
 });
 ```
 
@@ -163,9 +163,9 @@ Sentry.addBreadcrumb({
 
 ```ts
 // 手动创建 span
-Sentry.startSpan({ name: 'fetchData', op: 'http.client' }, async (span) => {
+Sentry.startSpan({ name: "fetchData", op: "http.client" }, async (span) => {
   const data = await fetchData();
-  span.setStatus({ code: 1, message: 'ok' });
+  span.setStatus({ code: 1, message: "ok" });
   return data;
 });
 
@@ -176,23 +176,22 @@ const activeSpan = Sentry.getActiveSpan();
 ### 日志记录
 
 ```ts
-Sentry.logger.info('User logged in', { userId: '12345' });
-Sentry.logger.warn('API response slow', { duration: 2000 });
-Sentry.logger.error('Payment failed', { orderId: '98765' });
+Sentry.logger.info("User logged in", { userId: "12345" });
+Sentry.logger.warn("API response slow", { duration: 2000 });
+Sentry.logger.error("Payment failed", { orderId: "98765" });
 ```
 
 ### 指标收集
 
 ```ts
 // 计数器
-Sentry.metrics.count('button_clicks', 1, { tags: { button: 'checkout' } });
+Sentry.metrics.count("button_clicks", 1, { tags: { button: "checkout" } });
 
 // 分布
-Sentry.metrics.distribution('api_latency', 150, { unit: 'millisecond' });
+Sentry.metrics.distribution("api_latency", 150, { unit: "millisecond" });
 
 // 计量
-Sentry.metrics.gauge('active_users', 42);
-
+Sentry.metrics.gauge("active_users", 42);
 ```
 
 ## 🔧 高级用法
@@ -201,14 +200,14 @@ Sentry.metrics.gauge('active_users', 42);
 
 ```ts
 Sentry.init({
-  dsn: 'YOUR_DSN',
+  dsn: "YOUR_DSN",
   integrations: [
     // 自定义控制台捕获
-    Sentry.captureConsoleIntegration({ levels: ['error', 'warn'] }),
+    Sentry.captureConsoleIntegration({ levels: ["error", "warn"] }),
     // 额外错误数据
     Sentry.extraErrorDataIntegration(),
     // 重写堆栈帧
-    Sentry.rewriteFramesIntegration({ root: '/' }),
+    Sentry.rewriteFramesIntegration({ root: "/" }),
   ],
 });
 ```
@@ -217,9 +216,9 @@ Sentry.init({
 
 ```ts
 Sentry.withScope((scope) => {
-  scope.setTag('transaction', 'payment');
-  scope.setLevel('warning');
-  Sentry.captureMessage('Payment processing');
+  scope.setTag("transaction", "payment");
+  scope.setLevel("warning");
+  Sentry.captureMessage("Payment processing");
 });
 ```
 

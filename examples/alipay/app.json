@@ -1,6 +1,7 @@
 {
   "pages": [
-    "pages/index/index"
+    "pages/index/index",
+    "pages/logs/index"
   ],
   "window": {
     "defaultTitle": "My App"
@@ -12,5 +13,5 @@
     "requestDefaultEnableCookie": true,
     "connectSocketDefaultMultiple": true
   },
-  "enablePolyfill": true
+  "enablePolyfill": false
 }

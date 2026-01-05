@@ -1,4 +1,4 @@
-import type { Mechanism, WrappedFunction } from '@sentry/core';
+import type { Mechanism, WrappedFunction } from "@sentry/core";
 import {
   addBreadcrumb,
   addExceptionMechanism,
@@ -10,7 +10,7 @@ import {
   markFunctionWrapped,
   normalize,
   withScope,
-} from '@sentry/core';
+} from "@sentry/core";
 
 const debounceDuration: number = 1000;
 let keypressTimeout: number | undefined;
@@ -48,10 +48,10 @@ export function wrap(
   options: {
     mechanism?: Mechanism;
   } = {},
-  before?: WrappedFunction,
+  before?: WrappedFunction
 ): any {
   // tslint:disable-next-line:strict-type-predicates
-  if (typeof fn !== 'function') {
+  if (typeof fn !== "function") {
     return fn;
   }
 
@@ -69,8 +69,11 @@ export function wrap(
     return fn;
   }
 
-  const sentryWrapped: WrappedFunction = function (this: any, ...args: any[]): any {
-    if (before && typeof before === 'function') {
+  const sentryWrapped: WrappedFunction = function (
+    this: any,
+    ...args: any[]
+  ): any {
+    if (before && typeof before === "function") {
       before.apply(this, args);
     }
 
@@ -85,8 +88,8 @@ export function wrap(
     } catch (ex) {
       ignoreNextOnError();
 
-      withScope(scope => {
-        scope.addEventProcessor(event => {
+      withScope((scope) => {
+        scope.addEventProcessor((event) => {
           const processedEvent = { ...event };
 
           if (options.mechanism) {
@@ -118,16 +121,19 @@ export function wrap(
         (sentryWrapped as any)[property] = (fn as any)[property];
       }
     }
-  } catch (_oO) { } // tslint:disable-line:no-empty
+  } catch (_oO) {} // tslint:disable-line:no-empty
 
   markFunctionWrapped(sentryWrapped, fn);
-  addNonEnumerableProperty(fn, '__sentry_wrapped__', sentryWrapped);
+  addNonEnumerableProperty(fn, "__sentry_wrapped__", sentryWrapped);
 
   // Restore original function name (not all browsers allow that)
   try {
-    const descriptor = Object.getOwnPropertyDescriptor(sentryWrapped, 'name') as PropertyDescriptor;
+    const descriptor = Object.getOwnPropertyDescriptor(
+      sentryWrapped,
+      "name"
+    ) as PropertyDescriptor;
     if (descriptor?.configurable) {
-      Object.defineProperty(sentryWrapped, 'name', {
+      Object.defineProperty(sentryWrapped, "name", {
         get(): string {
           return (fn as WrappedFunction).name;
         },
@@ -148,7 +154,10 @@ let debounceTimer: number = 0;
  * @returns wrapped breadcrumb events handler
  * @hidden
  */
-export function breadcrumbEventHandler(eventName: string, debounce: boolean = false): (event: Event) => void {
+export function breadcrumbEventHandler(
+  eventName: string,
+  debounce: boolean = false
+): (event: Event) => void {
   return (event: Event) => {
     // reset keypress timeout; e.g. triggering a 'click' after
     // a 'keypress' will reset the keypress debounce so that a new
@@ -169,9 +178,11 @@ export function breadcrumbEventHandler(eventName: string, debounce: boolean = fa
 
       // Accessing event.target can throw (see getsentry/raven-js#838, #768)
       try {
-        target = event.target ? htmlTreeAsString(event.target as Node) : htmlTreeAsString((event as unknown) as Node);
+        target = event.target
+          ? htmlTreeAsString(event.target as Node)
+          : htmlTreeAsString(event as unknown as Node);
       } catch (e) {
-        target = '<unknown>';
+        target = "<unknown>";
       }
 
       if (target.length === 0) {
@@ -221,19 +232,24 @@ export function keypressEventHandler(): (event: Event) => void {
     // only consider keypress events on actual input elements
     // this will disregard keypresses targeting body (e.g. tabbing
     // through elements, hotkeys, etc)
-    if (!tagName || (tagName !== 'INPUT' && tagName !== 'TEXTAREA' && !(target as HTMLElement).isContentEditable)) {
+    if (
+      !tagName ||
+      (tagName !== "INPUT" &&
+        tagName !== "TEXTAREA" &&
+        !(target as HTMLElement).isContentEditable)
+    ) {
       return;
     }
 
     // record first keypress in a series, but ignore subsequent
     // keypresses until debounce clears
     if (!keypressTimeout) {
-      breadcrumbEventHandler('input')(event);
+      breadcrumbEventHandler("input")(event);
     }
     clearTimeout(keypressTimeout);
 
-    keypressTimeout = (setTimeout(() => {
+    keypressTimeout = setTimeout(() => {
       keypressTimeout = undefined;
-    }, debounceDuration) as any) as number;
+    }, debounceDuration) as any as number;
   };
 }
