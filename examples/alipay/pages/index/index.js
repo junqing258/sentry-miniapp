@@ -1,4 +1,4 @@
-import * as Sentry from "../../vender/sentry-miniapp.js";
+import * as Sentry from "../../vendor/sentry/index.js";
 
 Page({
   data: {

@@ -1,4 +1,4 @@
-import * as Sentry from "./vender/sentry-miniapp.js";
+import * as Sentry from "./vendor/sentry/index";
 
 Sentry.init({
   dsn: "https://607f106645b6ecb5420e7cf5a44cc90a@o325862.ingest.us.sentry.io/4510430332190720",
@@ -15,7 +15,6 @@ Sentry.init({
     }),
     Sentry.consoleLoggingIntegration({ levels: ["log", "warn", "error"] }),
   ],
-  enableLogs: true,
   tracesSampleRate: 1.0,
   tracePropagationTargets: ["localhost", /^https:\/\/yourserver\.io\/api/],
 });

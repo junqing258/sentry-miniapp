@@ -1,4 +1,4 @@
-import * as Sentry from "../../vender/sentry-miniapp.js";
+import * as Sentry from "../../vendor/sentry/index";
 
 Page({
   data: {
@@ -41,7 +41,7 @@ Page({
 
     Sentry.startSpan({ name: "manual_work", op: "task" }, () => {
       const start = Date.now();
-      while (Date.now() - start < 50) {}
+      while (Date.now() - start < 50) { }
     });
   },
 
