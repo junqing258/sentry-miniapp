@@ -103,7 +103,7 @@ export { consoleLoggingIntegration }
 
 export { createConsolaReporter }
 
-export declare const defaultIntegrations: (Integration | GlobalHandlers | TryCatch | LinkedErrors | System | Router | IgnoreMpcrawlerErrors)[];
+export declare const defaultIntegrations: (Integration | TryCatch | GlobalHandlers | LinkedErrors | System | Router | IgnoreMpcrawlerErrors)[];
 
 export { Event_2 as Event }
 

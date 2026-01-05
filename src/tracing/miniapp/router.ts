@@ -1,21 +1,25 @@
 import {
   SEMANTIC_ATTRIBUTE_SENTRY_ORIGIN,
   SEMANTIC_ATTRIBUTE_SENTRY_SOURCE,
-  SEMANTIC_ATTRIBUTE_SENTRY_IDLE_SPAN_FINISH_REASON,
   getActiveSpan,
   getCurrentScope,
   getRootSpan,
   spanToJSON,
   debug,
   GLOBAL_OBJ,
-  timestampInSeconds,
-} from '@sentry/core';
-import type { Span, SpanAttributes, StartSpanOptions, TransactionSource } from '@sentry/core';
-import { sdk } from '../../crossPlatform';
-import { IS_DEBUG_BUILD } from '../../flags';
+  fill,
+} from "@sentry/core";
+import type {
+  Span,
+  SpanAttributes,
+  StartSpanOptions,
+  TransactionSource,
+} from "@sentry/core";
+import { sdk } from "../../crossPlatform";
+import { IS_DEBUG_BUILD } from "../../flags";
 
 /**
- * 
+ *
  * 小程序路由事件
  * https://developers.weixin.qq.com/miniprogram/dev/framework/app-service/route-event-listener.html
  */
@@ -52,7 +56,7 @@ export interface MiniAppRouterInstrumentationOptions {
    *
    * @default 'path'
    */
-  routeLabel?: 'path';
+  routeLabel?: "path";
 
   /**
    * If a span should be created on page load.
@@ -88,44 +92,50 @@ function getActiveRootSpan(): Span | undefined {
   }
 
   const op = spanToJSON(rootSpan).op;
-  return op === 'navigation' || op === 'pageload' ? rootSpan : undefined;
+  return op === "navigation" || op === "pageload" ? rootSpan : undefined;
 }
 
 /**
  * Determine transaction name from route
  */
-function getTransactionName(route: MiniAppRoute): { name: string; source: TransactionSource } {
+function getTransactionName(route: MiniAppRoute): {
+  name: string;
+  source: TransactionSource;
+} {
   // Use path as the transaction name
-  const path = route.path || 'unknown';
-  return { name: path, source: 'url' };
+  const path = route.path || "unknown";
+  return { name: path, source: "url" };
 }
 
 /**
  * Build span attributes from route info
  */
-function buildSpanAttributes(route: MiniAppRoute, origin: string): SpanAttributes {
+function buildSpanAttributes(
+  route: MiniAppRoute,
+  origin: string
+): SpanAttributes {
   const attributes: SpanAttributes = {
     [SEMANTIC_ATTRIBUTE_SENTRY_ORIGIN]: origin,
   };
 
   if (route.openType) {
-    attributes['miniapp.open_type'] = route.openType;
+    attributes["miniapp.open_type"] = route.openType;
   }
 
   if (route.scene !== undefined) {
-    attributes['miniapp.scene'] = route.scene;
+    attributes["miniapp.scene"] = route.scene;
   }
 
   if (route.isTabBar !== undefined) {
-    attributes['miniapp.is_tabbar'] = route.isTabBar;
+    attributes["miniapp.is_tabbar"] = route.isTabBar;
   }
 
   if (route.webviewId !== undefined) {
-    attributes['miniapp.webview_id'] = route.webviewId;
+    attributes["miniapp.webview_id"] = route.webviewId;
   }
 
   if (route.query) {
-    attributes['miniapp.query'] = route.query;
+    attributes["miniapp.query"] = route.query;
   }
 
   return attributes;
@@ -136,7 +146,7 @@ function buildSpanAttributes(route: MiniAppRoute, origin: string): SpanAttribute
  */
 function normalizeRouteInfo(options: any): MiniAppRoute {
   return {
-    path: options?.path || options?.route || options?.url || 'unknown-route',
+    path: options?.path || options?.route || options?.url || "unknown-route",
     query: options?.query,
     scene: options?.scene,
     openType: options?.openType,
@@ -150,9 +160,12 @@ function normalizeRouteInfo(options: any): MiniAppRoute {
 /**
  * Check if this is a page load navigation (first navigation or app launch)
  */
-function isPageLoadNavigation(openType?: string, isFirstRoute: boolean = false): boolean {
+function isPageLoadNavigation(
+  openType?: string,
+  isFirstRoute: boolean = false
+): boolean {
   // App launch is always a page load
-  if (openType === 'appLaunch') {
+  if (openType === "appLaunch") {
     return true;
   }
 
@@ -167,11 +180,6 @@ function isPageLoadNavigation(openType?: string, isFirstRoute: boolean = false):
 /**
  * Context for tracking pending route events
  */
-interface PendingRouteContext {
-  route: MiniAppRoute;
-  startTime: number;
-  isPageLoad: boolean;
-}
 
 /**
  * Instrument miniapp router to create navigation spans.
@@ -188,40 +196,27 @@ interface PendingRouteContext {
  */
 export function instrumentMiniAppRouter(
   options: MiniAppRouterInstrumentationOptions,
-  startNavigationSpan: (context: StartSpanOptions) => void,
+  startNavigationSpan: (context: StartSpanOptions) => void
 ): void {
-  const { instrumentPageLoad = true, instrumentNavigation = true, endSpanOnRouteComplete = true } = options;
+  const { instrumentPageLoad = true, instrumentNavigation = true } = options;
 
-  const globalObj = GLOBAL_OBJ as { wx?: any; my?: any; getCurrentPages?: () => any[] };
-  /* const miniappGlobal = getGlobalObject();
+  const globalObj = GLOBAL_OBJ as {
+    wx?: any;
+    my?: any;
+    getCurrentPages?: () => any[];
+  };
 
-  if (!miniappGlobal) {
-    debug.warn('[MiniAppTracing] No miniapp global object found');
-    return;
-  } */
   // Try to get route event listeners from sdk or global
-  // New APIs (基础库 3.5.5+)
-  const onBeforeAppRoute = (sdk as any).onBeforeAppRoute;
   const onAppRoute = (sdk as any).onAppRoute;
   const onAppRouteDone = (sdk as any).onAppRouteDone;
   const onBeforePageLoad = (sdk as any).onBeforePageLoad;
   const onAfterPageLoad = (sdk as any).onAfterPageLoad;
 
-  // Check if new route event APIs are available
-  const hasNewRouteEventAPI = typeof onBeforeAppRoute === 'function';
-  if (!hasNewRouteEventAPI && typeof onAppRoute !== 'function') {
-    debug.warn('[MiniAppTracing] No route event API available');
-    return;
-  }
-
   let isFirstRoute = true;
   let hasHandledPageLoad = false;
 
-  // Store pending route contexts by routeEventId
-  const pendingRoutes = new Map<string, PendingRouteContext>();
-
   // Handle SDK initialized after page already loaded
-  if (instrumentPageLoad && typeof globalObj.getCurrentPages === 'function') {
+  if (instrumentPageLoad && typeof globalObj.getCurrentPages === "function") {
     const pages = globalObj.getCurrentPages() || [];
     const currentPage = pages[pages.length - 1];
 
@@ -231,144 +226,151 @@ export function instrumentMiniAppRouter(
 
       const route: MiniAppRoute = {
         path: currentPage.route,
-        openType: 'appLaunch',
+        openType: "appLaunch",
       };
 
       handlePageLoad(route, startNavigationSpan);
     }
   }
 
-  // Use new route event API for accurate timing if available
-  if (hasNewRouteEventAPI) {
-    IS_DEBUG_BUILD && debug.log('[MiniAppTracing] Using new route event API (onBeforeAppRoute)');
+  // Common route handler
+  const routeHandler = (eventOptions: any) => {
+    const route = normalizeRouteInfo(eventOptions);
 
-    // Start timing when route begins (before page lifecycle)
-    onBeforeAppRoute((eventOptions: any) => {
-      const route = normalizeRouteInfo(eventOptions);
-      const routeEventId = route.routeEventId;
-      const startTime = route.timeStamp ? route.timeStamp / 1000 : timestampInSeconds();
+    // Determine if this is pageload or navigation
+    const isPageLoad =
+      !hasHandledPageLoad && isPageLoadNavigation(route.openType, isFirstRoute);
 
-      IS_DEBUG_BUILD && debug.log('[MiniAppTracing] onBeforeAppRoute:', route.path, 'routeEventId:', routeEventId);
-
-      // Determine if this is pageload or navigation
-      const isPageLoad = !hasHandledPageLoad && isPageLoadNavigation(route.openType, isFirstRoute);
-
-      if (isFirstRoute) {
-        isFirstRoute = false;
-      }
-
-      // Skip if this route type shouldn't be instrumented
-      if ((isPageLoad && !instrumentPageLoad) || (!isPageLoad && !instrumentNavigation)) {
-        return;
-      }
-
-      // Store pending route context for correlation
-      if (routeEventId) {
-        pendingRoutes.set(routeEventId, {
-          route,
-          startTime,
-          isPageLoad,
-        });
-      }
-
-      // Start navigation span immediately with accurate start time
-      if (isPageLoad && instrumentPageLoad) {
-        hasHandledPageLoad = true;
-        handlePageLoad(route, startNavigationSpan, startTime);
-      } else if (instrumentNavigation && hasHandledPageLoad) {
-        handleNavigation(route, startNavigationSpan, startTime);
-      }
-    });
-
-    // End span on onAppRoute (page onShow completed)
-    if (typeof onAppRoute === 'function') {
-      onAppRoute((eventOptions: any) => {
-        const route = normalizeRouteInfo(eventOptions);
-        const routeEventId = route.routeEventId;
-        const endTime = route.timeStamp ? route.timeStamp / 1000 : timestampInSeconds();
-
-        IS_DEBUG_BUILD && debug.log('[MiniAppTracing] onAppRoute:', route.path, 'routeEventId:', routeEventId);
-
-        // Get active span and add route timing
-        const activeRootSpan = getActiveRootSpan();
-
-        if (routeEventId) {
-          const pendingContext = pendingRoutes.get(routeEventId);
-          if (pendingContext) {
-            const routeDuration = (endTime - pendingContext.startTime) * 1000; // ms
-
-            // Add route timing to active span
-            if (activeRootSpan) {
-              activeRootSpan.setAttribute('miniapp.route_duration_ms', routeDuration);
-              activeRootSpan.setAttribute('miniapp.route_event_id', routeEventId);
-            }
-
-            IS_DEBUG_BUILD && debug.log(`[MiniAppTracing] Route completed: ${route.path}, duration: ${routeDuration.toFixed(2)}ms`);
-
-            // Clean up pending context
-            pendingRoutes.delete(routeEventId);
-          }
-        }
-
-        // End the span with accurate end time when page onShow completes
-        if (endSpanOnRouteComplete && activeRootSpan && !spanToJSON(activeRootSpan).timestamp) {
-          activeRootSpan.setAttribute(SEMANTIC_ATTRIBUTE_SENTRY_IDLE_SPAN_FINISH_REASON, 'routeComplete');
-          activeRootSpan.end(endTime);
-          IS_DEBUG_BUILD && debug.log(`[MiniAppTracing] Ended span on onAppRoute: ${route.path}`);
-        }
-      });
+    if (isFirstRoute) {
+      isFirstRoute = false;
     }
 
-    // Optional: onAppRouteDone for logging
-    if (typeof onAppRouteDone === 'function') {
+    if (isPageLoad && instrumentPageLoad) {
+      hasHandledPageLoad = true;
+      handlePageLoad(route, startNavigationSpan);
+      return;
+    }
+
+    // Handle navigation
+    if (instrumentNavigation && hasHandledPageLoad) {
+      handleNavigation(route, startNavigationSpan);
+    }
+  };
+
+  if (typeof onAppRoute === "function") {
+    onAppRoute(routeHandler);
+
+    // Optional: Use onAppRouteDone for logging
+    if (typeof onAppRouteDone === "function") {
       onAppRouteDone((eventOptions: any) => {
-        IS_DEBUG_BUILD && debug.log('[MiniAppTracing] onAppRouteDone:', eventOptions?.path);
+        IS_DEBUG_BUILD &&
+          debug.log("[MiniAppTracing] Route done:", eventOptions?.path);
       });
     }
   } else {
-    // Fallback to legacy API (onAppRoute only)
-    IS_DEBUG_BUILD && debug.log('[MiniAppTracing] Using legacy route event API (onAppRoute)');
+    // Fallback: Instrument Page and Component if onAppRoute is not available
+    IS_DEBUG_BUILD &&
+      debug.log(
+        "[MiniAppTracing] No route event API available, falling back to Page/Component instrumentation"
+      );
 
-    onAppRoute((eventOptions: any) => {
-      const route = normalizeRouteInfo(eventOptions);
-
-      // Determine if this is pageload or navigation
-      const isPageLoad = !hasHandledPageLoad && isPageLoadNavigation(route.openType, isFirstRoute);
-
-      if (isFirstRoute) {
-        isFirstRoute = false;
-      }
-
-      if (isPageLoad && instrumentPageLoad) {
-        hasHandledPageLoad = true;
-        handlePageLoad(route, startNavigationSpan);
+    const instrumentLifecycle = (constructorName: "Page" | "Component") => {
+      const constructor = globalObj[constructorName];
+      if (typeof constructor !== "function") {
         return;
       }
 
-      // Handle navigation
-      if (instrumentNavigation && hasHandledPageLoad) {
-        handleNavigation(route, startNavigationSpan);
-      }
-    });
+      fill(globalObj, constructorName, (originalConstructor) => {
+        return function (this: any, options: any) {
+          if (options) {
+            // Helper to hook into onLoad
+            const injectOnLoad = (originalMethod?: Function) => {
+              return function (this: any, ...args: any[]) {
+                const [query] = args;
+                // Slight delay to ensure getCurrentPages usage is safe and page is pushed
+                setTimeout(() => {
+                  const pages = globalObj.getCurrentPages?.() || [];
+                  const currentPage = pages[pages.length - 1];
+                  if (currentPage) {
+                    routeHandler({
+                      path: currentPage.route || currentPage.__route__,
+                      query,
+                      // We can't easily get openType or exact scene without SDK support
+                      // but we can infer some things or just default
+                    });
+                  }
+                }, 0);
 
-    // Optional: Use onAppRouteDone for logging
-    if (typeof onAppRouteDone === 'function') {
-      onAppRouteDone((eventOptions: any) => {
-        IS_DEBUG_BUILD && debug.log('[MiniAppTracing] Route done:', eventOptions?.path);
+                if (originalMethod) {
+                  return originalMethod.apply(this, args);
+                }
+              };
+            };
+
+            // Helper to hook into onUnload
+            const injectOnUnload = (originalMethod?: Function) => {
+              return function (this: any, ...args: any[]) {
+                // Slight delay to ensure getCurrentPages usage is safe and page is popped
+                setTimeout(() => {
+                  const pages = globalObj.getCurrentPages?.() || [];
+                  const currentPage = pages[pages.length - 1];
+                  if (currentPage) {
+                    routeHandler({
+                      path: currentPage.route || currentPage.__route__,
+                      query: currentPage.options || {},
+                      openType: "navigateBack",
+                    });
+                  }
+                }, 0);
+
+                if (originalMethod) {
+                  return originalMethod.apply(this, args);
+                }
+              };
+            };
+
+            if (constructorName === "Page") {
+              options.onLoad = injectOnLoad(options.onLoad);
+              options.onUnload = injectOnUnload(options.onUnload);
+            } else if (constructorName === "Component") {
+              // Component can be used as Page
+              // Check methods.onLoad or just onLoad (mixed usage)
+              // Wechat Component-as-Page uses methods: { onLoad() {} }
+              if (options.methods) {
+                if (options.methods.onLoad) {
+                  options.methods.onLoad = injectOnLoad(options.methods.onLoad);
+                }
+                if (options.methods.onUnload) {
+                  options.methods.onUnload = injectOnUnload(
+                    options.methods.onUnload
+                  );
+                }
+              }
+              // Also check direct onLoad just in case (e.g. some frameworks)
+              // But standard Wechat Component doesn't have root onLoad unless invoked differently
+            }
+          }
+          return originalConstructor.call(this, options);
+        };
       });
-    }
+    };
+
+    instrumentLifecycle("Page");
+    instrumentLifecycle("Component");
   }
 
   // Optional: Page load lifecycle events for additional metrics
-  if (typeof onBeforePageLoad === 'function') {
+  if (typeof onBeforePageLoad === "function") {
     onBeforePageLoad((eventOptions: any) => {
-      IS_DEBUG_BUILD && debug.log('[MiniAppTracing] onBeforePageLoad:', eventOptions?.path);
+      IS_DEBUG_BUILD &&
+        debug.log("[MiniAppTracing] onBeforePageLoad:", eventOptions?.path);
     });
   }
 
-  if (typeof onAfterPageLoad === 'function') {
+  if (typeof onAfterPageLoad === "function") {
     onAfterPageLoad((eventOptions: any) => {
-      IS_DEBUG_BUILD && debug.log('[MiniAppTracing] onAfterPageLoad:', eventOptions?.path);
+      IS_DEBUG_BUILD &&
+        debug.log("[MiniAppTracing] onAfterPageLoad:", eventOptions?.path);
     });
   }
 }
@@ -377,15 +379,15 @@ export function instrumentMiniAppRouter(
  * Handle page load - update existing pageload span or create new one
  * @param route - Route information
  * @param startNavigationSpan - Function to start navigation span
- * @param startTime - Optional start time from onBeforeAppRoute for accurate timing
+ * @param startTime - Optional start time for accurate timing
  */
 function handlePageLoad(
   route: MiniAppRoute,
   startNavigationSpan: (context: StartSpanOptions) => void,
-  startTime?: number,
+  startTime?: number
 ): void {
   const { name, source } = getTransactionName(route);
-  const attributes = buildSpanAttributes(route, 'auto.pageload.miniapp');
+  const attributes = buildSpanAttributes(route, "auto.pageload.miniapp");
   attributes[SEMANTIC_ATTRIBUTE_SENTRY_SOURCE] = source;
 
   // Check if there's already an active pageload span
@@ -395,7 +397,7 @@ function handlePageLoad(
     const existingAttributes = spanToJSON(activeRootSpan).data || {};
 
     // Update the existing span with route info if not custom source
-    if (existingAttributes[SEMANTIC_ATTRIBUTE_SENTRY_SOURCE] !== 'custom') {
+    if (existingAttributes[SEMANTIC_ATTRIBUTE_SENTRY_SOURCE] !== "custom") {
       activeRootSpan.updateName(name);
       activeRootSpan.setAttribute(SEMANTIC_ATTRIBUTE_SENTRY_SOURCE, source);
     }
@@ -403,14 +405,15 @@ function handlePageLoad(
     // Add route-specific attributes
     activeRootSpan.setAttributes(attributes);
 
-    IS_DEBUG_BUILD && debug.log(`[MiniAppTracing] Updated pageload span: ${name}`);
+    IS_DEBUG_BUILD &&
+      debug.log(`[MiniAppTracing] Updated pageload span: ${name}`);
   } else {
     // Create new pageload span
     getCurrentScope().setTransactionName(name);
 
     const spanOptions: StartSpanOptions = {
       name,
-      op: 'pageload',
+      op: "pageload",
       attributes,
     };
 
@@ -421,7 +424,12 @@ function handlePageLoad(
 
     startNavigationSpan(spanOptions);
 
-    IS_DEBUG_BUILD && debug.log(`[MiniAppTracing] Created pageload span: ${name}${startTime ? ' (with accurate timing)' : ''}`);
+    IS_DEBUG_BUILD &&
+      debug.log(
+        `[MiniAppTracing] Created pageload span: ${name}${
+          startTime ? " (with accurate timing)" : ""
+        }`
+      );
   }
 }
 
@@ -429,22 +437,22 @@ function handlePageLoad(
  * Handle navigation - create new navigation span
  * @param route - Route information
  * @param startNavigationSpan - Function to start navigation span
- * @param startTime - Optional start time from onBeforeAppRoute for accurate timing
+ * @param startTime - Optional start time for accurate timing
  */
 function handleNavigation(
   route: MiniAppRoute,
   startNavigationSpan: (context: StartSpanOptions) => void,
-  startTime?: number,
+  startTime?: number
 ): void {
   const { name, source } = getTransactionName(route);
-  const attributes = buildSpanAttributes(route, 'auto.navigation.miniapp');
+  const attributes = buildSpanAttributes(route, "auto.navigation.miniapp");
   attributes[SEMANTIC_ATTRIBUTE_SENTRY_SOURCE] = source;
 
   getCurrentScope().setTransactionName(name);
 
   const spanOptions: StartSpanOptions = {
     name,
-    op: 'navigation',
+    op: "navigation",
     attributes,
   };
 
@@ -455,7 +463,12 @@ function handleNavigation(
 
   startNavigationSpan(spanOptions);
 
-  IS_DEBUG_BUILD && debug.log(`[MiniAppTracing] Created navigation span: ${name}${startTime ? ' (with accurate timing)' : ''}`);
+  IS_DEBUG_BUILD &&
+    debug.log(
+      `[MiniAppTracing] Created navigation span: ${name}${
+        startTime ? " (with accurate timing)" : ""
+      }`
+    );
 }
 
 /**
