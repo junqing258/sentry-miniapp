@@ -28,7 +28,7 @@ export default defineConfig((args) => {
       rollupOptions: {
         external: (id) => nodeBuiltIns.has(id),
         treeshake: {
-          moduleSideEffects: (id) => id.includes('polyfills'),
+          moduleSideEffects: (id) => id.includes("polyfills"),
         },
         output: {
           banner,

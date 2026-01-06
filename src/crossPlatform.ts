@@ -1,3 +1,5 @@
+import { getGlobalObject } from "./polyfills/globalObject";
+
 declare const wx: any; // 微信小程序、微信小游戏
 declare const my: any; // 支付宝小程序
 declare const tt: any; // 字节跳动小程序
@@ -35,52 +37,6 @@ type AppName =
   | "unknown";
 
 /**
- * 获取跨平台的 SDK
- */
-const getSDK = () => {
-  let currentSdk: SDK = {
-    // tslint:disable-next-line: no-empty
-    request: () => { },
-    // tslint:disable-next-line: no-empty
-    httpRequest: () => { },
-    // tslint:disable-next-line: no-empty
-    getSystemInfoSync: () => { },
-    getPerformance: () => {
-      return {};
-    },
-    onAppHide: function (_cb: () => void) {
-    },
-    canIUse: function (_feature: string): boolean {
-      return false;
-    }
-  };
-
-  if (typeof wx === "object") {
-    // tslint:disable-next-line: no-unsafe-any
-    currentSdk = wx;
-  } else if (typeof my === "object") {
-    // tslint:disable-next-line: no-unsafe-any
-    currentSdk = my;
-  } else if (typeof tt === "object") {
-    // tslint:disable-next-line: no-unsafe-any
-    currentSdk = tt;
-  } else if (typeof dd === "object") {
-    // tslint:disable-next-line: no-unsafe-any
-    currentSdk = dd;
-  } else if (typeof qq === "object") {
-    // tslint:disable-next-line: no-unsafe-any
-    currentSdk = qq;
-  } else if (typeof swan === "object") {
-    // tslint:disable-next-line: no-unsafe-any
-    currentSdk = swan;
-  } else {
-    throw new Error("sentry-miniapp 暂不支持此平台");
-  }
-
-  return currentSdk;
-};
-
-/**
  * 获取平台名称
  */
 const getAppName = () => {
@@ -103,7 +59,7 @@ const getAppName = () => {
   return currentAppName;
 };
 
-const sdk = getSDK();
+const sdk = getGlobalObject() as SDK;
 const appName = getAppName();
 
 export { sdk, appName };
