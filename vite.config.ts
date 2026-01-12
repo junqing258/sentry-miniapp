@@ -16,7 +16,7 @@ const banner = `// ${pkg.name} v${pkg.version}`;
 export default defineConfig((args) => {
   return {
     build: {
-      target: "es2015",
+      target: args.mode === "dev" ? "esnext" : "es2015",
       lib: {
         entry: resolve(__dirname, "src/index.ts"),
         formats: args.mode === "dev" ? ["es"] : ["es", "cjs"],

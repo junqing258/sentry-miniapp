@@ -41,6 +41,7 @@ interface MiniProgramPerformance {
   getEntriesByType?: (type: string) => PerformanceEntry[];
   timeOrigin?: number;
   now?: () => number;
+  _entryList?: PerformanceEntry[];
 }
 
 /** Options for adding performance entries */
@@ -71,7 +72,7 @@ function isMeasurementValue(value: unknown): value is number {
  * Converts from milliseconds to seconds.
  */
 function msToSec(time: number): number {
-  return time / 1000;
+  return Math.floor(time / 1000);
 }
 
 /**
@@ -126,7 +127,7 @@ export class MetricsInstrumentation {
   private _timeOrigin?: number;
   private _performanceCursor: number = 0;
 
-  public constructor(private _reportAllChanges: boolean = false) {}
+  public constructor(private _reportAllChanges: boolean = false) { }
 
   /**
    * Add performance entries from the miniapp performance API.
@@ -140,13 +141,8 @@ export class MetricsInstrumentation {
     }
 
     const origin = this._getMiniProgramTimeOrigin(performance);
-    if (!origin) {
-      return;
-    }
-
-    const timeOrigin = msToSec(origin);
+    const timeOrigin = msToSec(origin || 0);
     const { op, start_timestamp: transactionStartTime } = spanToJSON(span);
-
     // Get all performance entries (similar to browser's getEntries())
     const performanceEntries = performance.getEntries?.() || [];
 
@@ -272,7 +268,7 @@ export class MetricsInstrumentation {
   }
 
   private _getMiniProgramTimeOrigin(performance: MiniProgramPerformance): number | undefined {
-    if (typeof performance.timeOrigin === 'number') {
+    if (typeof performance.timeOrigin === 'number') { // performance.timeOrigin
       return performance.timeOrigin;
     }
 

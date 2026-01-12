@@ -15,7 +15,8 @@ fi
 diff_excludes=(
   ':(exclude)dist'
   ':(exclude,glob)dist/**'
-  ':(exclude)pnpm-lock.yaml'
+  ':(exclude)pnpm-lock.yaml',
+  ':(exclude)js.map',
 )
 
 if git diff --cached --quiet -- . "${diff_excludes[@]}"; then

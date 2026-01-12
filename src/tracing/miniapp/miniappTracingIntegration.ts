@@ -16,7 +16,7 @@ import {
   type StartSpanOptions,
 } from '@sentry/core';
 
-import { MetricsInstrumentation, type AddPerformanceEntriesOptions } from './metrics';
+import { MetricsInstrumentation, type AddPerformanceEntriesOptions } from './miniapp-utils';
 import { defaultRequestInstrumentationOptions, RequestInstrumentationOptions } from './request';
 import { instrumentMiniAppRouter, type MiniAppRouterInstrumentationOptions } from './router';
 import { sdk } from '../../crossPlatform';
